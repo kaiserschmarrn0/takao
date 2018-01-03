@@ -1,0 +1,21 @@
+*NOTE: The dependecies will be soon automatically installed for determinated linux distros with "make dependencies", and the derivated
+"make build-dependencies" and "make test-dependencies", functions that are not implemented for the moment*
+
+CKA needs for it's build system the following libraries and programs:
+
+- Make (makefiles are used in this proyect).
+- clang (the proyect compiler).
+- lld for linking. but can be remplaced with classic ld without any problem modifying the makefile
+- gnu-efi (a library used for the EFI targets, that provides the basic things for .efi applications).
+
+Getting these packages:
+
+Ubuntu and variants:
+	sudo apt-get install gnu-efi make
+   sudo add-apt-repository "deb http://apt.llvm.org/artful/ llvm-toolchain-artful-5.0 main
+	sudo apt-get install clang-5.0 lld-5.0
+   
+For testing, it depends on the architecture, but the following packages are commonly used:
+- qemu (virtual machine)
+- OVMF (UEFI testing)
+- Mtools (also called mtools, used to access FAT disk images in the command line)
