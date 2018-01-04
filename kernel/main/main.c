@@ -12,10 +12,8 @@ KABI void kernel_main(void)
 {
 	// Start serial port
 	init_serial();
-	char x[10];
-	sprintf(x, "hi\n");
 	serial_print("[kernel_main] Kernel booting\n");
-	serial_print(x);
+
 	// Reached the end of function so lets panic
 	panic(1);
 }

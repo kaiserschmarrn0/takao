@@ -33,13 +33,19 @@ KABI int sprintf(char *dest, const char *format, ...)
 			strcpy(&dest[i], &format[i]); 
 		}
 
-		if (format[i] == '%')
+		else
 		{
 			i++;
 			switch(format[i])
 			{
 				case 's' : s = va_arg(arg,char *); //string representation
 							// Put the string
+							uint64_t len = strlen(s);
+							for (size_t y = 0; y != len; y++) {
+								strcpy(&dest[i+y-1], &s[y]); 
+							}
+							// Go forward the lenght of s
+							i = i + len;
 							break;
 
 				case 'x' : l = va_arg(arg, unsigned int); // hexadecimal representation
