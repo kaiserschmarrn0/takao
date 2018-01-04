@@ -1,3 +1,9 @@
+// File: kernelincludes.h
+//
+// Description: All that our little kernel uses
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
+
 #pragma once
 
 // The kernel library, with memcpy, strlen, etc.

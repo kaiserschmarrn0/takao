@@ -1,5 +1,8 @@
-#File distributed under the LICENSE of the package (GNU GPL V3)
-#Check LICENSE for more information
+# File: Makefile ( Main function one )
+#
+# Description: Makefile of the main function
+#
+# License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 # all: compiles the main.c to main,o
 all: $(MAIN)

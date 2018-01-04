@@ -1,5 +1,8 @@
-//File distributed under the LICENSE of the package (GNU GPL V3)
-//Check LICENSE for more information
+// File: graphics.c
+//
+// Description: Provides a way for outputting to screen using the UEFI boot services
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #include "graphics.h"
 

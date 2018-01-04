@@ -1,5 +1,8 @@
-#File distributed under the LICENSE of the package (GNU GPL V3)
-#Check LICENSE for more information
+# File: Makefile ( Global one )
+#
+# Description: Makefile of the project
+#
+# License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #Kernel version details
 VERS=0-0-7-2

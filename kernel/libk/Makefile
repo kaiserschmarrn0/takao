@@ -1,5 +1,8 @@
-#File distributed under the LICENSE of the package (GNU GPL V3)
-#Check LICENSE for more information
+# File: Makefile ( Libk one )
+#
+# Description: Makefile of the libK
+#
+# License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 # all: compiles the libk and archives it to a .a archive
 all: $(LIBK)

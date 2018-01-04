@@ -1,5 +1,8 @@
-//File distributed under the LICENSE of the package (GNU GPL V3)
-//Check LICENSE for more information
+// File: serial.c
+//
+// Description: Serial port driver
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #include "../includes/ioport.h"
 #include "../includes/serial.h"

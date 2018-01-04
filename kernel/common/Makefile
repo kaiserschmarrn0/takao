@@ -1,5 +1,8 @@
-#File distributed under the LICENSE of the package (GNU GPL V3)
-#Check LICENSE for more information
+# File: Makefile ( Common files )
+#
+# Description: Makefile of the common files
+#
+# License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 # all: compiles the arch independent archives
 all: $(ARCHINDEPENDENT)

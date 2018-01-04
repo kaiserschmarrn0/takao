@@ -1,5 +1,8 @@
-//File distributed under the LICENSE of the package (GNU GPL V3)
-//Check LICENSE for more information
+// File: ioport.c
+//
+// Description: Provide the interface for reading I/O ports
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #include "../../includes/ioport.h"
 

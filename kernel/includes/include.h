@@ -1,5 +1,8 @@
-//File distributed under the LICENSE of the package (GNU GPL V3)
-//Check LICENSE for more information
+// File: include.h
+//
+// Description: All the includes in one include
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #pragma once
 

@@ -1,5 +1,8 @@
-//File distributed under the LICENSE of the package (GNU GPL V3)
-//Check LICENSE for more information
+// File: stdlib.h
+//
+// Description: internal stdlib header
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #pragma once
 

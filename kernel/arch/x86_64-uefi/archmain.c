@@ -1,5 +1,8 @@
-//File distributed under the LICENSE of the package (GNU GPL V3)
-//Check LICENSE for more information
+// File: archmain.c
+//
+// Description: Main script of all the arch-dependent things of the kernel
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 // UEFI protocol stuff
 #include <efi.h>

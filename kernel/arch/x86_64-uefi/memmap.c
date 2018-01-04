@@ -1,5 +1,8 @@
-//File distributed under the LICENSE of the package (GNU GPL V3)
-//Check LICENSE for more information
+// File: memmap.c
+//
+// Description: Using UEFI methods, gets a memory map.
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #include "memmap.h"
 

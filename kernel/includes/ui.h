@@ -1,5 +1,8 @@
-//File distributed under the LICENSE of the package (GNU GPL V3)
-//Check LICENSE for more information
+// File: ui.h
+//
+// Description: A header that includes UI specific things
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #pragma once
 

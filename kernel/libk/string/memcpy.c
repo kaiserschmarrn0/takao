@@ -1,6 +1,8 @@
-//File distributed under the LICENSE of the package (GNU GPL V3)
-//Check LICENSE for more information
-
+// File: memcpy.c
+//
+// Description: Defines the memcpy function.
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
 #include "../string.h"
 
 // memcpy : copies the number specified by len from memory src to dest, being

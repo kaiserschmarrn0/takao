@@ -1,5 +1,8 @@
-//File distributed under the LICENSE of the package (GNU GPL V3)
-//Check LICENSE for more information
+// File: main.c
+//
+// Description: The kernel main function, bow down.
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #include "kernelincludes.h" // All the required "material"
 #include "main.h" // Just to declare the prototype

@@ -1,5 +1,8 @@
-//File distributed under the LICENSE of the package (GNU GPL V3)
-//Check LICENSE for more information
+// File: cpu.c
+//
+// Description: Rescues CPU info via cpuid and returns it to a struct.
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #include "cpu.h"
 #include "lowpanic.h"

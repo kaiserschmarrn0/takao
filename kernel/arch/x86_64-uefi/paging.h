@@ -1,5 +1,8 @@
-//File distributed under the LICENSE of the package (GNU GPL V3)
-//Check LICENSE for more information
+// File: paging.h
+//
+// Description: paging.c main header.
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #pragma once
 #include "utils.h"

@@ -1,5 +1,8 @@
-//File distributed under the LICENSE of the package (GNU GPL V3)
-//Check LICENSE for more information
+// File: gdt.c
+//
+// Description: Set-up the Global Descriptor Table and provides ways to modify it. 
+//
+// License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #include "gdt.h"
 

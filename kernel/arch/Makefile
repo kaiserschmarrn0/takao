@@ -1,5 +1,8 @@
-#File distributed under the LICENSE of the package (GNU GPL V3)
-#Check LICENSE for more information
+# File: Makefile ( arch-dependent )
+#
+# Description: Makefile of the arch dependent files
+#
+# License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 # all: compiles the arch dependent archives
 all: $(ARCHDEPENDENT)
