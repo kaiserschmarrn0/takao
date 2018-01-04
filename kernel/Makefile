@@ -2,7 +2,7 @@
 #Check LICENSE for more information
 
 #Kernel version details
-VERS=0-0-6-2
+VERS=0-0-7-2
 KERNEL=cka
 FINALFILE=$(KERNEL)$(VERS)
 NICKNAME="prophet"

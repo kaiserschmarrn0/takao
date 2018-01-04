@@ -10,7 +10,7 @@ CKA stands for "C Kernel and less Assembly", reffering to my irrational hate to 
 CKA is a hobby project that helps me to understand how computers work, learn about it and, in the future, represent how I think they should work.
 
 ### CKA releases:
-Currently CKA is in the version 0-0-6-2, nicknamed "Prophet".
+Currently CKA is in the version 0-0-7-2, nicknamed "Prophet".
 For the moment CKA is in alpha phase.
 
 ### Useful documentation:

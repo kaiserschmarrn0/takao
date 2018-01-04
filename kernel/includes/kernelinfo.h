@@ -6,4 +6,4 @@
 //some system info
 #define KERNEL_NAME           "cka"
 #define KERNEL_RELEASENAME    "prophet"
-#define KERNEL_VERSNUM        "0.0.6.2"
+#define KERNEL_VERSNUM        "0.0.7.2"

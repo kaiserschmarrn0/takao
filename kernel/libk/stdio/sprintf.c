@@ -17,7 +17,9 @@
 // This will print: Value of Pi = 3,14159
 KABI int sprintf(char *dest, const char *format, ...)
 {
-	/*
+	unsigned int l; /* Used when fetching arguments that are not strings */
+	char* s; /* this one for strings */
+	
 	// starting arguments
 	va_list arg;
 	va_start(arg, format);
@@ -28,6 +30,7 @@ KABI int sprintf(char *dest, const char *format, ...)
 		if (format[i] != '%')
 		{
 			// Just copy the string component
+			strcpy(&dest[i], &format[i]); 
 		}
 
 		if (format[i] == '%')
@@ -48,18 +51,19 @@ KABI int sprintf(char *dest, const char *format, ...)
 							break;
 
 				case 'd' : l = va_arg(arg,int);
-                        		if(l<0) 
+                        		/*
+					if(l<0) 
                         		{ 
                             			l = -l;
-                            			io_80x25putc('-'); 
+                            			dest[i] = '-'; 
                         		} 
 					io_80x25puts(convert(i,10));
-					break; 
+					break;
+					*/ 
 			}
 
 		}
 	}
 	// Close arguments for clean up
 	va_end(arg);
-	*/
 }

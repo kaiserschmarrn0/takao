@@ -22,15 +22,15 @@
 KABI char* strcpy(char * dest, const char * src)
 {
 	char* result = dest;
-	if((NULL != dest) && (NULL != src))
+	if(('\0' != dest) && ('\0' != src))
 	{
 		/* Start copy src to dest */
-		while (NULL != *src)
+		while ('\0' != *src)
 		{
 			*dest++ = *src++;
 		}
-		/* put NULL termination */
-		*dest = NULL;
+		/* put '\0' termination */
+		*dest = '\0';
 	}
 	return result;
  	 

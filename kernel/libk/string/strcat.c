@@ -22,20 +22,20 @@
 KABI char* strcat(char* dest,const char * src)
 {
 	char* result = dest;
-	if((NULL != dest) && (NULL != src))
+	if(('\0' != dest) && ('\0' != src))
 	{
 		/* Iterate till end of dest string */
-		while(NULL != *dest)
+		while('\0' != *dest)
 		{
 			dest++;
 		}
 		/* Copy src string starting from the end NULL of dest */
-		while(NULL != *src)
+		while('\0' != *src)
 		{
 			*dest++ = *src++;
 		}
 	/* put NULL termination */
- 	*dest = NULL;
+ 	*dest = '\0';
 	}
 	return result; 	 
 }
