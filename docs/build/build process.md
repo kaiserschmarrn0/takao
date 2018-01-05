@@ -10,7 +10,7 @@ that vary between architectures. Can be found in /arch
 The arch independent files = Built as archindependent.a, are the common kernel drivers that don't vary between architectures.
 Can be found in /common
 
-The main kernel = Built as main.o, is the main kernel function, can be found in /main. 
+The main kernel = Built as main.a, is the main kernel function with some utilities, can be found in /main. 
 
 The libk = Built as libk.a, is the kernel specific library, can be found in /libk.
 
