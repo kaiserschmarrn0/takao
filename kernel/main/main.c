@@ -10,6 +10,8 @@
 // The function "arch_main" just dropped us in an enviroment with all the arch
 // dependent and final booting stuff done.
 // Now we just start building in the top off all.
+// Arch_main should provide:
+// - A graphic interface (a basic one, without using specific drivers)
 
 KABI void kernel_main(void)
 {
