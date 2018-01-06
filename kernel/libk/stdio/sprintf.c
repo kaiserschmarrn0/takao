@@ -25,6 +25,7 @@ KABI int sprintf(char *dest, const char *format, ...)
 	
 	// starting arguments
 	va_list arg;
+	
 	va_start(arg, format);
 
 	for (size_t i = 0; format[i] != '\0'; i++) 

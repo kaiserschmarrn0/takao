@@ -57,9 +57,10 @@ ARCHINDEPENDENT=highpanic.o \
 
 MAIN=main.o 
 
-LIBK=string/memcmp.o \
-	string/memcpy.o \
-	string/memset.o \
+LIBK=mem/memcmp.o \
+	mem/memcpy.o \
+	mem/memset.o \
+	\
 	string/strlen.o \
 	string/strcpy.o \
 	string/strcat.o \

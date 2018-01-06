@@ -53,7 +53,8 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 
 	// Get the memory map
 	status = get_memmap(&archmain.uefi, &archmain.uefi.boot_memmap);
-
+	ASSERT_EFI_STATUS(status);
+	
 	// Exit the UEFI boot services
 	status = exit_bootservices(&archmain.uefi);
 

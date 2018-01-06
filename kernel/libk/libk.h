@@ -20,3 +20,6 @@
 
 // Stdio
 #include "stdio.h"
+
+// Mem functions
+#include "mem.h"
