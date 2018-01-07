@@ -49,8 +49,7 @@ ARCHDEPENDENT=x86_64-uefi/archmain.o \
 	x86_64-uefi/gdt.o \
 	x86_64-uefi/ioport.o \
 	x86_64-uefi/paging.o \
-	x86_64-uefi/memmap.o \
-	x86_64-uefi/acpi.o
+	x86_64-uefi/memmap.o 
 
 ARCHINDEPENDENT=highpanic.o \
 		serial.o 
