@@ -8,5 +8,7 @@
 
 KABI EFI_STATUS get_memmap(const struct uefi *uefi, struct efi_memory_map *map_info)
 {
-	efi_memory_map(uefi, map_info);
+	EFI_STATUS status;
+	
+	status = efi_memory_map(uefi, map_info);
 }

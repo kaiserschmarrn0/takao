@@ -24,7 +24,7 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 
 	EFI_STATUS status;
     
-	// UEFI give us a x86_64 enviroment, now we call the "arch_main"
+	// UEFI give us a x86_64 enviroment, now we call the "arch_main" things
 	// to setup all arch-dependent stuff and then we will call
 	// "kernel_main"
 
@@ -37,25 +37,31 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 	// for our kernel will happen
 
 	// First, lets get CPU info and enable SSE if it is present
-	// All of this is in "cpu.h"
+	// All of this is in "cpu.c/h"
 	init_cpu(&archmain.cpu);
 
 	// Then, we will init our graphics output system, in CKA the graphics are arch-dependent,
-	// So the kernel will only recive a set-pixel function.
+	// So the kernel will only recive a set-pixel function in order to make the main kernel
+	// freestanding.
+	// All of this in "graphics.c/h" and "set_pixel.c"
 	status = init_graphics(&archmain.uefi, &archmain.graphics);
 	ASSERT_EFI_STATUS(status);
 	
 	// Init our Global Descriptor Table (GDT)
+	// All of this in "gdt.c/h"
 	init_gdt();
 
 	// Init our paging
+	// All of this in "paging.c/h"
 	init_paging(&archmain.cpu);
 
 	// Get the memory map
+	// All of this in "uefifunc.c/h"
 	status = get_memmap(&archmain.uefi, &archmain.uefi.boot_memmap);
 	ASSERT_EFI_STATUS(status);
 	
 	// Exit the UEFI boot services
+	// All of this in "uefifunc.c/h"
 	status = exit_bootservices(&archmain.uefi);
 
 	// With all finished, we can call the kernel main

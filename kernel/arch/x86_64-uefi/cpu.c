@@ -22,6 +22,7 @@ const uint64_t CR4_OSXMMEXCPT_BIT = 1 << 10;
 KABI void init_cpu(struct cpu *cpu)
 {
 	uint32_t b, c, d, a = 1;
+
 	__asm__("cpuid" : "=d"(d), "=b"(b), "=c"(c), "+a"(a));
 	cpu->has_apic = (d & HAS_APIC) != 0;
 	cpu->has_x2apic = (c & HAS_X2APIC) != 0;
