@@ -1,4 +1,3 @@
-
 # Panic error code meaning:                                     
 #### Author: TheStr3ak5
 
