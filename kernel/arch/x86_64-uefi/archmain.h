@@ -20,12 +20,15 @@
 #include "graphics.h"
 // Memory map provided by UEFI
 #include "memmap.h"
+// Memory routines
+#include "mem.h"
 
 // A struct for storing some info
 struct archmain {
 	struct cpu cpu;
 	struct uefi uefi;
 	struct graphics graphics;
+	struct mem mem;
 };
 
 // The "arch_main" function, crucial in our boot process

@@ -63,6 +63,8 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 	// Exit the UEFI boot services
 	// All of this in "uefifunc.c/h"
 	status = exit_bootservices(&archmain.uefi);
+	ASSERT_EFI_STATUS(status);
+
 
 	// With all finished, we can call the kernel main
 	
