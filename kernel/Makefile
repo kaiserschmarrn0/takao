@@ -45,7 +45,6 @@ ARCHDEPENDENT=x86_64-uefi/archmain.o \
 	x86_64-uefi/uefifunc.o \
 	x86_64-uefi/cpu.o \
 	x86_64-uefi/graphics.o \
-	x86_64-uefi/set_pixel.o \
 	x86_64-uefi/gdt.o \
 	x86_64-uefi/ioport.o \
 	x86_64-uefi/paging.o \
@@ -164,5 +163,4 @@ clean:
 	rm -rf debug.log
 	rm -rf $(FINALFILE).bin
 	rm -rf $(FINALFILE).efi
-	rm -rf common/handlerconventions.h
 	rm -rf $(BUILDDIR)

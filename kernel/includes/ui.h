@@ -7,6 +7,3 @@
 #pragma once
 
 // UI Specific things.
-
-// Set pixel function
-#include "set_pixel.h"
