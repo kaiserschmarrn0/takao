@@ -7,3 +7,6 @@
 #pragma once
 
 // UI Specific things.
+
+// The tty driver
+#include "tty.h"

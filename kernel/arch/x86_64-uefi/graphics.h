@@ -23,3 +23,4 @@ struct graphics {
 // must be called while boot services are available.
 KABI EFI_STATUS init_graphics(const struct uefi *uefi, struct graphics *gs);
 KABI void set_pixel_GOP(const struct graphics *gs, int w, int h, uint32_t rgb);
+KABI void fill_screen_GOP(const struct graphics *gs, uint32_t rgb);

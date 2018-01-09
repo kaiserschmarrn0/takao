@@ -45,11 +45,12 @@ ARCHDEPENDENT=x86_64-uefi/archmain.o \
 	x86_64-uefi/uefifunc.o \
 	x86_64-uefi/cpu.o \
 	x86_64-uefi/graphics.o \
+	x86_64-uefi/tty.o \
 	x86_64-uefi/gdt.o \
 	x86_64-uefi/ioport.o \
 	x86_64-uefi/paging.o \
 	x86_64-uefi/memmap.o \
-	x86_64-uefi/mem.o
+	x86_64-uefi/mem.o \
 
 ARCHINDEPENDENT=highpanic.o \
 		serial.o 

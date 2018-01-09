@@ -78,6 +78,11 @@ KABI void set_pixel_GOP(const struct graphics *gs, int w, int h, uint32_t rgb)
 	*addr = rgb;
 }
 
-
-
-
+KABI void fill_screen_GOP(const struct graphics *gs, uint32_t rgb) {
+    rgb |= 0xff000000;
+    for(int x = 0; x < gs->output_mode.HorizontalResolution; x += 1) {
+        for(int y = 0; y < gs->output_mode.VerticalResolution; y += 1) {
+            set_pixel_GOP(gs, x, y, rgb);
+        }
+    }
+}

@@ -15,6 +15,8 @@
 
 KABI void kernel_main(void)
 {
+	// Start tty	
+	tty_init();
 	// Start serial port
 	init_serial();
 	serial_print("[kernel_main] Kernel booting\n");
