@@ -11,3 +11,7 @@
 
 // tty_init: Cleans the screen and setup all.
 KABI void tty_init(void);
+
+KABI void put_char(char c, uint8_t x, uint8_t y, uint32_t rgb);
+
+KABI void put_string(const char* str, uint8_t x, uint8_t y, uint32_t rgb);
