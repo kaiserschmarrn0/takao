@@ -60,9 +60,10 @@ KABI void put_string(const char* str, uint8_t x, uint8_t y, uint32_t rgb)
 KABI void tty_init(void)
 {
 	// Colors
-	uint32_t r = 64 << 16;
-	uint32_t g = 64 << 8;
-	uint32_t b = 64;
-
-	put_char("c", 1, 1, r | g | b);
+	uint32_t r = 255 << 16;
+	uint32_t g = 255 << 8;
+	uint32_t b = 255;
+	
+	set_pixel(2, 2, r | g | b);
+	put_char('c', 10, 10, r | g | b);
 }
