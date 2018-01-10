@@ -6,22 +6,22 @@
 
 #pragma once
 
-#include "utils.h"
+#include "../utils/utils.h"
 
 // Functions for rescuing CPU info and doing things with it.
-#include "cpu.h"
+#include "../cpu/cpu.h"
 // Functions for restoring uefi boot info
-#include "uefifunc.h"
+#include "../specifics/uefifunc.h"
 // GDT and related stuff
-#include "gdt.h"
+#include "../mem/gdt.h"
 // Paging setup
-#include "paging.h"
+#include "../mem/paging.h"
 // Graphic initialization
-#include "graphics.h"
+#include "../output/graphics.h"
 // Memory map provided by UEFI
-#include "memmap.h"
+#include "../mem/memmap.h"
 // Memory routines
-#include "mem.h"
+#include "../mem/mem.h"
 
 // A struct for storing some info
 struct archmain {

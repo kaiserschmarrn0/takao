@@ -4,7 +4,9 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "utils.h"
+#pragma once
+
+#include "../utils/utils.h"
 
 struct GDT {
 	uint16_t limit;

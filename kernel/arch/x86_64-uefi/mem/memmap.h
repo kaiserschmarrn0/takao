@@ -6,8 +6,9 @@
 
 #pragma once
 
-#include "utils.h"
-#include "uefifunc.h"
+#include "../utils/utils.h"
+
+#include "../specifics/uefifunc.h"
 
 KABI EFI_STATUS get_memmap(const struct uefi *uefi, struct efi_memory_map *map_info);
 

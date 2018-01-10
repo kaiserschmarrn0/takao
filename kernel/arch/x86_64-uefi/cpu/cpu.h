@@ -5,7 +5,7 @@
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #pragma once
-#include "utils.h"
+#include "../utils/utils.h"
 
 
 struct cpu {

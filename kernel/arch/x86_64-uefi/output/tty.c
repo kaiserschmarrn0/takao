@@ -4,8 +4,8 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "../../includes/tty.h"
-#include "archmain.h"
+#include "../../../includes/tty.h"
+#include "../boot/archmain.h"
 #include "font.h"
 
 struct archmain archmain;

@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "utils.h"
-#include "uefifunc.h"
+#include "../utils/utils.h"
+#include "../specifics/uefifunc.h"
 
 #define GRAPHICS_MOST_APPROPRIATE_H 1080
 #define GRAPHICS_MOST_APPROPRIATE_W 1920

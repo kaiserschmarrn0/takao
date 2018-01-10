@@ -4,9 +4,9 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "cpu.h"
+#include "../cpu/cpu.h"
 #include "paging.h"
-#include "lowpanic.h"
+#include "../utils/lowpanic.h"
 
 const uint64_t IA32_EFER_LME_BIT = (1ull << 8);
 const uint64_t IA32_EFER_NXE_BIT = (1ull << 11);

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "utils.h"
+#include "../utils/utils.h"
 
 #define CHAR_WIDTH 6
 #define CHAR_HEIGHT 8

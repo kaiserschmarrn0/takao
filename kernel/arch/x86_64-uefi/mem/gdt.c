@@ -6,7 +6,7 @@
 
 #include "gdt.h"
 
-#include "lowpanic.h"
+#include "../utils/lowpanic.h"
 
 KABI void init_gdt()
 {

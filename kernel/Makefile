@@ -40,17 +40,24 @@ QEMUFLAGS=-L OVMF_dir/ -bios OVMF.fd -usb
 QEMUFINALFLAGS=-enable-kvm -m 64 -serial file:debug.log -device VGA 
 
 # All about the files of the kernel, with empty lanes to separate:
-ARCHDEPENDENT=x86_64-uefi/archmain.o \
-	x86_64-uefi/lowpanic.o \
-	x86_64-uefi/uefifunc.o \
-	x86_64-uefi/cpu.o \
-	x86_64-uefi/graphics.o \
-	x86_64-uefi/tty.o \
-	x86_64-uefi/gdt.o \
-	x86_64-uefi/ioport.o \
-	x86_64-uefi/paging.o \
-	x86_64-uefi/memmap.o \
-	x86_64-uefi/mem.o \
+ARCHDEPENDENT=x86_64-uefi/boot/archmain.o \
+	\
+	x86_64-uefi/cpu/cpu.o \
+	\
+	x86_64-uefi/io/ioport.o \
+	\
+	x86_64-uefi/mem/gdt.o \
+	x86_64-uefi/mem/paging.o \
+	x86_64-uefi/mem/memmap.o \
+	x86_64-uefi/mem/mem.o \
+	\
+	x86_64-uefi/output/graphics.o \
+	x86_64-uefi/output/tty.o \
+	\
+	x86_64-uefi/specifics/uefifunc.o \
+	\
+	x86_64-uefi/utils/lowpanic.o
+	
 
 ARCHINDEPENDENT=highpanic.o \
 		serial.o 

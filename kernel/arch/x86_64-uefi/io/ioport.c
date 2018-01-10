@@ -4,7 +4,7 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "../../includes/ioport.h"
+#include "../../../includes/ioport.h"
 
 KABI uint8_t port_outb(uint16_t port, uint8_t value)
 {

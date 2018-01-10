@@ -12,7 +12,7 @@
 #include "archmain.h"
 
 // The "kernel_main" and "arch_main" functions prototypes
-#include "../../main/main.h"
+#include "../../../main/main.h"
 
 struct archmain archmain;
 

@@ -5,7 +5,7 @@
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 #include "cpu.h"
-#include "lowpanic.h"
+#include "../utils/lowpanic.h"
 
 const uint32_t HAS_APIC = 1 << 9;
 const uint32_t HAS_X2APIC = 1 << 21;
