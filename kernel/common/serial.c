@@ -4,8 +4,8 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "../includes/ioport.h"
-#include "../includes/serial.h"
+#include "../includes/io/ioport.h"
+#include "../includes/output/serial.h"
 
 #define SERIAL_REGISTER_BASE 0x03F8
 #define SERIAL_BAUD_RATE 115200

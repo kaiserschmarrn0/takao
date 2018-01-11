@@ -7,7 +7,7 @@
 #pragma once
 
 // Include our shiny and "optimal" libk
-#include "../libk/libk.h"
+#include "../../libk/libk.h"
 
 // tty_init: Cleans the screen and setup all.
 KABI void tty_init(void);

@@ -6,6 +6,6 @@
 
 #pragma once
 
-#include "../libk/libk.h"
+#include "../../libk/libk.h"
 
 KABI void panic(int error_code);

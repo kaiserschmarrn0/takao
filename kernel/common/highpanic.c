@@ -4,7 +4,7 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "../includes/highpanic.h"
+#include "../includes/utils/highpanic.h"
 
 KABI void panic(int error_code)
 {

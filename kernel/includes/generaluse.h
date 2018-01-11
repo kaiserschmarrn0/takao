@@ -9,13 +9,13 @@
 // General use things.
 
 // port_inb, port_outb and etc.
-#include "ioport.h"
+#include "io/ioport.h"
 
 // Panic function.
-#include "highpanic.h"
+#include "utils/highpanic.h"
 
 //Kernel general info.
 #include "kernelinfo.h"
 
 // Serial port
-#include "serial.h"
+#include "output/serial.h"

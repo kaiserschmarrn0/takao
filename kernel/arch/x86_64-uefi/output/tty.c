@@ -4,7 +4,7 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "../../../includes/tty.h"
+#include "../../../includes/output/tty.h"
 #include "../boot/archmain.h"
 #include "font.h"
 

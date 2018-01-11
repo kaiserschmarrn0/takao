@@ -9,4 +9,4 @@
 // UI Specific things.
 
 // The tty driver
-#include "tty.h"
+#include "output/tty.h"

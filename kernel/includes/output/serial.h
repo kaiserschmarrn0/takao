@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../libk/libk.h"
+#include "../../libk/libk.h"
 
 KABI void init_serial(void);
 KABI uint64_t serial_port_write(uint8_t *buffer, uint64_t size);
