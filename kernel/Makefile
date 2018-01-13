@@ -56,8 +56,16 @@ ARCHDEPENDENT=x86_64-uefi/boot/archmain.o \
 	\
 	x86_64-uefi/specifics/uefifunc.o \
 	\
-	x86_64-uefi/utils/lowpanic.o
-	
+	x86_64-uefi/utils/lowpanic.o \
+	\
+	x86_64-uefi/interrupts/acpi.o \
+	x86_64-uefi/interrupts/handlers/df.o \
+	x86_64-uefi/interrupts/handlers/gp.o \
+	x86_64-uefi/interrupts/handlers/pf.o \
+	x86_64-uefi/interrupts/handlers/ud.o \
+	x86_64-uefi/interrupts/handlers/unknown.o \
+	x86_64-uefi/interrupts/handlers/unknown_irq.o \
+	x86_64-uefi/interrupts/handlers/unknown_software.o
 
 ARCHINDEPENDENT=highpanic.o \
 		serial.o 

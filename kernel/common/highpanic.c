@@ -9,7 +9,7 @@
 
 KABI void panic(int error_code)
 {
-	serial_print("[panic] Kernel halted due to an error!\n");
+	serial_print("[panic] Kernel halted (busy stop) due to an error!\n");
 	serial_print("\tError code :");
 	serial_print("\n");
 	// Stuff here
