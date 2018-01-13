@@ -6,7 +6,7 @@ This numbers have a meaning, is the following:
 
 Example: 
 ```
-CKA 1-3-5-2
+CKA 1-3-5-2k
 ```
 ```x-x-x-2``` means Bug-fix 2, these are just version that fix some errors or include documentation, but without any substantial
 change in code. This number is maintained until one 'Big release' happens.
@@ -20,3 +20,8 @@ without making a global change, for example, support for mouse input or a big ch
 ```1-x-x-x``` means Mayor release 1, these are huge versions that change the global behaviour of the kernel, these are rare
 and imply incompatibility with binaries, dependencies and any other existent structure. For example, leaving the kernel project 
 to enter into a complete OS project, making a GUI and focusing the system to it, etc.
+
+Then we have, in special cases, a 'k', this 'k' means 'Kensei', that means that the version was focused to error resolving instead
+of adding new features or other things, the kensei releases don't follow any pattern, are made when the developers find it necessary,
+but usually they coincide with the Big releases.
+When a version don't have the Kensei mark ('k'), is a common release.

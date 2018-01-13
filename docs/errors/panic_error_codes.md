@@ -19,6 +19,9 @@ low_panic error codes:
 |1          | Processor has not SSE/SSE2 (cpuid).  | Is a hardware fault, CKA is not responsible. | No apparent solution for CKA.|
 |3          | GDT Entry making failed.             | A resource related to GDT ran out            | Restart the system.          |
 |7          | System does not support IA32e paging.| Is a hardware fault, CKA is not responsible. | No apparent solution for CKA.|
+|8          | System has no APIC/x2APIC            | Is a hardware fault, CKA is not responsible. | No apparent solution for CKA.|
+|9          | APIC info was not found              | Is a hardware fault, CKA is not responsible. | Restart the system.          |
+|10         | System has I/O SAPIC, not supported. | Is a hardware fault, CKA is not responsible. | No apparent solution for CKA.|
 
 panic error codes:
 

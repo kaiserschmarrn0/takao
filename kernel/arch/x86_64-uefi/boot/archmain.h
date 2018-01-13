@@ -22,6 +22,8 @@
 #include "../mem/memmap.h"
 // Memory routines
 #include "../mem/mem.h"
+// Interrupts
+#include "../interrupts/interrupts.h"
 
 // A struct for storing some info
 struct archmain {
@@ -29,6 +31,7 @@ struct archmain {
 	struct uefi uefi;
 	struct graphics graphics;
 	struct mem mem;
+	struct interrupts interrupts;
 };
 
 // The "arch_main" function, crucial in our boot process

@@ -40,6 +40,11 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 	// All of this is in "cpu.c/h"
 	init_cpu(&archmain.cpu);
 
+	// Init interrupts
+	// FIXME: Call init_interrupts make the computer restart (?), until we fix it is unusable
+	//status = init_interrupts(&archmain);
+	//ASSERT_EFI_STATUS(status);
+
 	// Then, we will init our graphics output system, in CKA the graphics are arch-dependent,
 	// So the kernel will only recive a set-pixel function in order to make the main kernel
 	// freestanding.

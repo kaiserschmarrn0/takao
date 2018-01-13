@@ -12,7 +12,7 @@ NICKNAME="prophet"
 
 # C compìler (the use of clang and flags)
 CC=clang
-CFLAGS_ARCHDEPENDENT=-I/usr/include/efi -I/usr/include/efi/x86_64 -I/usr/include/efi/protocol -fno-stack-protector -fpic -fno-builtin -fshort-wchar -mno-red-zone -DHAVE_USE_MS_ABI -Wall -Wextra -c -o
+CFLAGS_ARCHDEPENDENT=-I/usr/include/efi -I/usr/include/efi/x86_64 -I/usr/include/efi/protocol -fno-stack-protector -fpic -fno-builtin -fshort-wchar -mno-red-zone -DHAVE_USE_MS_ABI -c -o
 CFLAGS_ARCHINDEPENDENT=-ffreestanding -fno-stack-protector -fpic -fno-builtin -fshort-wchar -mno-red-zone -DHAVE_USE_MS_ABI -Wall -Wextra -c -o
 CFLAGS_MAIN=-ffreestanding -fno-stack-protector -fpic -fno-builtin -fshort-wchar -mno-red-zone -DHAVE_USE_MS_ABI -Wall -Wextra -c -o
 CFLAGS_LIBK=-ffreestanding -fno-stack-protector -fpic -fno-builtin -fshort-wchar -mno-red-zone -DHAVE_USE_MS_ABI -Wall -Wextra -c -o
@@ -59,6 +59,7 @@ ARCHDEPENDENT=x86_64-uefi/boot/archmain.o \
 	x86_64-uefi/utils/lowpanic.o \
 	\
 	x86_64-uefi/interrupts/acpi.o \
+	x86_64-uefi/interrupts/interrupts.o \
 	x86_64-uefi/interrupts/handlers/df.o \
 	x86_64-uefi/interrupts/handlers/gp.o \
 	x86_64-uefi/interrupts/handlers/pf.o \
