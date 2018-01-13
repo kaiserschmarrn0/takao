@@ -37,3 +37,8 @@ typedef enum {
 struct archmain;
 
 KABI EFI_STATUS init_memory(struct archmain *archmain);
+KABI void *allocate_page(struct archmain *a);
+KABI void deallocate_page(struct archmain *a, void *p);
+
+/// Map a single page to a specified address.
+KABI void map_page(struct archmain *a, uint64_t address, uint8_t level, uint64_t phys_addr);
