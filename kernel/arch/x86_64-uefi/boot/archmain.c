@@ -60,6 +60,10 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 	// All of this in "paging.c/h"
 	init_paging(&archmain.cpu);
 
+	// Memory management
+	status = init_memory(&archmain);
+	ASSERT_EFI_STATUS(status);
+
 	// Get the memory map
 	// All of this in "uefifunc.c/h"
 	status = get_memmap(&archmain.uefi, &archmain.uefi.boot_memmap);

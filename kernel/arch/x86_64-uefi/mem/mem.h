@@ -33,3 +33,7 @@ typedef enum {
 	_EfiPersistentMemory,
 	_EfiMaxMemoryType
 } _EFI_MEMORY_TYPE;
+
+struct archmain;
+
+KABI EFI_STATUS init_memory(struct archmain *archmain);
