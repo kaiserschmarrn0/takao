@@ -25,3 +25,5 @@ If you experiment issues in the build process or in the runtime of the kernel yo
 These are other projects that I used as inspiration / educational purposes / etc.
 
 The Daouki's project, VeloxOS : https://github.com/daouki/veloxos <- Project organization and coding conventions.
+Google's Zircon project : https://github.com/fuchsia-mirror/zircon <- Mostly inspiring the rewrite branch, that will become the new
+CKA.
