@@ -1,24 +1,28 @@
-# File: Makefile ( Main function one )
+# File: Makefile ( main folder one )
 #
-# Description: Makefile of the main function
+# Description: Makefile of the main kernel files
 #
 # License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-# all: compiles the main.c to main,o
-all: $(MAIN)
-	@echo ""
-	@echo "$(MAIN_FINAL) compilation done"
-	@echo ""
-	@echo "Copying $(MAIN_FINAL) to /build..."
-	@echo ""
-	cp $(MAIN_FINAL) ../build/$(MAIN_FINAL)
+cflags_main = -ffreestanding -fno-stack-protector -fpic -fno-builtin -fshort-wchar -mno-red-zone \
+	-Wall -Wextra -c -o
 
-# clean: clean the objects
+main = main.o
+
+# export all
+export
+
+.PHONY: all clean
+
+all: $(main)
+	@echo "Copy the archives to output"
+	cp $(main) ../../$(builddir)/
+	@echo ""
+
 clean:
-	rm -rf $(MAIN)
-	rm -rf $(MAIN_FINAL)
+	rm -rf $(main)
 
 # Rule: .c archives
 %.o: %.c
-	@echo Compiling $< 
-	@$(CC) $(CFLAGS_MAIN) -c $< -o $@
+	@echo Compiling $<
+	@$(ccompiler) $(cflags_main) -c $< -o $@

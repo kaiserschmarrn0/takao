@@ -6,10 +6,9 @@
 
 #pragma once
 
-#include "systemapi.h"
 #include "types.h"
 
 // the functions
-KABI int memcmp(const void *d1, const void *d2, uint64_t len);
-KABI void memcpy(void *dest, const void *src, uint64_t len);
-KABI void memset(void *dest, uint8_t b, uint64_t len);
+int memcmp(const void *d1, const void *d2, uint64_t len);
+void memcpy(void *dest, const void *src, uint64_t len);
+void memset(void *dest, uint8_t b, uint64_t len);

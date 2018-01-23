@@ -1,27 +1,44 @@
-# File: Makefile ( Libk one )
+# File: Makefile ( libk )
 #
-# Description: Makefile of the libK
+# Description: Makefile of the libk
 #
 # License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-# all: compiles the libk and archives it to a .a archive
-all: $(LIBK)
-	@echo ""
-	@echo "$(LIBK_FINAL) compilation done"
-	@echo "calling the archiver ($(AR))..."
-	@echo ""
-	$(AR) $(ARFLAGS_LIBK) $(LIBK_FINAL) $(LIBK)
-	@echo ""
-	@echo "Copying $(LIBK_FINAL) to /build..."
-	@echo ""
-	cp $(LIBK_FINAL) ../build/$(LIBK_FINAL)
+cflags_libk = -ffreestanding -fno-stack-protector -fpic -fno-builtin -fshort-wchar -mno-red-zone \
+	-Wall -Wextra -c -o
 
-# clean: clean the objects
+libk = 	mem/memcmp.o \
+	mem/memcpy.o \
+	mem/memset.o \
+	\
+	io/output/vsprintf.o \
+	io/output/sprintf.o \
+	\
+	lib/rand.o \
+	lib/isdigit.o \
+	lib/isalnum.o \
+	lib/isalpha.o \
+	lib/isblank.o \
+	lib/islower.o \
+	lib/isspace.o \
+	lib/isupper.o \
+	lib/tolower.o \
+	lib/toupper.o \
+	\
+	string/strcat.o \
+	string/strcpy.o \
+	string/strlen.o \
+	string/strcmp.o
+
+all: $(libk)
+	@echo "Copy the archives to output"
+	cp $(libk) ../../$(builddir)/
+	@echo ""
+
 clean:
-	rm -rf $(LIBK)
-	rm -rf $(LIBK_FINAL)
+	rm -rf $(libk)
 
 # Rule: .c archives
 %.o: %.c
-	@echo Compiling $< 
-	@$(CC) $(CFLAGS_LIBK) -c $< -o $@
+	@echo Compiling $<
+	@$(ccompiler) $(cflags_libk) -c $< -o $@

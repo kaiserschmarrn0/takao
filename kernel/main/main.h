@@ -6,8 +6,7 @@
 
 #pragma once
 
-// The kernel library, with memcpy, strlen, etc.
 #include "../libk/libk.h"
 
 // The main kernel function (the no arch-dependent one)
-KABI void kernel_main(void);
+void kernel_main(void);

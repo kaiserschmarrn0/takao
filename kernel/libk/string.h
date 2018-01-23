@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "systemapi.h"
 #include "types.h"
 
 // The functions
-KABI uint64_t strlen(const char *d);
-KABI char* strcpy(char * dest, const char * src);
-KABI char* strcat(char* dest,const char * src);
+uint64_t strlen(const char *d);
+char* strcpy(char * dest, const char * src);
+char* strcat(char* dest,const char * src);
+int strcmp(const char* s1, const char* s2);

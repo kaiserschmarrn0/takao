@@ -4,8 +4,8 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "../includes/io/ioport.h"
-#include "../includes/output/serial.h"
+#include "../includes/ioport.h"
+#include "../includes/serial.h"
 
 #define SERIAL_REGISTER_BASE 0x03F8
 #define SERIAL_BAUD_RATE 115200
@@ -40,26 +40,26 @@
 #define   B_UART_MSR_RI       (1 << 7)
 #define   B_UART_MSR_DCD      (1 << 8)
 
-KABI void init_serial_port();
+void serialport_init();
 
 
-KABI void init_serial()
+void serial_init()
 {
-	return init_serial_port();
+	return serialport_init();
 }
 
-KABI uint8_t read_serial_register(uint16_t offset)
+uint8_t read_serial_register(uint16_t offset)
 {
 	return port_inb(SERIAL_REGISTER_BASE + offset * SERIAL_REGISTER_STRIDE);
 }
 
-KABI void write_serial_register(uint16_t offset, uint8_t d)
+void write_serial_register(uint16_t offset, uint8_t d)
 {
 	port_outb(SERIAL_REGISTER_BASE + offset * SERIAL_REGISTER_STRIDE, d);
 }
 
 
-KABI void init_serial_port()
+void serialport_init()
 {
 	// Calculate divisor for baud generator
 	//    Ref_Clk_Rate / Baud_Rate / 16
@@ -104,7 +104,7 @@ KABI void init_serial_port()
 	write_serial_register(R_UART_MCR, 0x00);
 }
 
-KABI bool serial_port_writable()
+bool serial_port_writable()
 {
 	if (SERIAL_USE_HW_FLOW_CONTROL) {
 		if (SERIAL_DETECT_CABLE) {
@@ -140,7 +140,7 @@ KABI bool serial_port_writable()
 }
 
 
-KABI uint64_t serial_port_write(uint8_t *buffer, uint64_t size)
+uint64_t serial_port_write(uint8_t *buffer, uint64_t size)
 {
 	if (buffer == NULL) { return 0; }
 	if (size == 0) {
@@ -176,32 +176,8 @@ KABI uint64_t serial_port_write(uint8_t *buffer, uint64_t size)
 	return size;
 }
 
-KABI void serial_print(const char *print) {
+int serial_print(const char *print) {
 	serial_port_write((uint8_t *)print, strlen(print));
+	return 0;
 }
 
-KABI void serial_print_int(uint64_t n) {
-	char buf[24] = {0}, *bp = buf + 24;
-	do {
-		bp--;
-		*bp = '0' + n % 10;
-		n /= 10;
-	} while (n != 0);
-	serial_port_write((uint8_t *)bp, buf - bp + 24);
-}
-
-KABI void serial_print_hex(uint64_t n) {
-	char buf[16], *bp = buf + 16;
-	for(int i = 0; i < 16; i++) buf[i] = '0';
-	do {
-		bp--;
-		uint8_t mod = n % 16;
-		if(mod < 10) {
-			*bp = '0' + mod;
-		} else {
-			*bp = 'A' - 10 + mod;
-		}
-		n /= 16;
-	} while (n != 0);
-	serial_port_write((uint8_t *)buf, 16);
-}

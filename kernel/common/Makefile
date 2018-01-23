@@ -1,27 +1,28 @@
-# File: Makefile ( Common files )
+# File: Makefile ( common )
 #
-# Description: Makefile of the common files
+# Description: Makefile of the main kernel files
 #
 # License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-# all: compiles the arch independent archives
-all: $(ARCHINDEPENDENT)
-	@echo ""
-	@echo "$(ARCHINDEPENDENT_FINAL) compilation done"
-	@echo ""
-	@echo "calling the archiver ($(AR))..."
-	@echo ""
-	$(AR) $(ARFLAGS_ARCHINDEPENDENT) $(ARCHINDEPENDENT_FINAL) $(ARCHINDEPENDENT)
-	@echo "Copying $(ARCHINDEPENDENT_FINAL) to /build..."
-	@echo ""
-	cp $(ARCHINDEPENDENT_FINAL) ../build/$(ARCHINDEPENDENT_FINAL)
+cflags_common = -ffreestanding -fno-stack-protector -fpic -fno-builtin -fshort-wchar -mno-red-zone \
+	-Wall -Wextra -c -o
 
-# clean: clean the objects
+common = serial.o
+
+# export all
+export
+
+.PHONY: all clean
+
+all: $(common)
+	@echo "Copy the archives to output"
+	cp $(common) ../../$(builddir)/
+	@echo ""
+
 clean:
-	rm -rf $(ARCHINDEPENDENT)
-	rm -rf $(ARCHINDEPENDENT_FINAL)
+	rm -rf $(common)
 
 # Rule: .c archives
 %.o: %.c
-	@echo Compiling $< 
-	@$(CC) $(CFLAGS_ARCHINDEPENDENT) -c $< -o $@
+	@echo Compiling $<
+	@$(ccompiler) $(cflags_common) -c $< -o $@
