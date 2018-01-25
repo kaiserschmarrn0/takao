@@ -65,11 +65,11 @@ kernel: prepare
 
 all: prepare
 	cd $(buildutils) && make all
+	@echo ""
 	@echo "Build finished"
 	@echo ""
-	@echo "*NOTE: All the warnings related to end of non-void functions are harmless"
-	@echo ""
 	@echo "\033[92m$(KERNELNAME) $(VERS) ($(NICKNAME)) ready!\033[0m"
+	@echo ""
 
 test-qemu:
 	cd $(buildutils) && make test-qemu

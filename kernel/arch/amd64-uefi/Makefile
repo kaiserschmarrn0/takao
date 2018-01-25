@@ -8,7 +8,8 @@ cflags_arch = -I ../../../boot/amd64-uefi/efi-lib/includes -I ../../../boot/amd6
 	-fno-stack-protector -fpic -fno-builtin \
 	-fno-builtin-fshort-wchar -mno-red-zone -DCONFIG_x86_64 -DGNU_EFI_USE_MS_ABI -c -o
 
-archobj = ioport.o
+archobj = ioport.o \
+	cpucheck.o
 
 # export all
 export
