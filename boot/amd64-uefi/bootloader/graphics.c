@@ -6,7 +6,7 @@
 
 #include "graphics.h"
 
-void memcpyGRAPHICS(void *dest, const void *src, uint64_t len);
+void memcpy_graphics(void *dest, const void *src, uint64_t len);
 EFI_STATUS select_mode(struct graphics *gs, uint32_t *mode);
 
 EFI_STATUS init_graphics(const struct uefi *uefi, struct graphics *gs)
@@ -36,7 +36,7 @@ EFI_STATUS select_mode(struct graphics *gs, uint32_t *mode)
 	// Initialize info of current mode
 	EFI_STATUS status = gs->protocol->QueryMode(gs->protocol, *mode, &size, &info);
 	ASSERT_EFI_STATUS(status);
-	memcpyGRAPHICS(&most_appropriate_info, info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
+	memcpy_graphics(&most_appropriate_info, info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
 
 	// Look for a better mode
 	for(UINT32 i = 0; i < gs->protocol->Mode->MaxMode; i += 1) {
@@ -56,21 +56,21 @@ EFI_STATUS select_mode(struct graphics *gs, uint32_t *mode)
 		// 1920 x 1080 > all
 		if(info->VerticalResolution == GRAPHICS_MOST_APPROPRIATE_H &&
 			info->HorizontalResolution == GRAPHICS_MOST_APPROPRIATE_W) {
-			memcpyGRAPHICS(&most_appropriate_info, info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
+			memcpy_graphics(&most_appropriate_info, info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
 			*mode = i;
 			break;
 		}
 		// Otherwise we have an arbitrary preferece to get as much vertical resolution as possible.
 		if(info->VerticalResolution > most_appropriate_info.VerticalResolution) {
-			memcpyGRAPHICS(&most_appropriate_info, info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
+			memcpy_graphics(&most_appropriate_info, info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
 			*mode = i;
 		}
 	}
-	memcpyGRAPHICS(&gs->output_mode, &most_appropriate_info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
+	memcpy_graphics(&gs->output_mode, &most_appropriate_info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
 	return EFI_SUCCESS;
 }
 
-void memcpyGRAPHICS(void *dest, const void *src, uint64_t len)
+void memcpy_graphics(void *dest, const void *src, uint64_t len)
 {
 	uint8_t *d = dest;
 	const uint8_t *s = src;
