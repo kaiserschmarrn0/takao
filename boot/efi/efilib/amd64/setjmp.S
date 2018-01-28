@@ -1,3 +1,9 @@
+// File: setjmp.S
+//
+// Description: Jump to code
+//
+// License: Intel open source license, a BSD license variant.
+
 	.text
 	.globl	setjmp
 #ifndef __MINGW32__

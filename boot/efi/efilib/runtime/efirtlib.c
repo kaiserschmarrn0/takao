@@ -1,29 +1,15 @@
-/*++
+// File: efirtlib.c
+//
+// Description: EFI runtime lib functions
+//
+// License: Intel open source license, a BSD license variant.
 
-Copyright (c) 1999  Intel Corporation
-
-Module Name:
-
-    EfiRtLib.h
-
-Abstract:
-
-    EFI Runtime library functions
-
-
-
-Revision History
-
---*/
-
-#include "efi.h"
-#include "efilib.h"
-#include "efirtlib.h"
+#include <efi.h>
+#include <efilib.h>
+#include <efirtlib.h>
 
 #ifndef __GNUC__
-
-#pragma RUNTIME_CODE(RtZeroMem)
-
+	#pragma RUNTIME_CODE(RtZeroMem)
 #endif
 
 VOID RUNTIMEFUNCTION RtZeroMem(IN VOID *Buffer, IN UINTN Size)
@@ -37,12 +23,10 @@ VOID RUNTIMEFUNCTION RtZeroMem(IN VOID *Buffer, IN UINTN Size)
 }
 
 #ifndef __GNUC__
-
-#pragma RUNTIME_CODE(RtSetMem)
-
+	#pragma RUNTIME_CODE(RtSetMem)
 #endif
-VOID RUNTIMEFUNCTION RtSetMem(IN VOID *Buffer, IN UINTN    Size, 
-			IN UINT8    Value)
+
+VOID RUNTIMEFUNCTION RtSetMem(IN VOID *Buffer, IN UINTN Size, IN UINT8 Value)
 {
 	INT8 *pt;
 
@@ -53,10 +37,9 @@ VOID RUNTIMEFUNCTION RtSetMem(IN VOID *Buffer, IN UINTN    Size,
 }
 
 #ifndef __GNUC__
-
-#pragma RUNTIME_CODE(RtCopyMem)
-
+	#pragma RUNTIME_CODE(RtCopyMem)
 #endif
+
 VOID RUNTIMEFUNCTION RtCopyMem(IN VOID *Dest, IN CONST VOID *Src, IN UINTN len)
 {
 	CHAR8 *d;
@@ -70,10 +53,9 @@ VOID RUNTIMEFUNCTION RtCopyMem(IN VOID *Dest, IN CONST VOID *Src, IN UINTN len)
 }
 
 #ifndef __GNUC__
-
-#pragma RUNTIME_CODE(RtCompareMem)
-
+	#pragma RUNTIME_CODE(RtCompareMem)
 #endif
+
 INTN RUNTIMEFUNCTION RtCompareMem(IN CONST VOID *Dest, IN CONST VOID *Src, IN UINTN len)
 {
 	CONST CHAR8    *d = Dest, *s = Src;
@@ -91,25 +73,10 @@ INTN RUNTIMEFUNCTION RtCompareMem(IN CONST VOID *Dest, IN CONST VOID *Src, IN UI
 }
 
 #ifndef __GNUC__
-
-#pragma RUNTIME_CODE(RtCompareGuid)
-
+	#pragma RUNTIME_CODE(RtCompareGuid)
 #endif
-/*++
 
-Routine Description:
-
-    Compares to GUIDs
-
-Arguments:
-
-    Guid1       - guid to compare
-    Guid2       - guid to compare
-
-Returns:
-    = 0     if Guid1 == Guid2
-
---*/
+// RtCompareGuid: Compares 2 GUID's, return 0 if they are equal.
 INTN RUNTIMEFUNCTION RtCompareGuid(IN EFI_GUID *Guid1, IN EFI_GUID *Guid2)
 {
 	INT32 *g1, *g2, r;

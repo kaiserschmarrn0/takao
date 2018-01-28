@@ -8,4 +8,5 @@
 
 #include <stdarg.h>
 
+// sprintf: Uses vsprintf to put a formated char in a char.
 int sprintf(char *s, const char *format, ...);

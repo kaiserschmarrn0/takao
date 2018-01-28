@@ -4,10 +4,11 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "../../string.h"
-#include "../../lib.h"
-#include "vsprintf.h"
+#include "../../string.h" // String functions
+#include "../../lib.h"    // Standard Lib functions (isdigit, etc.)
+#include "vsprintf.h"     // The function header
 
+// Some defines
 #define PAD_ZEROES     (1 << 0)
 #define SIGNED         (1 << 1)
 #define PLUS           (1 << 2)
@@ -19,8 +20,7 @@
 const char *digits_large = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const char *digits_small = "0123456789abcdefghijklmnopqrstuvwxyz";
 
-static char *num_to_base(char *str, int num, int base, int size,
-						 int precision, int type)
+static char *num_to_base(char *str, int num, int base, int size, int precision, int type)
 {
 	char c;
 	char sign;
@@ -99,6 +99,7 @@ static int skip_atoi(const char **s)
 	return i;
 }
 
+// vsprintf: Put formated data using a argument list in a char.
 int vsprintf(char *buf, const char *fmt, va_list args)
 {
 	int len;
@@ -106,7 +107,6 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 	int flags;
 	int field_width;
 	int precision;
-	int *ip;
 	char *str;
 	char *s;
 
@@ -185,49 +185,6 @@ int vsprintf(char *buf, const char *fmt, va_list args)
 					*str++ = ' ';
 				break;
 
-			case 'o':
-				str = num_to_base(str, va_arg(args, unsigned long),
-								  8, field_width, precision, flags);
-				break;
-
-			case 'p':
-				if (field_width == -1)
-				{
-					field_width = 8;
-					flags |= PAD_ZEROES;
-				}
-				str = num_to_base(str, (unsigned long)va_arg(args, void *),
-								  16, field_width, precision, flags);
-				break;
-
-			case 'x':
-				flags |= LOWER_CASE;
-			case 'X':
-				str = num_to_base(str, va_arg(args, unsigned long),
-								  16, field_width, precision, flags);
-				break;
-
-			case 'd':
-			case 'i':
-				flags |= SIGNED;
-			case 'u':
-				str = num_to_base(str, va_arg(args, unsigned long),
-								  10, field_width, precision, flags);
-				break;
-
-			case 'n':
-				ip = va_arg(args, int *);
-				*ip = (str - buf);
-				break;
-
-			default:
-				if (*fmt != '%')
-					*str++ = '%';
-				if (*fmt)
-					*str++ = *fmt;
-				else
-					fmt--;
-				break;
 		}
 	}
 

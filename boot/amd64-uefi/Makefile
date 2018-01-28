@@ -12,8 +12,8 @@ bootloader = bootloader/bootmain.o \
 	bootloader/graphics.o \
 	bootloader/uefifunc.o
 
-efilib = ../efi/efiboot/crt0-efi-x86_64.o \
-	../efi/efiboot/reloc_x86_64.o \
+efilib = ../efi/efiboot/crt0-efi-amd64.o \
+	../efi/efiboot/reloc_amd64.o \
 	\
 	../efi/efilib/boxdraw.o \
 	../efi/efilib/cmdline.o \
@@ -40,11 +40,11 @@ efilib = ../efi/efiboot/crt0-efi-x86_64.o \
 	../efi/efilib/runtime/rtlock.o \
 	../efi/efilib/runtime/rtstr.o \
 	../efi/efilib/runtime/vm.o \
-	../efi/efilib/x86_64/callwrap.o \
-	../efi/efilib/x86_64/efi_stub.o \
-	../efi/efilib/x86_64/initplat.o \
-	../efi/efilib/x86_64/math.o \
-	../efi/efilib/x86_64/setjmp.o
+	../efi/efilib/amd64/callwrap.o \
+	../efi/efilib/amd64/efi_stub.o \
+	../efi/efilib/amd64/initplat.o \
+	../efi/efilib/amd64/math.o \
+	../efi/efilib/amd64/setjmp.o
 
 .PHONY: all clean
 

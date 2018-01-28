@@ -1,50 +1,48 @@
-/*
- * Function calling ABI conversion from Linux to EFI for x86_64
- *
- * Copyright (C) 2007 Intel Corp
- *	Bibo Mao <bibo.mao@intel.com>
- *	Huang Ying <ying.huang@intel.com>
- * Copyright (C) 2012 Felipe Contreras <felipe.contreras@gmail.com>
- */
+// File: rtstr.c
+//
+// Description: Linux ABI convention to EFI amd64 one.
+//
+// License: Intel open source license, a BSD license variant.
 
 #if !defined(HAVE_USE_MS_ABI)
-/*
- * EFI calling conventions are documented at:
- *   http://msdn.microsoft.com/en-us/library/ms235286%28v=vs.80%29.aspx
- * ELF calling conventions are documented at:
- *   http://www.x86-64.org/documentation/abi.pdf
- *
- * Basically here are the conversion rules:
- * a) our function pointer is in %rdi
- * b) rsi through r8 (elf) aka rcx through r9 (ms) require stack space
- *    on the MS side even though it's not getting used at all.
- * c) 8(%rsp) is always aligned to 16 in ELF, so %rsp is shifted 8 bytes extra
- * d) arguments are as follows: (elf -> ms)
- *   1) rdi -> rcx (32 saved)
- *   2) rsi -> rdx (32 saved)
- *   3) rdx -> r8 (32 saved)
- *   4) rcx -> r9 (32 saved)
- *   5) r8 -> 32(%rsp) (32 saved)
- *   6) r9 -> 40(%rsp) (48 saved)
- *   7) 8(%rsp) -> 48(%rsp) (48 saved)
- *   8) 16(%rsp) -> 56(%rsp) (64 saved)
- *   9) 24(%rsp) -> 64(%rsp) (64 saved)
- *  10) 32(%rsp) -> 72(%rsp) (80 saved)
- * e) because the first argument we recieve in a thunker is actually the
- *    function to be called, arguments are offset as such:
- *   0) rdi -> caller
- *   1) rsi -> rcx (32 saved)
- *   2) rdx -> rdx (32 saved)
- *   3) rcx -> r8 (32 saved)
- *   4) r8 -> r9 (32 saved)
- *   5) r9 -> 32(%rsp) (32 saved)
- *   6) 8(%rsp) -> 40(%rsp) (48 saved)
- *   7) 16(%rsp) -> 48(%rsp) (48 saved)
- *   8) 24(%rsp) -> 56(%rsp) (64 saved)
- *   9) 32(%rsp) -> 64(%rsp) (64 saved)
- *  10) 40(%rsp) -> 72(%rsp) (80 saved)
- * f) arguments need to be moved in opposite order to avoid clobbering
- */
+
+	//
+	// EFI calling conventions are documented at:
+	// 	http://msdn.microsoft.com/en-us/library/ms235286%28v=vs.80%29.aspx
+	// ELF calling conventions are documented at:
+	// 	http://www.x86-64.org/documentation/abi.pdf
+	//
+	// Basically here are the conversion rules:
+	// 
+	// a) our function pointer is in %rdi
+	// b) rsi through r8 (elf) aka rcx through r9 (ms) require stack space
+	// on the MS side even though it's not getting used at all.
+	// c) 8(%rsp) is always aligned to 16 in ELF, so %rsp is shifted 8 bytes extra
+	// d) arguments are as follows: (elf -> ms)
+	//	1) rdi -> rcx (32 saved)
+	//	2) rsi -> rdx (32 saved)
+	//	3) rdx -> r8 (32 saved)
+	//	4) rcx -> r9 (32 saved)
+	//	5) r8 -> 32(%rsp) (32 saved)
+	//	6) r9 -> 40(%rsp) (48 saved)
+	//	7) 8(%rsp) -> 48(%rsp) (48 saved)
+	//	8) 16(%rsp) -> 56(%rsp) (64 saved)
+	//	9) 24(%rsp) -> 64(%rsp) (64 saved)
+	//	10) 32(%rsp) -> 72(%rsp) (80 saved)
+	// e) because the first argument we recieve in a thunker is actually the
+	// function to be called, arguments are offset as such:
+	//	0) rdi -> caller
+	//	1) rsi -> rcx (32 saved)
+	//	2) rdx -> rdx (32 saved)
+	//	3) rcx -> r8 (32 saved)
+	//	4) r8 -> r9 (32 saved)
+	//	5) r9 -> 32(%rsp) (32 saved)
+	//	6) 8(%rsp) -> 40(%rsp) (48 saved)
+	//	7) 16(%rsp) -> 48(%rsp) (48 saved)
+	//	8) 24(%rsp) -> 56(%rsp) (64 saved)
+	//	9) 32(%rsp) -> 64(%rsp) (64 saved)
+	//	10) 40(%rsp) -> 72(%rsp) (80 saved)
+	// f) arguments need to be moved in opposite order to avoid clobbering
 
 #define ENTRY(name)	\
 	.globl name;	\

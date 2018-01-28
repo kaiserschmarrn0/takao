@@ -4,10 +4,10 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "../../string.h"
-#include "sprintf.h"
-#include "vsprintf.h"
+#include "sprintf.h"  // sprintf function header
+#include "vsprintf.h" // vsprintf
 
+// sprintf: Uses vsprintf to put a formated char in a char.
 int sprintf(char *s, const char *format, ...)
 {
 	va_list arg;
