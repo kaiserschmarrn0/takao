@@ -6,9 +6,7 @@
 
 #pragma once
 
-extern "C" {
-	#include "../libk/libk.h"
-}
+#include "../cpu.hpp"
 
 struct cpuinfo {
 	bool has_apic;
@@ -21,7 +19,9 @@ struct cpuinfo {
 	bool has_ssse3;
 };
 
-void check_cpu(struct cpuinfo *cpuinfo);
+namespace cpu {
+	void check_cpu(struct cpuinfo *cpuinfo);
+}
 
 uint64_t cpu_read_msr(uint32_t msr /*rcx*/);
 void cpu_write_msr(uint32_t msr /*rcx*/, uint64_t data/*rdx*/);

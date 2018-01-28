@@ -10,9 +10,9 @@ extern "C" {
 	#include "../libk/libk.h"       // Libk
 }
 
-#include "../includes/cpucheck.hpp" // Cpu info and arch dependent things
+#include "../includes/cpu.hpp"      // CPU
 #include "../includes/serial.hpp"   // Serial port
-#include "../includes/panic.hpp"    // Panic function
+#include "../includes/err.hpp"      // Panic, warn, etc functions
 
 struct maininfo {
 	struct cpuinfo cpuinfo;

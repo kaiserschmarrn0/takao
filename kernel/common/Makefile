@@ -8,7 +8,7 @@ cppflags_common = -ffreestanding -fno-stack-protector -fpic -fno-builtin -fshort
 	-Wall -Wextra -fno-exceptions -fno-rtti -c -o
 
 common = serial.o \
-	panic.o
+	err/panic.o
 
 # export all
 export

@@ -11,13 +11,13 @@ struct maininfo maininfo;
 
 void kernel_main(void)
 {
-	// Cpuid
-	check_cpu(&maininfo.cpuinfo);
+	// CPUID
+	cpu::check_cpu(&maininfo.cpuinfo);
 	
 	// Init the serial port
 	serial_port::serial_init(); 
 	serial_port::serial_print("Hi from the kernel!!!!!!!\n");
 
 	// Kernel function reached end, panic
-	panic(1);
+	err::panic(1);
 }

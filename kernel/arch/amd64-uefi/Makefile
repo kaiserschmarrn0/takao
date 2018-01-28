@@ -8,7 +8,7 @@ cppflags_arch = -fno-stack-protector -fpic -fno-builtin \
 	-fno-builtin-fshort-wchar -mno-red-zone -fno-exceptions -fno-rtti -c -o
 
 archobj = ioport.o \
-	cpucheck.o
+	cpu/cpucheck.o
 
 # export all
 export

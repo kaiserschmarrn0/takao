@@ -4,4 +4,8 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-void panic(int errorcode);
+#pragma once
+
+namespace err{
+    void panic(int errorcode);
+}
