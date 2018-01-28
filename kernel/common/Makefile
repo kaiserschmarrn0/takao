@@ -4,8 +4,8 @@
 #
 # License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-cflags_common = -ffreestanding -fno-stack-protector -fpic -fno-builtin -fshort-wchar -mno-red-zone \
-	-Wall -Wextra -c -o
+cppflags_common = -ffreestanding -fno-stack-protector -fpic -fno-builtin -fshort-wchar -mno-red-zone \
+	-Wall -Wextra -fno-exceptions -fno-rtti -c -o
 
 common = serial.o \
 	panic.o
@@ -23,7 +23,7 @@ all: $(common)
 clean:
 	rm -rf $(common)
 
-# Rule: .c archives
-%.o: %.c
+# Rule: .cpp archives
+%.o: %.cpp
 	@echo Compiling $<
-	@$(ccompiler) $(cflags_common) -c $< -o $@
+	@$(cppcompiler) $(cppflags_common) -c $< -o $@

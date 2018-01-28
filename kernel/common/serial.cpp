@@ -4,8 +4,8 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "../includes/ioport.h"
-#include "../includes/serial.h"
+#include "../includes/ioport.hpp"
+#include "../includes/serial.hpp"
 
 #define SERIAL_REGISTER_BASE 0x03F8
 #define SERIAL_BAUD_RATE 115200
@@ -40,22 +40,77 @@
 #define   B_UART_MSR_RI       (1 << 7)
 #define   B_UART_MSR_DCD      (1 << 8)
 
+uint8_t read_serial_register(uint16_t offset);
+void write_serial_register(uint16_t offset, uint8_t d);
 void serialport_init();
+bool serial_port_writable();
 
 
-void serial_init()
-{
-	return serialport_init();
+namespace serial_port {
+	void serial_init()
+	{
+		return serialport_init();
+	}
+
+	uint64_t serial_port_write(uint8_t *buffer, uint64_t size)
+	{
+		if (buffer == NULL) { return 0; }
+		
+		if (size == 0) {
+			// Flush the hardware
+			//
+			// Wait for both the transmit FIFO and shift register empty.
+			while ((read_serial_register(R_UART_LSR) & (B_UART_LSR_TEMT | B_UART_LSR_TXRDY))
+					!= (B_UART_LSR_TEMT | B_UART_LSR_TXRDY));
+				
+				while (!serial_port_writable());
+				
+				return 0;
+			}
+		
+		// Compute the maximum size of the Tx FIFO
+		uint64_t fifo_size = 1;
+		if ((SERIAL_FIFO_CONTROL & B_UART_FCR_FIFOE) != 0) {
+			if ((SERIAL_FIFO_CONTROL & B_UART_FCR_FIFO64) == 0) {
+				fifo_size = 16;
+			} 
+			else {
+				fifo_size = SERIAL_EXTENDED_FIFO_TX_SIZE;
+			}
+		}
+
+		while (size != 0) {
+			// Wait for the serial port to be ready, to make sure both the transmit FIFO
+			// and shift register empty.
+			while ((read_serial_register(R_UART_LSR) & B_UART_LSR_TEMT) == 0);
+		
+			// Fill then entire Tx FIFO
+			for (uint64_t index = 0; index < fifo_size && size != 0; index++, size--, buffer++) {
+				
+				// Wait for the hardware flow control signal
+				while (!serial_port_writable());
+				// Write byte to the transmit buffer.
+				write_serial_register(R_UART_TXBUF, *buffer);
+			}
+		}
+		return size;
+	}
+
+	int serial_print(const char *print) {
+		serial_port_write((uint8_t *)print, strlen(print));
+	return 0;
+	}
 }
 
+// Auxiliar functions
 uint8_t read_serial_register(uint16_t offset)
 {
-	return port_inb(SERIAL_REGISTER_BASE + offset * SERIAL_REGISTER_STRIDE);
+	return ioport::inb(SERIAL_REGISTER_BASE + offset * SERIAL_REGISTER_STRIDE);
 }
 
 void write_serial_register(uint16_t offset, uint8_t d)
 {
-	port_outb(SERIAL_REGISTER_BASE + offset * SERIAL_REGISTER_STRIDE, d);
+	ioport::outb(SERIAL_REGISTER_BASE + offset * SERIAL_REGISTER_STRIDE, d);
 }
 
 
@@ -140,44 +195,5 @@ bool serial_port_writable()
 }
 
 
-uint64_t serial_port_write(uint8_t *buffer, uint64_t size)
-{
-	if (buffer == NULL) { return 0; }
-	if (size == 0) {
-		// Flush the hardware
-		//
-		// Wait for both the transmit FIFO and shift register empty.
-		while ((read_serial_register(R_UART_LSR) & (B_UART_LSR_TEMT | B_UART_LSR_TXRDY))
-			!= (B_UART_LSR_TEMT | B_UART_LSR_TXRDY));
-		while (!serial_port_writable());
-			return 0;
-	}
-	// Compute the maximum size of the Tx FIFO
-	uint64_t fifo_size = 1;
-	if ((SERIAL_FIFO_CONTROL & B_UART_FCR_FIFOE) != 0) {
-		if ((SERIAL_FIFO_CONTROL & B_UART_FCR_FIFO64) == 0) {
-			fifo_size = 16;
-		} else {
-			fifo_size = SERIAL_EXTENDED_FIFO_TX_SIZE;
-		}
-	}
-	while (size != 0) {
-		// Wait for the serial port to be ready, to make sure both the transmit FIFO
-		// and shift register empty.
-		while ((read_serial_register(R_UART_LSR) & B_UART_LSR_TEMT) == 0);
-		// Fill then entire Tx FIFO
-		for (uint64_t index = 0; index < fifo_size && size != 0; index++, size--, buffer++) {
-			// Wait for the hardware flow control signal
-			while (!serial_port_writable());
-			// Write byte to the transmit buffer.
-			write_serial_register(R_UART_TXBUF, *buffer);
-		}
-	}
-	return size;
-}
 
-int serial_print(const char *print) {
-	serial_port_write((uint8_t *)print, strlen(print));
-	return 0;
-}
 

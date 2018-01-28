@@ -1,10 +1,10 @@
-// File: cpu.h
+// File: cpucheck.cpp
 //
 // Description: CPU info rescuing
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "../../includes/cpucheck.h"
+#include "../../includes/cpucheck.hpp"
 
 const uint32_t HAS_APIC = 1 << 9;
 const uint32_t HAS_X2APIC = 1 << 21;

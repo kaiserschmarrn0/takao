@@ -23,6 +23,9 @@ arch ?= amd64-uefi
 # C compiler (recommended clang and gcc, for flag compatibility)
 ccompiler ?= clang
 
+# C++ compiler (recommended clang++)
+cppcompiler ?= clang++
+
 # Linker
 linker ?= ld.lld-5.0
 
@@ -49,6 +52,7 @@ check-env:
 	@echo "Output dir (respect the makefle dir): $(builddir)"
 	@echo "Choosed arch : $(arch)"
 	@echo "C Compiler : $(ccompiler)"
+	@echo "C++ Compiler : $(cppcompiler)"
 	@echo "Linker : $(linker)"
 	@echo "Archiver : $(archiver)"
 	@echo "Objcopy : $(objcopy)"

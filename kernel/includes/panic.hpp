@@ -1,4 +1,4 @@
-// File: panic.h
+// File: panic.hpp
 //
 // Description: Panic function include
 //

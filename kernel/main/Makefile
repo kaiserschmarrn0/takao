@@ -4,8 +4,8 @@
 #
 # License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-cflags_main = -ffreestanding -fno-stack-protector -fpic -fno-builtin -fshort-wchar -mno-red-zone \
-	-Wall -Wextra -c -o
+cppflags_main = -ffreestanding -fno-stack-protector -fpic -fno-builtin -fshort-wchar -mno-red-zone \
+	-Wall -Wextra -fno-exceptions -fno-rtti -c -o
 
 main = main.o
 
@@ -25,4 +25,4 @@ clean:
 # Rule: .c archives
 %.o: %.c
 	@echo Compiling $<
-	@$(ccompiler) $(cflags_main) -c $< -o $@
+	@$(cppcompiler) $(cppflags_main) -c $< -o $@

@@ -1,4 +1,4 @@
-// File: cpucheck.h
+// File: cpucheck.hpp
 //
 // Description: The header that defines the CPU info struct and functions.
 //
@@ -6,7 +6,9 @@
 
 #pragma once
 
-#include "../libk/libk.h"
+extern "C" {
+	#include "../libk/libk.h"
+}
 
 struct cpuinfo {
 	bool has_apic;

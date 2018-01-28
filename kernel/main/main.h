@@ -8,5 +8,10 @@
 
 #include "../libk/libk.h"
 
-// The main kernel function (the no arch-dependent one)
-void kernel_main(void);
+#ifdef __cplusplus
+	// The main kernel function (the no arch-dependent one)
+	extern "C" void kernel_main(void);
+#else
+	// The main kernel function (the no arch-dependent one)
+	void kernel_main(void);
+#endif

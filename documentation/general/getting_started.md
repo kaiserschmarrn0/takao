@@ -37,6 +37,7 @@ Having this in mind, we recommend 2 options when choosing a toolchain:
 
 ```shell
 C compiler = clang
+C++ comp.  = clang++
 Linker = ld.lld-5.0
 ```
 Consisting in Clang and lld, this will be the one used when no C compiler 
@@ -49,6 +50,7 @@ If you want to use GNU utils, we recommend 2 options inside this one:
 
 ```shell
 C compiler = gcc (cross-compiler)
+C++ comp.  = g++ (cross-compiler)
 Linker = ld.lld-5.0
 ``` 
 
@@ -59,6 +61,7 @@ want to do this there are tons of tutorials in google for example.
 
 ```shell
 C compiler = gcc (cross-compiler)
+C++ comp.  = g++ (cross-compiler)
 Linker = ld (cross-compiler)
 ``` 
 
@@ -97,6 +100,7 @@ The list of available flags is:
 arch -> change target architecture, usage : arch=x , by default is amd64-uefi.
 builddir -> change the output directory, usage : builddir=x , by default is output.
 ccompiler -> change the C compiler, usage : ccompiler=x, by default is clang.
+cppcompiler -> change the C++ compiler, usage : cppcompiler=x, by default is clang++.
 linker -> change the linker, usage : linker=x, by default is lld.
 archiver -> change the archiver, usage : archiver=x, by default is llvm-ar.
 objcopy -> change the objcopy program, usage : objcopy=x, by default is objcopy.
