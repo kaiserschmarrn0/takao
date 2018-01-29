@@ -6,8 +6,8 @@
 
 #Kernel version details
 override KERNELNAME = cka
-override VERS = 0-0-7-2
-override NICKNAME = "prophet"
+override VERS = ALPHA
+override NICKNAME = "kensei"
 override FINALFILE = $(KERNELNAME)$(VERS)
 
 # Var work
