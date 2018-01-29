@@ -7,13 +7,13 @@
 .PHONY: all clean
 
 all:
-	cd arch/$(arch) && make all
+	cd arch/$(arch_kernel) && make all
 	cd common && make all
 	cd main && make all
 	cd libk && make all
 
 clean:
-	cd arch/$(arch) && make clean
+	cd arch/$(arch_kernel) && make clean
 	cd common && make clean
 	cd main && make clean
 	cd libk && make clean

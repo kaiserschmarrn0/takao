@@ -38,6 +38,7 @@ objcopy ?= objcopy
 #######################################################
 ifeq ($(arch),amd64-uefi)
 buildutils = build/amd64-uefi
+arch_kernel = amd64
 else
 @echo "arch dont recognized, defaulting to amd64-uefi"
 buildutils = build/amd64-uefi
