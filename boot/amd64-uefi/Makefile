@@ -4,10 +4,6 @@
 #
 # License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-cflags_bootloader = -I ../efi/includes -I ../efi/includes/x86_64 -I ../efi/includes/protocol \
-	-fno-stack-protector -fpic -fno-builtin \
-	-fno-builtin-fshort-wchar -mno-red-zone -DCONFIG_x86_64 -DGNU_EFI_USE_MS_ABI -c -o
-
 bootloader = bootloader/bootmain.o \
 	bootloader/graphics.o \
 	bootloader/uefifunc.o
@@ -46,25 +42,18 @@ efilib = ../efi/efiboot/crt0-efi-amd64.o \
 	../efi/efilib/amd64/math.o \
 	../efi/efilib/amd64/setjmp.o
 
-.PHONY: all clean
+.PHONY: compile clean
 
-all: $(bootloader) $(efilib)
-	@echo ""
-	@echo "Copy the archives to output"
-	cp $(bootloader) $(efilib) ../../$(builddir)/
-	@echo ""
-
-clean:
-	rm -rf $(bootloader)
-	rm -rf $(efilib)
-
+compile: $(bootloader) $(efilib)
 
 # Rule: .c archives
 %.o: %.c
-	@echo Compiling $< 
+	@echo "Compiling $<" 
 	@$(ccompiler) $(cflags_bootloader) -c $< -o $@
+	@mv $@ $(builddir)/objects
 
 # Rule: .S archives
 %.o: %.S
-	@echo Compiling $< 
+	@echo "Compiling $<"
 	@$(ccompiler) $(cflags_bootloader) -c $< -o $@
+	@mv $@ $(builddir)/objects

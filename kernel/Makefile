@@ -4,16 +4,11 @@
 #
 # License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-.PHONY: all clean
+.EXPORT_ALL_VARIABLES:
+.PHONY: compile
 
-all:
-	cd arch/$(arch_kernel) && make all
-	cd common && make all
-	cd main && make all
-	cd libk && make all
-
-clean:
-	cd arch/$(arch_kernel) && make clean
-	cd common && make clean
-	cd main && make clean
-	cd libk && make clean
+compile:
+	cd arch/$(arch) && make compile
+	cd common && make compile
+	cd main && make compile
+	cd libk && make compile

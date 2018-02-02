@@ -4,9 +4,6 @@
 #
 # License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-cflags_libk = -ffreestanding -fno-stack-protector -fpic -fno-builtin -fshort-wchar -mno-red-zone \
-	-Wall -Wextra -c -o
-
 libk = 	mem/memcmp.o \
 	mem/memcpy.o \
 	mem/memset.o \
@@ -30,15 +27,12 @@ libk = 	mem/memcmp.o \
 	string/strlen.o \
 	string/strcmp.o
 
-all: $(libk)
-	@echo "Copy the archives to output"
-	cp $(libk) ../../$(builddir)/
-	@echo ""
+.PHONY: compile
 
-clean:
-	rm -rf $(libk)
+compile: $(libk)
 
 # Rule: .c archives
 %.o: %.c
 	@echo Compiling $<
 	@$(ccompiler) $(cflags_libk) -c $< -o $@
+	@mv $@ $(builddir)/objects

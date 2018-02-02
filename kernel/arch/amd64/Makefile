@@ -4,26 +4,18 @@
 #
 # License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-cppflags_arch = -fno-stack-protector -fpic -fno-builtin \
-	-fno-builtin-fshort-wchar -mno-red-zone -fno-exceptions -fno-rtti -c -o
-
 archobj = io/ports.o \
 	cpu/cpucheck.o
 
 # export all
 export
 
-.PHONY: all clean
+.PHONY: compile
 
-all: $(archobj)
-	@echo "Copy the archives to output"
-	cp $(archobj) ../../../$(builddir)/
-	@echo ""
-
-clean:
-	rm -rf $(archobj)
+compile: $(archobj)
 
 # Rule: .cpp archives
 %.o: %.cpp
 	@echo Compiling $<
 	@$(cppcompiler) $(cppflags_arch) -c $< -o $@
+	@mv $@ $(builddir)/objects

@@ -4,81 +4,93 @@
 #
 # License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#Kernel version details
-override KERNELNAME = cka
-override VERS = ALPHA
-override NICKNAME = "kensei"
-override FINALFILE = $(KERNELNAME)$(VERS)
+# First define the kernel version and etc, this is overrided, and cant be
+# modified by command line.
 
-# Var work
-# All of this variables can be set up with the command line
-# Ex: builddir=xD to override the output default
+#Dont blame me for that comments, makefile behaves weird when inline comments
+override kernel_name = CKA# Kernel name
+override kernel_vers = 0-0-0-1# Kernel version
+override kernel_nick = kensei# Kernel nickname
+override kernel_file = $(kernel_name)$(kernel_vers)# Name of the final file (no extension)
 
-# Build dir
-override builddir = output
+# Now lets start
+.EXPORT_ALL_VARIABLES:
+.PHONY: all
 
-# Arch that we are going to build.
-arch ?= amd64-uefi
+ifeq ($(strip $(builddir)), )
+# builddir is not set, so we print a small how to.
 
-# C compiler (recommended clang and gcc, for flag compatibility)
-ccompiler ?= clang
-
-# C++ compiler (recommended clang++)
-cppcompiler ?= clang++
-
-# Linker
-linker ?= ld.lld-5.0
-
-# archiver
-archiver ?= llvm-ar
-
-# Objcopy program
-objcopy ?= objcopy
-
-#######################################################
-ifeq ($(arch),amd64-uefi)
-buildutils = build/amd64-uefi
-arch_kernel = amd64
-else
-@echo "arch dont recognized, defaulting to amd64-uefi"
-buildutils = build/amd64-uefi
-endif
-
-# export all
-export
-#######################################################
-.PHONY: check-env prepare bootloader kernel all clean test-qemu
-
-check-env:
-	@echo "Output dir (respect the makefle dir): $(builddir)"
-	@echo "Choosed arch : $(arch)"
-	@echo "C Compiler : $(ccompiler)"
-	@echo "C++ Compiler : $(cppcompiler)"
-	@echo "Linker : $(linker)"
-	@echo "Archiver : $(archiver)"
-	@echo "Objcopy : $(objcopy)"
-
-prepare: check-env
+all:
 	@echo ""
+	@echo "Welcome to $(kernel_name) build! But you are doing it wrong!"
+	@echo "Do the following to prepare and build $(kernel_name)."
+	@echo ""
+	@echo "  1. Run 'make builddir=<absolute path of nonexisting directory>'"
+	@echo "     The directory will be used exclusively to build the system"
+	@echo "  2. Cd into the specified build directory"
+	@echo "  3. Verify the settings in makeconf.local"
+	@echo "  4. Run 'make all' again"
+	@echo "";
+	@exit 0
+
+else ifeq ($(strip $(srcdir)), )
+# builddir is set, not the case of srcdir, so we use the specified build dir
+
+all:
+	@echo ""
+	@# Check if the path is absolute or not, exit if not. 
+	@if [ "/" != "`echo $(builddir) | cut -c1`" ]; then \
+		echo "$(builddir) is not an absolute path"; \
+		echo ""; \
+		echo "exiting with error code 1..."; \
+		echo ""; \
+		exit 1; \
+	fi
+
+	@# Check if the dir exist, if it exist exit.
+	@if [ -d $(builddir) ]; then \
+		echo "$(builddir) exist already! Use a non existent directory"; \
+		echo ""; \
+		echo "exiting with error code 1..."; \
+		echo ""; \
+		exit 1; \
+	fi
+
+	@# The builddir is fine, now we create it
 	mkdir -p $(builddir)
 
-bootloader: prepare
-	cd $(buildutils) && make bootloader
+	@# Now lets start with the build
 
-kernel: prepare
-	cd $(buildutils) && make kernel
+	@# Now we will copy the config template (in build/template) to the builddir
+	@cp -r build/template/* $(builddir)
 
-all: prepare
-	cd $(buildutils) && make all
+	@# Adjust the makeconfig.template and make a makeconfig.local, remove template
+	@(grep -v srcdir $(builddir)/makeconfig.template ; \
+	  echo "srcdir = $(CURDIR)") >> $(builddir)/makeconfig.local
+	@rm -f $(builddir)/makeconfig.template
+
+	@# The end of the setup.
 	@echo ""
-	@echo "Build finished"
+	@echo "Directory prepared for build, change to it."
 	@echo ""
-	@echo "\033[92m$(KERNELNAME) $(VERS) ($(NICKNAME)) ready!\033[0m"
-	@echo ""
+	
+else
+# scrdir and builddir are set, lets start the real build
 
-test-qemu:
-	cd $(buildutils) && make test-qemu
+compile: 
+	mkdir -p $(builddir)/objects
+	cd boot/$(arch)-$(firmware) && $(MAKE) compile
+	cd kernel && $(MAKE) compile
 
-clean:
-	cd $(buildutils) && make clean
-	rm -rf $(builddir)
+link:
+	$(linker) $(linker_flags) $(builddir)/objects/* -o $(builddir)/$(kernel_file).bin
+
+image:
+	cd build/images && $(MAKE) -f finalimages-$(arch)-$(firmware).make
+
+test:
+	cd build/test && $(MAKE) -f test-$(arch)-$(firmware).make
+
+all: compile link image
+
+endif

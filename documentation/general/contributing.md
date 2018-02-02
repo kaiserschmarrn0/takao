@@ -1,11 +1,11 @@
 # Contributing
 
-CKA is in heavy development, and the API can change from a day
+Takao is in heavy development, and the API can change from a day
 to another, so the source base is very unstable, however, if you
-want to help CKA, all kind of help is welcome.
+want to help Takao, all kind of help is welcome.
 
 Here are some general guidelines that should be considered when
-contributing to CKA. 
+contributing to Takao. 
 
 This list is very incomplete and will be expanded over time.
 

@@ -1,0 +1,10 @@
+# File: makeconf.template
+#
+# Description: Make config
+#
+# License: GNU GPL v2, check LICENSE file under the distributed package for details.
+
+arch = amd64
+firmware = uefi
+builddir = $(CURDIR)
+srcdir =
