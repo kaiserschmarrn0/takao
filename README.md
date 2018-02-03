@@ -6,8 +6,8 @@ Takao is a hobby project that helps me to understand how computers
 work, learn about it and, in the future, represent how I think they 
 should work.
 
-Takao stands for "C Kernel and less Assembly", referring to my irrational 
-hate to the assembly language.
+
+
 
 Takao now is in alpha phase where big changes and design decisions will 
 happen, so it has not a specific version number.
