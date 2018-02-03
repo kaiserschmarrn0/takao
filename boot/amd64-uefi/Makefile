@@ -5,7 +5,6 @@
 # License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 bootloader = bootloader/bootmain.o \
-	bootloader/graphics.o \
 	bootloader/uefifunc.o
 
 efilib = ../efi/efiboot/crt0-efi-amd64.o \

@@ -24,9 +24,5 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 
 	EFI_STATUS status;
 
-	// Init graphics
-	status = init_graphics(&bootmain.uefi, &bootmain.graphics);
-	ASSERT_EFI_STATUS(status);
-
 	kernel_main();
 }
