@@ -6,7 +6,7 @@
 #pragma once
 
 #include "uefifunc.h"
-#include "utils.h"
+#include "gdt.h"
 
 // A struct for storing some info
 struct bootmain {

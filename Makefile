@@ -8,8 +8,8 @@
 # modified by command line.
 
 #Dont blame me for that comments, makefile behaves weird when inline comments
-override kernel_name = CKA# Kernel name
-override kernel_vers = 0-0-0-1# Kernel version
+override kernel_name = Takao# Kernel name
+override kernel_vers = ALPHA# Kernel version
 override kernel_nick = kensei# Kernel nickname
 override kernel_file = $(kernel_name)$(kernel_vers)# Name of the final file (no extension)
 

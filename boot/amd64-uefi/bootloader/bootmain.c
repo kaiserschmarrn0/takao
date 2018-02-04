@@ -10,7 +10,7 @@
 
 // The function prototype and needed things
 #include "bootmain.h"
-#include "../../../kernel/main/main.h" //Main kernel
+#include <main/main.h> //Main kernel
 
 #include "bootmain-inc.h" //All includes
 
@@ -23,6 +23,9 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 	bootmain.uefi.system_table = st;
 
 	EFI_STATUS status;
+
+	// Init a GDT
+	init_gdt();
 
 	kernel_main();
 }
