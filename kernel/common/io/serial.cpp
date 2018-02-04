@@ -4,8 +4,8 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "../../includes/io/ports.hpp"
-#include "../../includes/io/serial.hpp"
+#include <io/ports.hpp>
+#include <io/serial.hpp>
 
 #define SERIAL_REGISTER_BASE 0x03F8
 #define SERIAL_BAUD_RATE 115200
