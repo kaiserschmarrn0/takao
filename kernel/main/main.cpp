@@ -6,10 +6,11 @@
 
 #include "main.h"     // Just to declare the prototype
 #include "includes.hpp" // All the kernel includes
+#include "bootinfo.h" // Bootinfo struct
 
 struct maininfo maininfo;
 
-void kernel_main(void)
+void kernel_main(struct bootinfo *bootinfo)
 {
 	// CPUID
 	cpu::check_cpu(&maininfo.cpuinfo);
