@@ -26,18 +26,13 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 
 	EFI_STATUS status;
 
-	// Init graphics mode
-	init_graphics(&bootmain.uefi, &bootmain.graphics);
-
 	// Init a GDT
 	init_gdt();
 
 	// With all finished, pass info to the main kernel
 	// The struct is declared in bootinfo.h
-	bootinfo.graphics_buffer.buffer_base = bootmain.graphics.buffer_base;
-	bootinfo.graphics_buffer.buffer_size = bootmain.graphics.buffer_size;
-	bootinfo.graphics_buffer.height = bootmain.graphics.height;
-	bootinfo.graphics_buffer.width = bootmain.graphics.width;
+
+	// Here assign values when we have something to pass
 
 	kernel_main(&bootinfo);
 }

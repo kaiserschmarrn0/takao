@@ -7,10 +7,8 @@
 
 #include "uefifunc.h"
 #include "gdt.h"
-#include "graphics.h"
 
 // A struct for storing some info
 struct bootmain {
 	struct uefi uefi;
-	struct graphics graphics;
 };
