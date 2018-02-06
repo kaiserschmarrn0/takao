@@ -11,8 +11,8 @@ namespace err {
 	void panic(int errorcode)
 	{
 		// Print the error code with a standarized message
-		serial_port::serial_print("\n");
-		serial_port::serial_print("[PANIC] System halted! (Busy stop)\n");
+		serial_port::print("\n");
+		serial_port::print("[PANIC] System halted! (Busy stop)\n");
 
 		for(;;);
 	}

@@ -10,6 +10,7 @@ extern "C" {
 	#include "../libk/libk.h"
 }
 
-#include "cpu/cpucheck.hpp"
-
 namespace cpu {}
+
+#include "cpu/check.hpp"
+

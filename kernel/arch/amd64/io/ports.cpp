@@ -4,7 +4,7 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "../../../includes/io/ports.hpp"
+#include <io/ports.hpp>
 
 namespace ioport {
 	uint8_t outb(uint16_t port, uint8_t value)

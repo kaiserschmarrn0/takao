@@ -14,6 +14,7 @@ extern "C" {
 #include "../includes/io/serial.hpp" // Serial port
 #include "../includes/io/ports.hpp"  // IO ports
 #include "../includes/err.hpp"       // Panic, warn, etc functions
+#include "../includes/mem.hpp"       // Memory management
 
 struct maininfo {
 	struct cpuinfo cpuinfo;

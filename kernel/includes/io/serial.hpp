@@ -11,7 +11,7 @@ extern "C" {
 }
 
 namespace serial_port {
-    void serial_init(void);
-    uint64_t serial_port_write(uint8_t *buffer, uint64_t size);
-    int serial_print(const char *print);
+    void init(void);
+    uint64_t port_write(uint8_t *buffer, uint64_t size);
+    int print(const char *print);
 }

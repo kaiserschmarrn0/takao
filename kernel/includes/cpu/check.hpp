@@ -20,7 +20,7 @@ struct cpuinfo {
 };
 
 namespace cpu {
-	void check_cpu(struct cpuinfo *cpuinfo);
+	void check(struct cpuinfo *cpuinfo);
 }
 
 uint64_t cpu_read_msr(uint32_t msr /*rcx*/);

@@ -1,10 +1,10 @@
-// File: cpucheck.cpp
+// File: check.cpp
 //
 // Description: CPU info rescuing
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include <cpu/cpucheck.hpp>
+#include <cpu/check.hpp>
 
 const uint32_t HAS_APIC = 1 << 9;
 const uint32_t HAS_X2APIC = 1 << 21;
@@ -18,7 +18,7 @@ const uint64_t CR4_OSFXSR_BIT = 1 << 9;
 const uint64_t CR4_OSXMMEXCPT_BIT = 1 << 10;
 
 namespace cpu {
-	void check_cpu(struct cpuinfo *cpuinfo)
+	void check(struct cpuinfo *cpuinfo)
 	{
 		uint32_t b, c, d, a = 1;
 		__asm__("cpuid" : "=d"(d), "=b"(b), "=c"(c), "+a"(a));

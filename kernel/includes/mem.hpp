@@ -1,6 +1,6 @@
-// File: err.hpp
+// File: mem.hpp
 //
-// Description: error and warning functions
+// Description: Memory related stuff
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
@@ -10,7 +10,6 @@ extern "C" {
 	#include "../libk/libk.h"
 }
 
-namespace err {}
+namespace mem {}
 
-#include "err/panic.hpp"
-
+#include "mem/init.hpp"

@@ -5,7 +5,9 @@
 # License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
 archobj = io/ports.o \
-	cpu/cpucheck.o
+	cpu/cpucheck.o \
+	mem/init.o \
+	mem/paging.o
 
 # export all
 export

@@ -47,12 +47,12 @@ bool serial_port_writable();
 
 
 namespace serial_port {
-	void serial_init()
+	void init()
 	{
 		return serialport_init();
 	}
 
-	uint64_t serial_port_write(uint8_t *buffer, uint64_t size)
+	uint64_t port_write(uint8_t *buffer, uint64_t size)
 	{
 		if (buffer == NULL) { return 0; }
 		
@@ -96,8 +96,8 @@ namespace serial_port {
 		return size;
 	}
 
-	int serial_print(const char *print) {
-		serial_port_write((uint8_t *)print, strlen(print));
+	int print(const char *print) {
+		port_write((uint8_t *)print, strlen(print));
 	return 0;
 	}
 }
