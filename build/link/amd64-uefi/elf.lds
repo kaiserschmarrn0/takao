@@ -1,9 +1,12 @@
 /* 
-*  File: elf.lds
+* elf.lds
 *
-*  Description: Linker script
+* Description: Arch linker
 *
-*  License: Intel open source license, a BSD license variant.
+* Copyright 2016 The Takao Authors (AUTHORS.md). All rights reserved.
+* Use of this source code is governed by a license that can be
+* found in the LICENSE.md file, in the root directory of
+* the source package.
 */
 
 OUTPUT_FORMAT("elf64-x86-64", "elf64-x86-64", "elf64-x86-64")

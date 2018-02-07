@@ -1,8 +1,11 @@
-// File: bootmain.c
-//
-// Description: Main script of the bootloader
-//
-// License: GNU GPL v2, check LICENSE file under the distributed package for details.
+// bootmain.c
+
+// Description: Main function of the bootloader
+
+// Copyright 2016 The Takao Authors (AUTHORS.md). All rights reserved.
+// Use of this source code is governed by a license that can be
+// found in the LICENSE.md file, in the root directory of
+// the source package.
 
 // UEFI protocol stuff
 #include <efi.h>

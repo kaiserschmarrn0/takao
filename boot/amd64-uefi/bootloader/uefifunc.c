@@ -1,8 +1,11 @@
-// File: uefifunc.c
-//
-// Description: Provides some useful UEFI utilities, like the memmap.
-//
-// License: GNU GPL v2, check LICENSE file under the distributed package for details.
+// uefifunc.c
+
+// Description: UEFI specifics
+
+// Copyright 2016 The Takao Authors (AUTHORS.md). All rights reserved.
+// Use of this source code is governed by a license that can be
+// found in the LICENSE.md file, in the root directory of
+// the source package.
 
 #include "uefifunc.h"
 
