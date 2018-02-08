@@ -9,6 +9,18 @@
 
 #include <syscall/idt.hpp>
 
+//
+// The strategy for interrupts in this kernel is thus:
+// We will be using interrupts from 255 backwards for hardware interrupts delivered by APIC.
+// 	Interrupts 32 through 128 will be used as software interrupts, which gives us ~100
+//	interrupts; we do not use DOS-like interrupt model where function is selected through values
+//	in registers in order to:
+//		1. Reduce number of instructions necessary for common syscalls; and
+//		2. Have less clobbered registers.
+//	The 129th interrupt is for misc software interrupts: this is where rarely used interrupts
+//	go and these use DOS-like model (i.e. number in some register) for selecting exact function.
+//
+
 struct idt_descriptor {
    uint16_t offset_1;    // offset bits 0..15
    uint16_t selector;    // a code segment selector in GDT or LDT
