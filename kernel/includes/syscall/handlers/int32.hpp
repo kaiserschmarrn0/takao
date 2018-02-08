@@ -1,6 +1,6 @@
-// idt.hpp
+// int32.hpp
 
-// Description: Interrupt things
+// Description: Interrupt 32, no-op
 
 // Copyright 2016 The Takao Authors (AUTHORS.md). All rights reserved.
 // Use of this source code is governed by a license that can be
@@ -9,13 +9,12 @@
 
 #pragma once
 
-#include "../syscall.hpp"
+#include "../../syscall.hpp"
 
 namespace syscall {
 	namespace idt {
-		void init(void);
-		void set_gate(uint8_t num, void (*handler)());
-		void sti(void);
-		void cli(void);
+		namespace handlers {
+			__attribute__((naked)) void int32();
+		}
 	}
 }

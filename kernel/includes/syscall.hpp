@@ -13,4 +13,5 @@ extern "C" {
 namespace syscall {}
 
 #include "syscall/idt.hpp"
+#include "syscall/handlers/int32.hpp"
 

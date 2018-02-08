@@ -54,6 +54,8 @@ namespace syscall {
 			memset(&idt_ptr, 0, sizeof(idt_descriptor)*256);
 
 			// Set all the gates
+			// No-op interrupt
+			idt::set_gate(32, idt::handlers::int32);
 
 			idt::cli();
 			

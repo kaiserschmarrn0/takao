@@ -11,7 +11,8 @@ archobj = io/ports.o \
 	cpu/check.o \
 	mem/init.o \
 	mem/paging.o \
-	syscall/idt.o
+	syscall/idt.o \
+	syscall/handlers/int32.o
 
 # export all
 export

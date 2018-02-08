@@ -47,6 +47,6 @@ void init_gdt()
 		"mov %%ax, %%es;"
 		"mov %%ax, %%fs;"
 		"mov %%ax, %%gs;"
-		// Now, reload the code segment. Calling our no-op interrupt should suffice.
-		"sti; int $32;" :: "r"(gdt) : "%ax");
+		// Now, reload the code segment. Calling a no-op should suffice.
+		"sti; nop;" :: "r"(gdt) : "%ax");
 }
