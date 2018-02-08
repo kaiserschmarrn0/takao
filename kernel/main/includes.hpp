@@ -15,6 +15,7 @@ extern "C" {
 #include "../includes/io/ports.hpp"  // IO ports
 #include "../includes/err.hpp"       // Panic, warn, etc functions
 #include "../includes/mem.hpp"       // Memory management
+#include "../includes/syscall.hpp"   // Syscalls, like interrupts and etc.
 
 struct maininfo {
 	struct cpuinfo cpuinfo;

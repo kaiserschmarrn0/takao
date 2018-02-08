@@ -10,7 +10,8 @@
 archobj = io/ports.o \
 	cpu/check.o \
 	mem/init.o \
-	mem/paging.o
+	mem/paging.o \
+	syscall/idt.o
 
 # export all
 export

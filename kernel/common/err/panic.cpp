@@ -4,8 +4,9 @@
 //
 // License: GNU GPL v2, check LICENSE file under the distributed package for details.
 
-#include "../../includes/io/serial.hpp"
-#include "../../includes/err/panic.hpp"
+#include <io/serial.hpp>
+#include <err/panic.hpp>
+#include <syscall/idt.hpp>
 
 namespace err {
 	void panic(int errorcode)
@@ -14,6 +15,8 @@ namespace err {
 		serial_port::print("\n");
 		serial_port::print("[PANIC] System halted! (Busy stop)\n");
 
+		syscall::idt::cli();
+		
 		for(;;);
 	}
 }

@@ -18,6 +18,9 @@ void kernel_main(struct bootinfo *bootinfo)
 	// Memory
 	mem::init();
 
+	// Init interrupts
+	syscall::idt::init();
+
 	// Init the serial port
 	serial_port::init(); 
 	serial_port::print("Hi from the kernel!!!!!!!\n");
