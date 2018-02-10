@@ -2,14 +2,13 @@
 
 # Description: Makefile of the amd64-uefi bootloader
 
-# Copyright 2016 The Takao Authors (AUTHORS.md). All rights reserved.
+# Copyright 2018 The Takao Authors (AUTHORS.md). All rights reserved.
 # Use of this source code is governed by a license that can be
 # found in the LICENSE.md file, in the root directory of
 # the source package.
 
 bootloader = bootloader/bootmain.o \
-	bootloader/uefifunc.o \
-	bootloader/gdt.o
+	bootloader/uefifunc.o
 
 efilib = ../efi/efiboot/crt0-efi-amd64.o \
 	../efi/efiboot/reloc_amd64.o \

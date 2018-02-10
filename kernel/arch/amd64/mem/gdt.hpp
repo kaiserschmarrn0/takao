@@ -1,6 +1,6 @@
-// bootinfo.h
+// gdt.hpp
 
-// Description: Bootinfo struct
+// Description: GDT
 
 // Copyright 2018 The Takao Authors (AUTHORS.md). All rights reserved.
 // Use of this source code is governed by a license that can be
@@ -9,9 +9,4 @@
 
 #pragma once
 
-#include <inttypes.h>
-#include <stdbool.h>
-#include <stddef.h>
-	
-struct bootinfo {
-};
+void gdt_init(void);

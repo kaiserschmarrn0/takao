@@ -1,8 +1,11 @@
-// File: includes.hpp
-//
-// Description: Includes of the kernel
-//
-// License: GNU GPL v2, check LICENSE file under the distributed package for details.
+// includes.hpp
+
+// Description: Kernel includes
+
+// Copyright 2018 The Takao Authors (AUTHORS.md). All rights reserved.
+// Use of this source code is governed by a license that can be
+// found in the LICENSE.md file, in the root directory of
+// the source package.
 
 #pragma once
 

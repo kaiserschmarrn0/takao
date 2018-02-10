@@ -2,7 +2,7 @@
 
 // Description: Main function of the bootloader
 
-// Copyright 2016 The Takao Authors (AUTHORS.md). All rights reserved.
+// Copyright 2018 The Takao Authors (AUTHORS.md). All rights reserved.
 // Use of this source code is governed by a license that can be
 // found in the LICENSE.md file, in the root directory of
 // the source package.
@@ -28,9 +28,6 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 	bootmain.uefi.system_table = st;
 
 	EFI_STATUS status;
-
-	// Init a GDT
-	init_gdt();
 
 	// With all finished, pass info to the main kernel
 	// The struct is declared in bootinfo.h

@@ -2,12 +2,13 @@
 
 // Description: Interrupt things
 
-// Copyright 2016 The Takao Authors (AUTHORS.md). All rights reserved.
+// Copyright 2018 The Takao Authors (AUTHORS.md). All rights reserved.
 // Use of this source code is governed by a license that can be
 // found in the LICENSE.md file, in the root directory of
 // the source package.
 
 #include <syscall/idt.hpp>
+#include <io/serial.hpp>
 
 //
 // The strategy for interrupts in this kernel is thus:
@@ -73,6 +74,7 @@ namespace syscall {
 			idt_entries[num].offset_1 = address & 0xffff;
 			idt_entries[num].offset_2 = address >> 16;
 			idt_entries[num].offset_3 = address >> 32;
+
 		}
 
 		void sti(void)

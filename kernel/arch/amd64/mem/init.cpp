@@ -1,15 +1,22 @@
-// File: init.cpp
-//
-// Description: Init all memory related things before any allocation
-//
-// License: GNU GPL v2, check LICENSE file under the distributed package for details.
+// init.cpp
+
+// Description: Inits all the things needed by the mem allocation
+
+// Copyright 2018 The Takao Authors (AUTHORS.md). All rights reserved.
+// Use of this source code is governed by a license that can be
+// found in the LICENSE.md file, in the root directory of
+// the source package.
 
 #include <mem/init.hpp>
 #include "paging.hpp"
+#include "gdt.hpp"
 
 namespace mem {
 	void init(void)
 	{
+		// Init GDT
+		gdt_init();
+		
 		// Init paging (paging.cpp/hpp)
 		paging_init();
 	}
