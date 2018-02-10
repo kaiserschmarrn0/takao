@@ -9,5 +9,9 @@
 
 #pragma once
 
+extern "C" {
+	#include <libk.h>
+}
+
 void gdt_init(void);
 void add_gdt_entry(uint64_t entry, uint16_t *byte);

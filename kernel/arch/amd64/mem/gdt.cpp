@@ -9,10 +9,6 @@
 
 #include "gdt.hpp"
 
-extern "C" {
-	#include <libk.h>
-}
-
 struct GDT {
 	uint16_t limit;
 	uint64_t offset;
