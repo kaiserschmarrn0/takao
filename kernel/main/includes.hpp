@@ -20,6 +20,3 @@ extern "C" {
 #include "../includes/mem.hpp"       // Memory management
 #include "../includes/syscall.hpp"   // Syscalls, like interrupts and etc.
 
-struct maininfo {
-	struct cpuinfo cpuinfo;
-};

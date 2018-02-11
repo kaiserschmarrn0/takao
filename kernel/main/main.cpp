@@ -11,15 +11,13 @@
 #include "includes.hpp" // All the kernel includes
 #include "bootinfo.h" // Bootinfo struct
 
-struct maininfo maininfo;
-
 void kernel_main(struct bootinfo *bootinfo)
 {
 	// Init the serial port
 	serial_port::init(); 
 	
 	// CPUID
-	cpu::check(&maininfo.cpuinfo);
+	cpu::init();
 	
 	// Memory
 	mem::init();

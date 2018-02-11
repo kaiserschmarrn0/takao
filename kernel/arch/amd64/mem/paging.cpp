@@ -8,7 +8,7 @@
 // the source package.
 
 #include "paging.hpp"
-#include <cpu/check.hpp>
+#include "../cpu/check.hpp"
 
 void paging_init(void)
 {

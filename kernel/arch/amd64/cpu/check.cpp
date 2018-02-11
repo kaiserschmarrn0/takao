@@ -7,7 +7,7 @@
 // found in the LICENSE.md file, in the root directory of
 // the source package.
 
-#include <cpu/check.hpp>
+#include "check.hpp"
 
 const uint32_t HAS_APIC = 1 << 9;
 const uint32_t HAS_X2APIC = 1 << 21;
@@ -20,27 +20,25 @@ const uint64_t CR0_MP_BIT = 1 << 1;
 const uint64_t CR4_OSFXSR_BIT = 1 << 9;
 const uint64_t CR4_OSXMMEXCPT_BIT = 1 << 10;
 
-namespace cpu {
-	void check(struct cpuinfo *cpuinfo)
-	{
-		uint32_t b, c, d, a = 1;
-		__asm__("cpuid" : "=d"(d), "=b"(b), "=c"(c), "+a"(a));
+void check(struct cpuinfo *cpuinfo)
+{
+	uint32_t b, c, d, a = 1;
+	__asm__("cpuid" : "=d"(d), "=b"(b), "=c"(c), "+a"(a));
 
-		cpuinfo->has_apic = (d & HAS_APIC) != 0;
-		cpuinfo->has_x2apic = (c & HAS_X2APIC) != 0;
-		cpuinfo->has_msr = (d & HAS_MSR) != 0;
-		cpuinfo->has_sse = (d & HAS_SSE) != 0;
-		cpuinfo->has_sse2 = (d & HAS_SSE2) != 0;
+	cpuinfo->has_apic = (d & HAS_APIC) != 0;
+	cpuinfo->has_x2apic = (c & HAS_X2APIC) != 0;
+	cpuinfo->has_msr = (d & HAS_MSR) != 0;
+	cpuinfo->has_sse = (d & HAS_SSE) != 0;
+	cpuinfo->has_sse2 = (d & HAS_SSE2) != 0;
 	
-		a = 0x80000001;
-		__asm__("cpuid" : "=d"(d), "=b"(b), "=c"(c), "+a"(a));
-		cpuinfo->has_ia32_efer = d & HAS_IA32_EFER;
+	a = 0x80000001;
+	__asm__("cpuid" : "=d"(d), "=b"(b), "=c"(c), "+a"(a));
+	cpuinfo->has_ia32_efer = d & HAS_IA32_EFER;
 	
-		// If SSE is present, enable it
-		if(cpuinfo->has_sse || cpuinfo->has_sse2) {
-			write_cr0((read_cr0() & ~CR0_EM_BIT) | CR0_MP_BIT);
-			write_cr4(read_cr4() | CR4_OSFXSR_BIT | CR4_OSXMMEXCPT_BIT);
-		}
+	// If SSE is present, enable it
+	if(cpuinfo->has_sse || cpuinfo->has_sse2) {
+		write_cr0((read_cr0() & ~CR0_EM_BIT) | CR0_MP_BIT);
+		write_cr4(read_cr4() | CR4_OSFXSR_BIT | CR4_OSXMMEXCPT_BIT);
 	}
 }
 

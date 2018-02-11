@@ -9,7 +9,9 @@
 
 #pragma once
 
-#include "../cpu.hpp"
+extern "C" {
+	#include <libk.h>
+}
 
 struct cpuinfo {
 	bool has_apic;
@@ -22,9 +24,7 @@ struct cpuinfo {
 	bool has_ssse3;
 };
 
-namespace cpu {
-	void check(struct cpuinfo *cpuinfo);
-}
+void check(struct cpuinfo *cpuinfo);
 
 uint64_t cpu_read_msr(uint32_t msr /*rcx*/);
 void cpu_write_msr(uint32_t msr /*rcx*/, uint64_t data/*rdx*/);

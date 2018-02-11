@@ -1,6 +1,6 @@
-// cpu.hpp
+// init.hpp
 
-// Description: CPU functions
+// Description: CPU init
 
 // Copyright 2018 The Takao Authors (AUTHORS.md). All rights reserved.
 // Use of this source code is governed by a license that can be
@@ -9,11 +9,8 @@
 
 #pragma once
 
-extern "C" {
-	#include "../libk/libk.h"
+#include "../cpu.hpp"
+
+namespace cpu {
+	void init(void);
 }
-
-namespace cpu {}
-
-#include "cpu/init.hpp"
-

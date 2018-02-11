@@ -9,7 +9,8 @@
 
 archobj = io/ports.o \
 	cpu/check.o \
-	mem/init.o \
+	cpu/cpuinit.o \
+	mem/meminit.o \
 	mem/paging.o \
 	mem/gdt.o \
 	syscall/idt.o \
