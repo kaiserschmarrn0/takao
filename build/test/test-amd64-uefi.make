@@ -10,5 +10,5 @@
 .PHONY: test-qemu
 
 test-qemu:
-	qemu-system-x86_64 -L OVMF_dir/ -bios OVMF.fd -usb -usbdevice disk::$(builddir)/fat.img \
+	qemu-system-x86_64 -monitor stdio -L OVMF_dir/ -bios OVMF.fd -usb -usbdevice disk::$(builddir)/fat.img \
 	-enable-kvm -m 64 -serial file:$(builddir)/debug.log -device VGA
