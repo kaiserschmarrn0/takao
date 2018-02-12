@@ -15,8 +15,5 @@
 // Some misc things
 #include "lib.h"
 
-// Stdio
-#include "io.h"
-
 // Mem functions
 #include "mem.h"

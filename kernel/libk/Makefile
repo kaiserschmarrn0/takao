@@ -12,9 +12,6 @@ libk = 	mem/memcmp.o \
 	mem/memcpy.o \
 	mem/memset.o \
 	\
-	io/output/vsprintf.o \
-	io/output/sprintf.o \
-	\
 	lib/rand.o \
 	lib/isdigit.o \
 	lib/isalnum.o \
