@@ -7,12 +7,15 @@
 // found in the LICENSE.md file, in the root directory of
 // the source package.
 
-#include "main.h"     // Just to declare the prototype
+#include "main.h"       // Just to declare the prototype
 #include "includes.hpp" // All the kernel includes
-#include "bootinfo.h" // Bootinfo struct
+#include "bootinfo.h"   // Bootinfo struct
+#include "info.hpp"     // Some info
 
 void kernel_main(struct bootinfo *bootinfo)
 {
+	const char* greeter = KERNEL " " VERSION "(" DATE_OF_RELEASE ") initted succesfully";
+
 	// Init the serial port
 	serial_port::init(); 
 	
@@ -25,7 +28,7 @@ void kernel_main(struct bootinfo *bootinfo)
 	// Init interrupts
 	syscall::idt::init();
 
-	serial_port::print("Hi from the kernel!!!!!!!\n");
+	serial_port::print(greeter);
 
 	// Kernel function reached end, panic
 	err::panic(1);

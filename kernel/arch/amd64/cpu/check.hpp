@@ -13,7 +13,7 @@ extern "C" {
 	#include <libk.h>
 }
 
-struct cpuinfo {
+struct cpucheck {
 	bool has_apic;
 	bool has_x2apic;
 	bool has_msr;
@@ -24,7 +24,7 @@ struct cpuinfo {
 	bool has_ssse3;
 };
 
-void check(struct cpuinfo *cpuinfo);
+void check(struct cpucheck *cpucheck);
 
 uint64_t cpu_read_msr(uint32_t msr /*rcx*/);
 void cpu_write_msr(uint32_t msr /*rcx*/, uint64_t data/*rdx*/);

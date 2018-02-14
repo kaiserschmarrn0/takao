@@ -1,4 +1,4 @@
-// init.hpp
+// cpuinit.cpp
 
 // Description: CPU init
 
@@ -11,12 +11,23 @@
 
 #include "check.hpp"
 
-struct cpuinfo cpuinfo;
+struct cpucheck cpucheck;
+
+void cpu::init(void)
+{
+	check(&cpucheck); // Check CPU
+}
 
 namespace cpu {
-	void init(void)
-	{
-		// Check CPU
-		check(&cpuinfo);
-	}
+	class cpuinfo {
+		public:
+			bool has_apic      = cpucheck.has_apic;
+			bool has_x2apic    = cpucheck.has_x2apic;
+			bool has_msr       = cpucheck.has_msr;
+			bool has_ia32_efer = cpucheck.has_ia32_efer;
+			bool has_sse       = cpucheck.has_sse;
+			bool has_sse2      = cpucheck.has_sse2;
+			bool has_sse3      = cpucheck.has_sse3;
+			bool has_ssse3     = cpucheck.has_ssse3;
+	};
 }

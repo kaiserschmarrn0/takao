@@ -11,13 +11,12 @@
 #include "paging.hpp"
 #include "gdt.hpp"
 
-namespace mem {
-	void init(void)
-	{
-		// Init GDT
-		gdt_init();
-		
-		// Init paging (paging.cpp/hpp)
-		paging_init();
-	}
+void mem::init(void)
+{
+	// Init GDT
+	gdt_init();
+	
+	// Init paging (paging.cpp/hpp)
+	paging_init();
 }
+

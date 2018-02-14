@@ -66,8 +66,9 @@ all:
 
 	@# Now lets start with the build
 
-	@# Now we will copy the config template (in build/template) to the builddir
+	@# Now we will copy the config template, flags and etc to the builddir
 	@cp -r build/template/* $(builddir)
+	@cp -r build/flags $(builddir)/build
 
 	@# Adjust the makeconfig.template and make a makeconfig.local, remove template
 	@(grep -v srcdir $(builddir)/makeconfig.template ; \
