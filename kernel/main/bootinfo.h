@@ -12,6 +12,13 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
-	
+
+struct graphics {
+	void*    buffer_base;
+	uint64_t buffer_size;
+	uint32_t horizontal_res;
+	uint32_t vertical_res;
+};
 struct bootinfo {
+	struct graphics graphics;
 };

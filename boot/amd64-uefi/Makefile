@@ -8,7 +8,8 @@
 # the source package.
 
 bootloader = bootloader/bootmain.o \
-	bootloader/uefifunc.o
+	bootloader/uefifunc.o \
+	bootloader/graphicsmode.o
 
 efilib = ../efi/efiboot/crt0-efi-amd64.o \
 	../efi/efiboot/reloc_amd64.o \

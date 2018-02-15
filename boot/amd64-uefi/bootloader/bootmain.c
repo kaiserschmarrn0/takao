@@ -29,10 +29,16 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 
 	EFI_STATUS status;
 
+	// Init graphics
+	status = init_graphics(&bootmain.uefi, &bootmain.graphics_info);
+
 	// With all finished, pass info to the main kernel
 	// The struct is declared in bootinfo.h
-
-	// Here assign values when we have something to pass
+	// First, the graphics buffer
+	bootinfo.graphics.buffer_base = bootmain.graphics_info.buffer_base;
+	bootinfo.graphics.buffer_size = bootmain.graphics_info.buffer_size;
+	bootinfo.graphics.horizontal_res = bootmain.graphics_info.width;
+	bootinfo.graphics.vertical_res = bootmain.graphics_info.height;
 
 	kernel_main(&bootinfo);
 }

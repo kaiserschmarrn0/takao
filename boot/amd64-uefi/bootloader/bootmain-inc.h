@@ -10,8 +10,10 @@
 #pragma once
 
 #include "uefifunc.h"
+#include "graphicsmode.h"
 
 // A struct for storing some info
 struct bootmain {
-	struct uefi uefi;
+	struct uefi     uefi;
+	struct graphics_info graphics_info;
 };
