@@ -9,7 +9,8 @@
 
 bootloader = bootloader/bootmain.o \
 	bootloader/uefifunc.o \
-	bootloader/graphicsmode.o
+	bootloader/graphicsmode.o \
+	bootloader/memsetup.o
 
 efilib = ../efi/efiboot/crt0-efi-amd64.o \
 	../efi/efiboot/reloc_amd64.o \

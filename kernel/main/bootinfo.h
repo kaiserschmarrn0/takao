@@ -13,12 +13,23 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+// Graphics buffer
 struct graphics {
 	void*    buffer_base;
 	uint64_t buffer_size;
 	uint32_t horizontal_res;
 	uint32_t vertical_res;
 };
+
+// Memmap
+struct kmem {
+	uint64_t *first_free_page;
+	uint64_t *pml4_table;
+	uint64_t max_addr;
+};
+
+// Not the global struct
 struct bootinfo {
 	struct graphics graphics;
+	struct kmem kmem;
 };

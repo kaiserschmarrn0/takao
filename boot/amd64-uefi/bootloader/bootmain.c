@@ -32,6 +32,9 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 	// Init graphics
 	status = init_graphics(&bootmain.uefi, &bootmain.graphics_info);
 
+	// Get a memmap and clean all mem, etc.
+	status = init_memory(&bootmain);
+
 	// With all finished, pass info to the main kernel
 	// The struct is declared in bootinfo.h
 	// First, the graphics buffer
@@ -39,6 +42,11 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 	bootinfo.graphics.buffer_size = bootmain.graphics_info.buffer_size;
 	bootinfo.graphics.horizontal_res = bootmain.graphics_info.width;
 	bootinfo.graphics.vertical_res = bootmain.graphics_info.height;
+
+	// Now memory things
+	bootinfo.kmem.first_free_page = bootmain.memory.first_free_page;
+	bootinfo.kmem.pml4_table = bootmain.memory.pml4_table;
+	bootinfo.kmem.max_addr = bootmain.memory.max_addr;
 
 	kernel_main(&bootinfo);
 }

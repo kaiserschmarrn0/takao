@@ -11,9 +11,11 @@
 
 #include "uefifunc.h"
 #include "graphicsmode.h"
+#include "memsetup.h"
 
 // A struct for storing some info
 struct bootmain {
-	struct uefi     uefi;
+	struct uefi          uefi;
 	struct graphics_info graphics_info;
+	struct memory        memory;
 };

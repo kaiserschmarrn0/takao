@@ -28,7 +28,7 @@ void *find_configuration_table(const struct uefi *uefi, EFI_GUID *guid)
 }
 
 
-EFI_STATUS efi_memory_map(const struct uefi *uefi, struct efi_memory_map *map_info)
+EFI_STATUS memory_map(const struct uefi *uefi, struct memory_map *map_info)
 {
 	EFI_STATUS              status;
 	EFI_MEMORY_DESCRIPTOR   *buffer;
