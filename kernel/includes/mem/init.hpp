@@ -10,7 +10,8 @@
 #pragma once
 
 #include "../mem.hpp"
+#include "../../main/bootinfo.h"
 
 namespace mem {
-	void init(void);
+	void init(struct bootinfo *bootinfo);
 }

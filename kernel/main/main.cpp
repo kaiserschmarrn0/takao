@@ -12,7 +12,7 @@
 #include "bootinfo.h"   // Bootinfo struct
 #include "info.hpp"     // Some info
 
-void kernel_main(struct bootinfo *bootinfo)
+void kernel_main(struct bootinfo bootinfo)
 {
 	const char* greeter = KERNEL " " VERSION "(" DATE_OF_RELEASE ") initted succesfully";
 
@@ -23,7 +23,7 @@ void kernel_main(struct bootinfo *bootinfo)
 	cpu::init();
 	
 	// Memory
-	mem::init();
+	mem::init(&bootinfo);
 
 	// Init interrupts
 	syscall::idt::init();

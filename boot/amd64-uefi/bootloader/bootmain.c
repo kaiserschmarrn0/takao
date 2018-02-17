@@ -45,8 +45,7 @@ EFI_STATUS efi_main (EFI_HANDLE ih, EFI_SYSTEM_TABLE *st)
 
 	// Now memory things
 	bootinfo.kmem.first_free_page = bootmain.memory.first_free_page;
-	bootinfo.kmem.pml4_table = bootmain.memory.pml4_table;
 	bootinfo.kmem.max_addr = bootmain.memory.max_addr;
 
-	kernel_main(&bootinfo);
+	kernel_main(bootinfo);
 }

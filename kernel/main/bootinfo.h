@@ -24,7 +24,6 @@ struct graphics {
 // Memmap
 struct kmem {
 	uint64_t *first_free_page;
-	uint64_t *pml4_table;
 	uint64_t max_addr;
 };
 
