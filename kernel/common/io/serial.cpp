@@ -132,7 +132,7 @@ void serialport_init()
 	}
 	// Calculate current divisor
 	write_serial_register(R_UART_LCR,
-        read_serial_register(R_UART_LCR) | B_UART_LCR_DLAB);
+		read_serial_register(R_UART_LCR) | B_UART_LCR_DLAB);
 	uint32_t current_divisor = read_serial_register(R_UART_BAUD_HIGH) << 8;
 	current_divisor |= (uint32_t)read_serial_register(R_UART_BAUD_LOW);
 	write_serial_register(R_UART_LCR,

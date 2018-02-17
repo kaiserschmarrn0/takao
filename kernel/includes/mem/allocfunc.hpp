@@ -1,6 +1,6 @@
-// mem.hpp
+// allocfunc.hpp
 
-// Description: Memory routines
+// Description: kmalloc, kfree, etc.
 
 // Copyright 2018 The Takao Authors (AUTHORS.md). All rights reserved.
 // Use of this source code is governed by a license that can be
@@ -9,11 +9,9 @@
 
 #pragma once
 
-extern "C" {
-	#include "../libk/libk.h"
+#include "../mem.hpp"
+
+namespace mem {
+	void *kmalloc(uint64_t nbytes);
+	void kfree(void *ptr);
 }
-
-namespace mem {}
-
-#include "mem/init.hpp"
-#include "mem/allocfunc.hpp"

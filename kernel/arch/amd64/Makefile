@@ -14,6 +14,7 @@ archobj = io/ports.o \
 	mem/paging.o \
 	mem/gdt.o \
 	mem/pages.o \
+	mem/allocfunc.o \
 	syscall/idt.o \
 	syscall/handlers/int32.o
 

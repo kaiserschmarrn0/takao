@@ -18,6 +18,9 @@ namespace mem {
 	uint64_t max_addr;
 }
 
+uint64_t *memory_first_free_page;
+uint64_t *memory_pml4_table;
+
 void mem::init(struct bootinfo *bootinfo)
 {
 	// Init GDT
@@ -48,5 +51,8 @@ void mem::init(struct bootinfo *bootinfo)
 		set_entry_pagesize(e, true);
 	}
 
+	// Set the global variables
+	memory_first_free_page = mem::first_free_page;
+	memory_pml4_table = mem::pml4_table;
 }
 
