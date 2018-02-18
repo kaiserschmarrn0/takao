@@ -15,3 +15,4 @@ compile:
 	cd common && make compile
 	cd main && make compile
 	cd lib && make compile
+	cd glue && make compile
