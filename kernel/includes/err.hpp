@@ -9,9 +9,7 @@
 
 #pragma once
 
-extern "C" {
-	#include "../libk/libk.h"
-}
+#include "../lib/lib.hpp"
 
 namespace err {}
 

@@ -8,7 +8,6 @@
 // the source package.
 
 #include <syscall/idt.hpp>
-#include <io/serial.hpp>
 
 //
 // The strategy for interrupts in this kernel is thus:
@@ -52,7 +51,7 @@ namespace syscall {
 			idt_ptr.limit = (sizeof(idt_descriptor) * 256) -1;
 			idt_ptr.offset = reinterpret_cast<uint64_t>(&idt_entries);
 			
-			memset(&idt_ptr, 0, sizeof(idt_descriptor)*256);
+			lib::memset(&idt_ptr, 0, sizeof(idt_descriptor)*256);
 
 			// Set all the gates
 			// No-op interrupt

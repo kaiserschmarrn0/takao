@@ -9,12 +9,7 @@
 
 #pragma once
 
-extern "C" {
-	#include "../../libk/libk.h"
-}
-
-
-// ioport namespace
+#include "../../lib/lib.hpp"
 
 namespace ioport {
 	uint8_t outb(uint16_t port, uint8_t value);

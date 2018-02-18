@@ -9,9 +9,7 @@
 
 #pragma once
 
-extern "C" {
-	#include <libk.h>
-}
+#include <lib.hpp>
 
 uint64_t *allocate_page_inner(uint64_t *first_free_page, bool ok);
 uint64_t *allocate_tables(uint64_t *first_free_page, uint64_t offset, uint64_t max_address, 

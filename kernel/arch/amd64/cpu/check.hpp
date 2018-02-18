@@ -9,9 +9,7 @@
 
 #pragma once
 
-extern "C" {
-	#include <libk.h>
-}
+#include <lib.hpp>
 
 struct cpucheck {
 	bool has_apic;

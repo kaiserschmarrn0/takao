@@ -74,16 +74,3 @@ EFI_STATUS efi_realloc_buffer(const struct uefi *uefi, void **buffer, uint64_t s
 	}
 	return status;
 }
-
-EFI_STATUS exit_bootservices(const struct uefi *uefi)
-{
-	EFI_STATUS status;
-	
-	status = uefi->system_table->BootServices->ExitBootServices(
-		uefi->image_handle,
-		uefi->boot_memmap.map_key
-	);
-
-	ASSERT_EFI_STATUS(status);
-
-}

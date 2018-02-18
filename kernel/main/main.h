@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "../libk/libk.h"
+#include "bootinfo.h"
 
 #ifdef __cplusplus
 	// The main kernel function (the no arch-dependent one)

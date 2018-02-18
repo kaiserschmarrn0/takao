@@ -32,4 +32,3 @@ struct uefi {
 void *find_configuration_table(const struct uefi *uefi, EFI_GUID *guid);
 bool compare_guid(EFI_GUID *g1, EFI_GUID *g2);
 EFI_STATUS memory_map(const struct uefi *uefi, struct memory_map *map_info);
-EFI_STATUS exit_bootservices(const struct uefi *uefi);

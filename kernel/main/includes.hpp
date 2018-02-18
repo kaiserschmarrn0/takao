@@ -9,10 +9,7 @@
 
 #pragma once
 
-extern "C" {
-	#include "../libk/libk.h"       // Libk
-}
-
+#include "../lib/lib.hpp"            // Lib
 #include "../includes/cpu.hpp"       // CPU
 #include "../includes/io/serial.hpp" // Serial port
 #include "../includes/io/ports.hpp"  // IO ports

@@ -14,4 +14,4 @@ compile:
 	cd arch/$(arch) && make compile
 	cd common && make compile
 	cd main && make compile
-	cd libk && make compile
+	cd lib && make compile

@@ -99,7 +99,7 @@ uint64_t serial_port::port_write(uint8_t *buffer, uint64_t size)
 }
 
 int serial_port::print(const char *print) {
-	port_write((uint8_t *)print, strlen(print));
+	port_write((uint8_t *)print, lib::strlen(print));
 	return 0;
 }
 

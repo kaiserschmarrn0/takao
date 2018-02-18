@@ -11,6 +11,14 @@
 
 EFI_STATUS select_mode(struct graphics_info *gs, uint32_t *mode);
 
+void graph_memcpy(void *dest, const void *src, uint64_t len) {
+	uint8_t *d = dest;
+	const uint8_t *s = src;
+	for(uint64_t i = 0; i < len; i++, d++, s++) {
+		*d = *s;
+	}
+}
+
 EFI_STATUS init_graphics(const struct uefi *uefi, struct graphics_info *gs)
 {
 
@@ -40,7 +48,7 @@ EFI_STATUS select_mode(struct graphics_info *gs, uint32_t *mode)
 	// Initialize info of current mode
 	EFI_STATUS status = gs->protocol->QueryMode(gs->protocol, *mode, &size, &info);
 	ASSERT_EFI_STATUS(status);
-	memcpy(&most_appropriate_info, info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
+	graph_memcpy(&most_appropriate_info, info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
 
 	// Look for a better mode
 	for(UINT32 i = 0; i < gs->protocol->Mode->MaxMode; i += 1) {
@@ -60,18 +68,18 @@ EFI_STATUS select_mode(struct graphics_info *gs, uint32_t *mode)
 		// Obviously the best mode!
 		if(info->VerticalResolution == GRAPHICS_MOST_APPROPRIATE_H &&
 		   info->HorizontalResolution == GRAPHICS_MOST_APPROPRIATE_W) {
-			memcpy(&most_appropriate_info, info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
+			graph_memcpy(&most_appropriate_info, info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
 			*mode = i;
 			break;
 		}
 		// Otherwise we have an arbitrary preferece to get as much vertical resolution as possible.
 		if(info->VerticalResolution > most_appropriate_info.VerticalResolution) {
-			memcpy(&most_appropriate_info, info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
+			graph_memcpy(&most_appropriate_info, info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
 			*mode = i;
 		}
 	}
 	gs->height = info->VerticalResolution;
 	gs->width = info->HorizontalResolution;
-	memcpy(&gs->output_mode, &most_appropriate_info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
+	graph_memcpy(&gs->output_mode, &most_appropriate_info, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION));
 	return EFI_SUCCESS;
 }

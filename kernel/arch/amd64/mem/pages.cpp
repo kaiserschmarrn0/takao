@@ -89,7 +89,7 @@ uint64_t *create_memory_entry_for(uint64_t *pml4_table, uint64_t *first_free_pag
         if(l == level) return next;
         if((*next & 1) == 0) {
             uint64_t *new_page = allocate_page_inner(first_free_page, true);
-            memset(new_page, 0, 0x1000);
+            lib::memset(new_page, 0, 0x1000);
             
 			*next = (uint64_t)new_page;
             set_entry_present(next, true);

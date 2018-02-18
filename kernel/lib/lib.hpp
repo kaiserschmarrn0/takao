@@ -1,6 +1,6 @@
-// serial.hpp
+// lib.hpp
 
-// Description: Serial port driver
+// Description: The global lib, pinnacle of half kernel, bow down.
 
 // Copyright 2018 The Takao Authors (AUTHORS.md). All rights reserved.
 // Use of this source code is governed by a license that can be
@@ -9,10 +9,8 @@
 
 #pragma once
 
-#include "../../lib/lib.hpp"
+namespace lib {}
 
-namespace serial_port {
-    void init(void);
-    uint64_t port_write(uint8_t *buffer, uint64_t size);
-    int print(const char *print);
-}
+#include "types.hpp"
+#include "mem.hpp"
+#include "string.hpp"

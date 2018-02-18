@@ -26,7 +26,7 @@ void gdt_init(void)
             "movw %%cs, %2;" : "=r"(gdt), "=r"(data_segment), "=r"(code_segment));
     data_segment /= 8;
     code_segment /= 8;
-    memset((uint8_t *)gdt->offset, gdt->limit + 1, 0);
+    lib::memset((uint8_t *)gdt->offset, gdt->limit + 1, 0);
     ((uint64_t *)gdt->offset)[data_segment] = 0xFFFF | 0xFull << 48
                                            | 1ull << 55 // this is a number of pages, not bytes
                                            | 1ull << 47 // present

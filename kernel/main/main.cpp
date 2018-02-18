@@ -29,7 +29,7 @@ void kernel_main(struct bootinfo bootinfo)
 	syscall::idt::init();
 
 	serial_port::print(greeter);
-
+	
 	// Kernel function reached end, panic
 	err::panic(1);
 }
