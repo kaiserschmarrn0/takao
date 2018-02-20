@@ -15,8 +15,10 @@ namespace err {
 	void panic(int errorcode)
 	{
 		// Print the error code with a standarized message
-		serial_port::print("\n");
-		serial_port::print("[PANIC] System halted! (Busy stop)\n");
+		serial_port::puts("\n");
+		serial_port::puts("[PANIC] System halted! (Busy stop)\n");
+		serial_port::puts("Error code: ");
+		serial_port::printf("%d", errorcode);
 
 		syscall::idt::cli();
 		

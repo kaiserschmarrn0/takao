@@ -28,7 +28,7 @@ void kernel_main(struct bootinfo bootinfo)
 	// Init interrupts
 	syscall::idt::init();
 
-	serial_port::print(greeter);
+	serial_port::puts(greeter);
 	
 	// Kernel function reached end, panic
 	err::panic(1);

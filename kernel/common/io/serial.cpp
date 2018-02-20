@@ -43,10 +43,14 @@
 #define   B_UART_MSR_RI       (1 << 7)
 #define   B_UART_MSR_DCD      (1 << 8)
 
+#define NORMAL 0
+#define FORMAT 1
+
 uint8_t read_serial_register(uint16_t offset);
 void write_serial_register(uint16_t offset, uint8_t d);
 void serialport_init();
 bool serial_port_writable();
+char *convert(unsigned int num, int base);
 
 
 void serial_port::init()
@@ -65,10 +69,10 @@ uint64_t serial_port::port_write(uint8_t *buffer, uint64_t size)
 		while ((read_serial_register(R_UART_LSR) & (B_UART_LSR_TEMT | B_UART_LSR_TXRDY))
 				!= (B_UART_LSR_TEMT | B_UART_LSR_TXRDY));
 			
-			while (!serial_port_writable());
+		while (!serial_port_writable());
 			
-			return 0;
-		}
+		return 0;
+	}
 	
 	// Compute the maximum size of the Tx FIFO
 	uint64_t fifo_size = 1;
@@ -98,12 +102,79 @@ uint64_t serial_port::port_write(uint8_t *buffer, uint64_t size)
 	return size;
 }
 
-int serial_port::print(const char *print) {
-	port_write((uint8_t *)print, lib::strlen(print));
+int serial_port::puts(const char *print) 
+{
+	serial_port::port_write((uint8_t *)print, lib::strlen(print));
 	return 0;
 }
 
+void serial_port::printf(char* format,...) 
+{ 
+	char *traverse; 
+	unsigned int i; 
+	char *s; 
+
+	va_list arg; 
+	va_start(arg, format); 
+	
+	for(traverse = format; *traverse != '\0'; traverse++) 
+	{ 
+		while( *traverse != '%' ) 
+		{
+			traverse++; 
+		} 
+		
+		traverse++; 
+		
+		//Module 2: Fetching and executing arguments
+		switch(*traverse) 
+		{
+			case 'd' : i = va_arg(arg,int); 		//Fetch Decimal/Integer argument
+						if(i<0) 
+						{ 
+							i = -i;
+							serial_port::puts("-"); 
+						} 
+						serial_port::puts(convert(i,10));
+						break; 
+						
+			case 'o': i = va_arg(arg,unsigned int); //Fetch Octal representation
+						serial_port::puts(convert(i,8));
+						break; 
+						
+			case 's': s = va_arg(arg,char *); 		//Fetch string
+						serial_port::puts(s); 
+						break; 
+						
+			case 'x': i = va_arg(arg,unsigned int); //Fetch Hexadecimal representation
+						serial_port::puts(convert(i,16));
+						break; 
+		}	
+	} 
+	
+	//Module 3: Closing argument list to necessary clean-up
+	va_end(arg); 
+} 
+
 // Auxiliar functions
+char *convert(unsigned int num, int base) 
+{ 
+	static char Representation[]= "0123456789ABCDEF";
+	static char buffer[50]; 
+	char *ptr; 
+	
+	ptr = &buffer[49]; 
+	*ptr = '\0'; 
+	
+	do 
+	{ 
+		*--ptr = Representation[num%base]; 
+		num /= base; 
+	}while(num != 0); 
+	
+	return(ptr); 
+}
+
 uint8_t read_serial_register(uint16_t offset)
 {
 	return ioport::inb(SERIAL_REGISTER_BASE + offset * SERIAL_REGISTER_STRIDE);
@@ -194,7 +265,4 @@ bool serial_port_writable()
 	}
 	return true;
 }
-
-
-
 

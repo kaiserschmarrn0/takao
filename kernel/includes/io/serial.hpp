@@ -10,9 +10,11 @@
 #pragma once
 
 #include "../../lib/lib.hpp"
+#include <stdarg.h>
 
 namespace serial_port {
     void init(void);
     uint64_t port_write(uint8_t *buffer, uint64_t size);
-    int print(const char *print);
+    int puts(const char *print);
+    void printf(char* format,...);
 }
