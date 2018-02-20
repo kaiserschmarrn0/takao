@@ -17,7 +17,7 @@ uint64_t *allocate_page_inner(uint64_t *first_free_page, bool ok)
 	
 	// Out of mem 
 	if(ret == NULL) {
-		err::panic(3);
+		err::panic(2);
 	}
 	// Now we note that next first_free_page is recorded in the page being returned.
 	
@@ -38,7 +38,7 @@ uint64_t *allocate_tables(uint64_t *first_free_page, uint64_t offset, uint64_t m
 		case 1: entry_size = 0x1000ull * 512; break;
 		case 2: entry_size = 0x1000ull * 512 * 512; break;
 		case 3: entry_size = 0x1000ull * 512 * 512 * 512; break;
-		default: err::panic(5); // bad level!
+		default: err::panic(3); // bad level!
 	}
 	uint64_t *new_page = allocate_page_inner(first_free_page, true);
 	if(level != 0) {
@@ -170,7 +170,7 @@ void set_entry_pagesize(uint64_t *entry, bool on)
 void set_entry_physical(uint64_t *entry, uint64_t physical)
 {
 	if((physical & 0xFFF) != 0) {
-		err::panic(12); // Bad physical address
+		err::panic(4); // Bad physical address
 	}
 	*entry |= physical;
 }

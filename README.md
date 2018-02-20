@@ -16,3 +16,4 @@ This page is a non-comprehensive index of the Takao documentation.
 + [An introduction to Takao internals](documentation/general/internals.md)
 
 + [License](LICENSE.md)
++ [Error codes](documentation/errorcodes.md)
