@@ -15,8 +15,8 @@ lib = mem/mem.o \
 
 compile: $(lib)
 
-# Rule: .c archives
-%.o: %.cpp
+# Rule: .cxx archives
+%.o: %.cxx
 	@echo Compiling $<
 	@$(cppcompiler) $(cppflags_lib) -c $< -o $@
 	@mv $@ $(builddir)/objects

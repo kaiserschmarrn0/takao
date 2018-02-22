@@ -15,7 +15,7 @@ main = main.o
 compile: $(main)
 
 # Rule: .cpp archives
-%.o: %.cpp
+%.o: %.cxx
 	@echo Compiling $<
 	@$(cppcompiler) $(cppflags_main) -c $< -o $@
 	@mv $@ $(builddir)/objects

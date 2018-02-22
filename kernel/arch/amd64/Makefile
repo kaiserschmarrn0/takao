@@ -25,8 +25,8 @@ export
 
 compile: $(archobj)
 
-# Rule: .cpp archives
-%.o: %.cpp
+# Rule: .cxx archives
+%.o: %.cxx
 	@echo Compiling $<
 	@$(cppcompiler) $(cppflags_arch) -c $< -o $@
 	@mv $@ $(builddir)/objects

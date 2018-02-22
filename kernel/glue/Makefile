@@ -15,8 +15,8 @@ glue = cxa_pure_virtual.o
 
 compile: $(glue)
 
-# Rule: .cpp archives
-%.o: %.cpp
+# Rule: .cxx archives
+%.o: %.cxx
 	@echo Compiling $<
 	@$(cppcompiler) $(cppflags_common) -c $< -o $@
 	@mv $@ $(builddir)/objects

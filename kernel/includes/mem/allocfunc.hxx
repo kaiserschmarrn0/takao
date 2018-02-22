@@ -1,6 +1,6 @@
-// utils.h
+// allocfunc.hxx
 
-// Description: UEFI bootloader utils
+// Description: kmalloc, kfree, etc.
 
 // Copyright 2018 The Takao Authors (AUTHORS.md). All rights reserved.
 // Use of this source code is governed by a license that can be
@@ -9,7 +9,9 @@
 
 #pragma once
 
-#define ASSERT_EFI_STATUS(x) {if(EFI_ERROR((x))) { return x; }}
+#include "../mem.hxx"
 
-// Include our types
-#include <lib/types.hxx>
+namespace mem {
+	void *kmalloc(uint64_t nbytes);
+	void kfree(void *ptr);
+}

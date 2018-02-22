@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "../lib/types.hpp"
+#include "../lib/types.hxx"
 
 // Graphics buffer
 struct graphics {

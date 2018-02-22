@@ -1,6 +1,6 @@
-// utils.h
+// cpu.hxx
 
-// Description: UEFI bootloader utils
+// Description: CPU functions
 
 // Copyright 2018 The Takao Authors (AUTHORS.md). All rights reserved.
 // Use of this source code is governed by a license that can be
@@ -9,7 +9,9 @@
 
 #pragma once
 
-#define ASSERT_EFI_STATUS(x) {if(EFI_ERROR((x))) { return x; }}
+#include "../lib/lib.hxx"
 
-// Include our types
-#include <lib/types.hxx>
+namespace cpu {}
+
+#include "cpu/init.hxx"
+

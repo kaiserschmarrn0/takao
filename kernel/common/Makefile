@@ -15,8 +15,8 @@ common = io/serial.o \
 
 compile: $(common)
 
-# Rule: .cpp archives
-%.o: %.cpp
+# Rule: .cxx archives
+%.o: %.cxx
 	@echo Compiling $<
 	@$(cppcompiler) $(cppflags_common) -c $< -o $@
 	@mv $@ $(builddir)/objects
