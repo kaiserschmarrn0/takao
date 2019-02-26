@@ -19,7 +19,7 @@ Make sure you have installed:
 * `dmd`
 * `binutils` (doesn't need an specific version)
 
-With all of that covered, just clone the [source] with `git` if you dont
+With all of that covered, just clone the source with `git` if you dont
 have it already with:
 
 ```bash
