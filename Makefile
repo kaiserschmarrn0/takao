@@ -1,102 +1,53 @@
-# Makefile
+# Makefile - makefile of the project
+# (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+# This code is governed by a license that can be found in LICENSE.md
 
-# Description: Makefile of the project
+override kernel = takao
+override image = $(kernel).elf
+override ISO = $(kernel).iso
 
-# Copyright 2018 The Takao Authors (AUTHORS.md). All rights reserved.
-# Use of this source code is governed by a license that can be
-# found in the LICENSE.md file, in the root directory of
-# the source package.
+override sourceDir = $(realpath source)
+override buildDir = $(realpath build)
 
-##################################################################################
+DC = dmd
+LD = ld
+AS = nasm
 
-# First define the kernel version and etc, this is overrided, and cant be
-# modified by command line.
+DFLAGS = -betterC -op -I=$(sourceDir)
+LDFLAGS = -nostdlib -T $(buildDir)/linker.ld
 
-#Dont blame me for that comments, makefile behaves weird when inline comments
-override kernel_name = Takao# Kernel name
-override kernel_vers = ALPHA# Kernel version
-override kernel_nick = kensei# Kernel nickname
-override kernel_file = $(kernel_name)$(kernel_vers)# Name of the final file (no extension)
+DSource = $(shell find $(sourceDir) -type f -name '*.d')
+ASMSource = $(shell find $(sourceDir) -type f -name '*.asm')
 
-# Now lets start
-.EXPORT_ALL_VARIABLES:
-.PHONY: all
+objects = $(DSource:.d=.o) $(ASMSource:.asm=.o)
 
-ifeq ($(strip $(builddir)), )
-# builddir is not set, so we print a small how to.
+.PHONY: all iso test clean
 
-all:
-	@echo ""
-	@echo "Welcome to $(kernel_name) build! But you are doing it wrong!"
-	@echo "Do the following to prepare and build $(kernel_name)."
-	@echo ""
-	@echo "  1. Run 'make builddir=<absolute path of nonexisting directory>'"
-	@echo "     The directory will be used exclusively to build the system"
-	@echo "  2. Cd into the specified build directory"
-	@echo "  3. Verify the settings in makeconf.local"
-	@echo "  4. Run 'make all' again"
-	@echo "";
-	@exit 0
+all: $(binaries) $(objects)
+	@echo "\033[0;35mLinking\033[0m '$(image)'..."
+	@$(LD) $(LDFLAGS) $(objects) -o $(image)
 
-else ifeq ($(strip $(srcdir)), )
-# builddir is set, not the case of srcdir, so we use the specified build dir
+%.o: %.d
+	@echo "\033[0;35mCompiling\033[0m '$<' into '$@'..."
+	@$(DC) $(DFLAGS) -c $< $@
 
-all:
-	@echo ""
-	@# Check if the path is absolute or not, exit if not. 
-	@if [ "/" != "`echo $(builddir) | cut -c1`" ]; then \
-		echo "$(builddir) is not an absolute path"; \
-		echo ""; \
-		echo "exiting with error code 1..."; \
-		echo ""; \
-		exit 1; \
-	fi
+%.o: %.asm
+	@echo "\033[0;35mCompiling\033[0m '$<' into '$@'..."
+	@$(AS) $< -f elf64 -o $@
 
-	@# Check if the dir exist, if it exist exit.
-	@if [ -d $(builddir) ]; then \
-		echo "$(builddir) exist already! Use a non existent directory"; \
-		echo ""; \
-		echo "exiting with error code 1..."; \
-		echo ""; \
-		exit 1; \
-	fi
+iso: all
+	mkdir -p isodir/boot/grub
+	cp $(image) isodir/boot/$(image)
+	cp $(buildDir)/grub.cfg isodir/boot/grub/grub.cfg
+	sed -i "s/NAME/$(kernel)/g" isodir/boot/grub/grub.cfg
+	sed -i "s/IMAGE/$(image)/g" isodir/boot/grub/grub.cfg
+	grub-mkrescue -o $(ISO) isodir
+	rm -rf isodir
 
-	@# The builddir is fine, now we create it
-	mkdir -p $(builddir)
+test: iso
+	qemu-system-x86_64 -m 2G -net none -enable-kvm -monitor stdio \
+	-drive file=$(ISO),index=0,media=disk,format=raw \
+    -cpu host
 
-	@# Now lets start with the build
-
-	@# Now we will copy the config template, flags and etc to the builddir
-	@cp -r build/template/* $(builddir)
-	@cp -r build/flags $(builddir)/build
-
-	@# Adjust the makeconfig.template and make a makeconfig.local, remove template
-	@(grep -v srcdir $(builddir)/makeconfig.template ; \
-	  echo "srcdir = $(CURDIR)") >> $(builddir)/makeconfig.local
-	@rm -f $(builddir)/makeconfig.template
-
-	@# The end of the setup.
-	@echo ""
-	@echo "Directory prepared for build, change to it."
-	@echo ""
-	
-else
-# scrdir and builddir are set, lets start the real build
-
-compile: 
-	mkdir -p $(builddir)/objects
-	cd boot/$(arch)-$(firmware) && $(MAKE) compile
-	cd kernel && $(MAKE) compile
-
-link:
-	$(linker) $(linker_flags) $(builddir)/objects/* -o $(builddir)/$(kernel_file).bin
-
-image:
-	cd build/images && $(MAKE) -f finalimages-$(arch)-$(firmware).make
-
-test:
-	cd build/test && $(MAKE) -f test-$(arch)-$(firmware).make
-
-all: compile link image
-
-endif
+clean:
+	rm -rf $(objects) $(binaries) $(image) $(ISO)

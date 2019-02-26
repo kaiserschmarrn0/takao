@@ -1,13 +1,8 @@
-# Authors
+# List of `takao` authors.
 
-Names should be added to this file as one of:
+Names should be added to this file as one of
+- Organization/Individual's name
+- Organization/Individual's name {any way of contact}
+- Organization/Individual's name {any way of contact} {contact2} {contactN}
 
-`` 
-Organization's name
-	
-Individual's name and a contact way, like email or username of github.
-`` 
-
-## Authors list
-
-TheStr3ak5 : assemblyislaw@gmail.com
+Cristian Simón Felipe {assemblyislaw@gmail.com}

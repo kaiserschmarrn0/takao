@@ -1,19 +1,44 @@
 # Takao
 
+![forthebadge](https://forthebadge.com/images/badges/contains-cat-gifs.svg)
+
 Welcome to the Takao source code!
 
-Takao is a hobby project that helps me to understand how computers 
+Takao is a hobbyist kernel project that helps me to understand how computers 
 work, learn about it and, in the future, represent how I think they 
 should work.
 
 Takao now is in alpha phase where big changes and design decisions will 
-happen, so it has not a specific version number.
+happen, so it doesn't have a specific version number.
 
-This page is a non-comprehensive index of the Takao documentation.
+## Building the source code
 
-+ [Getting Started](documentation/general/getting_started.md)
-+ [Contributing](documentation/general/contributing.md)
-+ [An introduction to Takao internals](documentation/general/internals.md)
+Make sure you have installed:
 
+* `git` (only if you are using it to download the source)
+* `dmd`
+* `binutils` (doesn't need an specific version)
+
+With all of that covered, just clone the [source] with `git` if you dont
+have it already with:
+
+```bash
+git clone https://github.com/TheStr3ak5/takao.git
+cd takao
+```
+
+And next lets build the source with:
+
+```bash
+make all
+```
+
+One can clean the build tree with `make clean` and even test the kernel with
+`make test`, this last command will require `qemu`.
+
+## Documentation
+
+This is a non-comprehensive index of the Takao documentation.
+
++ [Authors](AUTHORS.md)
 + [License](LICENSE.md)
-+ [Error codes](documentation/errorcodes.md)
