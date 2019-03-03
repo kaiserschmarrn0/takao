@@ -12,7 +12,7 @@ global earlyError:function (earlyError.end - earlyError)
 ; The string comes in esi
 earlyError:
     pusha
-    mov edi, 0xb8000
+    mov edi, 0xB8000
 .loop:
     lodsb
     test al, al

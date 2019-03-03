@@ -43,6 +43,7 @@ static __gshared IDTDescriptor[256] idt;
 
 void setIDT() {
     import system.interrupts.exceptions;
+    import system.interrupts.handlers;
 
     // Load the IDT
     IDTPointer idtPointer;
@@ -55,35 +56,38 @@ void setIDT() {
     }
 
     // Exception handlers
-    registerInterruptHandler(0,  &DEHandler);
-    registerInterruptHandler(1,  &DBHandler);
+    registerInterruptHandler(0,  &DEHandler );
+    registerInterruptHandler(1,  &DBHandler );
     registerInterruptHandler(2,  &NMIHandler);
-    registerInterruptHandler(3,  &BPHandler);
-    registerInterruptHandler(4,  &OFHandler);
-    registerInterruptHandler(5,  &BRHandler);
-    registerInterruptHandler(6,  &UDHandler);
-    registerInterruptHandler(7,  &NMHandler);
-    registerInterruptHandler(8,  &DFHandler);
+    registerInterruptHandler(3,  &BPHandler );
+    registerInterruptHandler(4,  &OFHandler );
+    registerInterruptHandler(5,  &BRHandler );
+    registerInterruptHandler(6,  &UDHandler );
+    registerInterruptHandler(7,  &NMHandler );
+    registerInterruptHandler(8,  &DFHandler );
     registerInterruptHandler(9,  &CSOHandler);
-    registerInterruptHandler(10, &TSHandler);
-    registerInterruptHandler(11, &NPHandler);
-    registerInterruptHandler(12, &SSHandler);
-    registerInterruptHandler(13, &GPHandler);
-    registerInterruptHandler(14, &PFHandler);
+    registerInterruptHandler(10, &TSHandler );
+    registerInterruptHandler(11, &NPHandler );
+    registerInterruptHandler(12, &SSHandler );
+    registerInterruptHandler(13, &GPHandler );
+    registerInterruptHandler(14, &PFHandler );
     // 15 is reserved.
-    registerInterruptHandler(16, &MFHandler);
-    registerInterruptHandler(17, &ACHandler);
-    registerInterruptHandler(18, &MCHandler);
-    registerInterruptHandler(19, &XFHandler);
-    registerInterruptHandler(20, &VEHandler);
+    registerInterruptHandler(16, &MFHandler );
+    registerInterruptHandler(17, &ACHandler );
+    registerInterruptHandler(18, &MCHandler );
+    registerInterruptHandler(19, &XFHandler );
+    registerInterruptHandler(20, &VEHandler );
     // 21 to 29 are reserved.
     registerInterruptHandler(30, &SXHandler);
     // 31 is reserved.
 
     // Then set all entries as unhandled interrupts
     for (ubyte vec = 32; vec < 129; vec++) {
-        registerInterruptHandler(vec, &unhandledInterruptHandler);
+        registerInterruptHandler(vec, &defaultHandler);
     }
+
+    // And the misc software interrupt
+    registerInterruptHandler(129, &miscSoftwareHandler);
 }
 
 void registerInterruptHandler(ubyte number, void function() handler) {

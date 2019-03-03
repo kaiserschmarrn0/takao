@@ -13,12 +13,14 @@ DC = dmd
 LD = ld
 AS = nasm
 
-DFLAGS = -betterC -op -I=$(sourceDir)
+DFLAGS = -O -betterC -op -I=$(sourceDir)
 LDFLAGS = -nostdlib -T $(buildDir)/linker.ld
 
+realModeSource = $(shell find $(sourceDir) -type f -name '*.real')
 DSource = $(shell find $(sourceDir) -type f -name '*.d')
 ASMSource = $(shell find $(sourceDir) -type f -name '*.asm')
 
+binaries = $(realModeSource:.real=.bin) 
 objects = $(DSource:.d=.o) $(ASMSource:.asm=.o)
 
 .PHONY: all iso test clean
@@ -34,6 +36,10 @@ all: $(binaries) $(objects)
 %.o: %.asm
 	@echo "\033[0;35mCompiling\033[0m '$<' into '$@'..."
 	@$(AS) $< -f elf64 -o $@
+
+%.bin: %.real
+	@echo "\033[0;35mCompiling\033[0m '$<' into '$@'..."
+	@$(AS) $< -f bin -o $@
 
 iso: all
 	mkdir -p isodir/boot/grub

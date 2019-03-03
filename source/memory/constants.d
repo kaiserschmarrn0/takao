@@ -4,5 +4,11 @@
 
 module memory.constants;
 
-immutable auto physicalMemoryOffset       = 0xffff800000000000;
-immutable auto kernelPhysicalMemoryOffset = 0xffffffffc0000000;
+immutable auto physicalMemoryOffset       = 0xFFFF800000000000;
+immutable auto kernelPhysicalMemoryOffset = 0xFFFFFFFFC0000000;
+
+immutable auto pageSize         = 4096;
+immutable auto pageTableEntries = 512;
+
+immutable auto memoryBase = 0x1000000;
+immutable auto bitmapBase = memoryBase / pageSize;

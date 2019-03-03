@@ -102,33 +102,3 @@ align 16
   .TSSReserved:
     dd 0
 .GDTEnd:
-
-global loadTSS:function (loadTSS.end - loadTSS)
-
-loadTSS:
-    ; address in RDI
-    push rbx
-    mov eax, edi
-    mov rbx, GDTPointer.TSSLow
-    mov word [rbx], ax
-    mov eax, edi
-    and eax, 0xff0000
-    shr eax, 16
-    mov rbx, GDTPointer.TSSMid
-    mov byte [rbx], al
-    mov eax, edi
-    and eax, 0xff000000
-    shr eax, 24
-    mov rbx, GDTPointer.TSSHigh
-    mov byte [rbx], al
-    mov rax, rdi
-    shr rax, 32
-    mov rbx, GDTPointer.TSSUpper32
-    mov dword [rbx], eax
-    mov rbx, GDTPointer.TSSFlags1
-    mov byte [rbx], 10001001b
-    mov rbx, GDTPointer.TSSFlags2
-    mov byte [rbx], 0
-    pop rbx
-    ret
-.end:

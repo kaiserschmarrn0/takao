@@ -5,16 +5,19 @@
 module utils.glue;
 
 extern (C) void __assert(const(char)* exp, const(char)* file, uint line) {
-    // kprint(KPRN_ERR, "failed assertion: %s", exp);
-    // kprint(KPRN_ERR, "file: %s", file);
-    // kprint(KPRN_ERR, "line: %u", line);
-    for (;;) {}
+    import io.term: error;
+    /*
+    error("failed assertion: %s", exp);
+    error("file: %s", file);
+    error("line: %u", line);
+    */
+    error("Failed assertion!");
 }
 
 extern (C) void* memset(void *s, int c, size_t n) {
-    ubyte* ptr = cast(ubyte*)s;
+    auto pointer = cast(ubyte*) s;
 
-    for (size_t i = 0; i < n; i++) ptr[i] = cast(ubyte)c;
+    for (auto i = 0; i < n; i++) pointer[i] = cast(ubyte) c;
 
     return s;
 }

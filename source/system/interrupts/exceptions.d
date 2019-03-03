@@ -6,13 +6,8 @@ module system.interrupts.exceptions;
 
 import io.term: error;
 
-// Generic interrupt handler
-void unhandledInterruptHandler() {
-    error("Unhandled interrupt was raised!");
-}
-
 // Exceptions are classified as:
-// - Faults: Can be corrected and the program can continue as if nothing //
+// - Faults: Can be corrected and the program can continue as if nothing
 //           happened.
 // - Traps:  Reported immediately after the execution of the instruction.
 // - Aborts: Some severe unrecoverable error.
@@ -169,9 +164,9 @@ void NPHandler() {
 //   register is executed, while the stack address is not in canonical form.
 // - When the stack-limit check fails.
 // This exeption is not part of segment not present exeption because of the 
-// need to push eip,cs,eflags,esp,ss to the stack is no longer valid because of 
+// need to push eip,cs,eflags,esp,ss. The stack is no longer valid because 
 // the ss's gdt entry (or the ss itself) had to be buggy in the first place for 
-// this exception to occur , so one must declare this exeption as a task switch 
+// this exception to occur, so one must declare this exception as a task switch 
 // interrupt and setting up tss for it. The saved instruction pointer points to 
 // the instruction which caused the exception.
 // Error Code: Stack segment selector index when a non-present segment 

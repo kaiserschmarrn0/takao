@@ -4,7 +4,7 @@
 
 module io.term;
 
-enum Colour {
+enum Colour : ubyte {
 	Black        = 0,
 	Blue         = 1,
 	Green        = 2,
@@ -28,18 +28,18 @@ immutable ubyte termHeight = 25;
 
 private __gshared uint   row;
 private __gshared uint   column;
-private __gshared byte   colour;
+private __gshared ubyte  colour;
 private __gshared short* buffer;
 
-private pragma(inline) byte entryColour(Colour background, Colour foreground) {
-    return cast(byte) (foreground | background << 4);
+private ubyte entryColour(Colour background, Colour foreground) {
+    return cast(ubyte) (foreground | background << 4);
 }
 
-private pragma(inline) short createEntry(char character, byte colour) {
-    return cast(short) (character | colour << 8);
+private ushort createEntry(ubyte character, ubyte colour) {
+    return cast(ushort) (character | colour << 8);
 }
 
-private pragma(inline) void putEntryAt(char c, byte colour, uint x, uint y) {
+private void putEntryAt(ubyte c, ubyte colour, uint x, uint y) {
     buffer[y * termWidth + x] = createEntry(c, colour);
 }
 
@@ -48,11 +48,11 @@ void initTerm() {
     import memory.constants: physicalMemoryOffset;
 
     // Disable the cursor
-    outb(0x3d4, 0x0a);
-    outb(0x3d5, 0x20);
+    outb(0x3D4, 0x0A);
+    outb(0x3D5, 0x20);
 
     colour = entryColour(Colour.Black, Colour.LightGrey);
-    buffer = cast(short*) (0xb8000 + physicalMemoryOffset);
+    buffer = cast(short*) (0xB8000 + physicalMemoryOffset);
 
     clearTerm();
 }
@@ -66,7 +66,7 @@ void clearTerm() {
     column = 0;
 }
 
-void print(char character) {
+void print(ubyte character) {
     switch (character) {
         case '\t':
             print("   ");
@@ -89,7 +89,7 @@ void print(char character) {
 }
 
 void print(string message) {
-    foreach (char c; message) print(c);
+    foreach (ubyte c; message) print(c);
 }
 
 void print(string message, Colour foreground) {
@@ -109,6 +109,8 @@ void printLine(string message, Colour foreground) {
 }
 
 void warning(string message) {
+    import system.state: halt;
+
     print("The kernel reported a warning: ", Colour.LightMagenta);
     printLine(message);
 
@@ -146,18 +148,18 @@ void printRegisters() {
         mov cr4, RAX;
     }
 
-    print("rbp=");
+    print("RBP=");
     print(toHex(rbp));
-    print(" rsp=");
+    print(", RSP=");
     printLine(toHex(rsp));
     printLine("");
 
-    print("cr0=");
+    print("CR0=");
     print(toHex(cr0));
-    print(" cr2=");
+    print(", CR2=");
     print(toHex(cr2));
-    print(" cr3=");
+    print(", CR3=");
     printLine(toHex(cr3));
-    print("cr4=");
+    print("CR4=");
     printLine(toHex(cr4));
 }

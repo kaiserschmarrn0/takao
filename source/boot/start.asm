@@ -19,7 +19,7 @@ start:
     extern main                ; The main kernel function
 
     ; Setup the stack
-    mov esp, 0xeffff0
+    mov esp, 0xEFFFF0
 
     ; Lets see if we can CPUID and long mode, if not it will just halt
     call checkCPUID    
@@ -53,7 +53,7 @@ start:
     jmp rax
 
 .higherHalf:
-    mov rsp, kernelPhysicalOffset + 0xeffff0
+    mov rsp, kernelPhysicalOffset + 0xEFFFF0
 
     lgdt [GDTPointer]
 

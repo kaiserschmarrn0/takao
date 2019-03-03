@@ -4,10 +4,26 @@
 
 module io.ports;
 
+ubyte inb(ushort port) {
+    ubyte value;
+
+    asm {
+        mov DX, port;
+        in  AL, DX;
+        mov value, AL;
+    }
+
+    return value;
+}
+
 void outb(ushort port, ubyte value) {
     asm {
         mov DX, port;
         mov AL, value;
         out DX, AL;
     }
+}
+
+void wait() {
+    outb(0x80, 0x00);
 }

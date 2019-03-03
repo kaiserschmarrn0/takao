@@ -6,20 +6,22 @@ module main;
 
 extern(C) void main() {
     import io.term:           Colour, initTerm, printLine, error;
-    import system.interrupts: enableInterrupts;
     import system.cpu:        CPU, getInfo;
+    import system.interrupts: enableInterrupts;
+    import memory.e820:       getE820;
 
     initTerm();
 
-    printLine("Reached main()\t\t\t\t:kongoudisgust:", Colour.LightMagenta);
-    printLine("Booting up...");
-
-    enableInterrupts();
+    printLine("Reached main(), booting up...\t\t\t\t\t\t\t\t:kongoudisgust:");
 
     auto cpu = getInfo();
     cpu.print();
     cpu.enableFeatures();
     cpu.checkDependencies();
+
+    enableInterrupts();
+
+    getE820();
 
     error("End of the kernel");
 }

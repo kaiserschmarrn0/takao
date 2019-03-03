@@ -164,9 +164,8 @@ struct CPUID {
         import util.convert: toBinary;
         import io.term:      Colour, print, printLine;
 
-        string featureString(bool c) {
-            // The spaces on available is for them to be the same length
-            return c ? "available    " : "not available";
+        string featureSign(bool c) {
+            return c ? "+" : "-";
         }
 
         Colour featureColour(bool c) {
@@ -174,35 +173,34 @@ struct CPUID {
         }
 
         printLine("CPUID:");
-        printLine("\trax=1");
+        printLine("\tRAX=1");
         
-        print("\trcx=");
+        print("\tRCX=");
         printLine(toBinary(RCXWithRAX1));
 
-        print("\trdx=");
+        print("\tRDX=");
         printLine(toBinary(RDXWithRAX1));
 
-        printLine("\trax=0x80000001");
+        printLine("\tRAX=0x80000001");
         
-        print("\trcx=");
+        print("\tRCX=");
         printLine(toBinary(RCXWithRAX0x80000001));
 
-        print("\trdx=");
+        print("\tRDX=");
         printLine(toBinary(RDXWithRAX0x80000001));
 
-        print("\tSSE3:   ");
-        print(featureString(hasSSE3), featureColour(hasSSE3));
-        print("\tx2APIC: ");
-        print(featureString(hasx2APIC), featureColour(hasx2APIC));
-        print("\tMSR:    ");
-        printLine(featureString(hasMSR), featureColour(hasMSR));
-
-        print("\tAPIC:   ");
-        print(featureString(hasAPIC), featureColour(hasAPIC));
-        print("\tACPI:   ");
-        print(featureString(hasACPI), featureColour(hasACPI));
-        print("\tSSE2:   ");
-        printLine(featureString(hasSSE2), featureColour(hasSSE2));
+        print(featureSign(hasSSE3), featureColour(hasSSE3));
+        print("SSE3, ");
+        print(featureSign(hasx2APIC), featureColour(hasx2APIC));
+        print("x2APIC, ");
+        print(featureSign(hasMSR), featureColour(hasMSR));
+        print("MSR, ");
+        print(featureSign(hasAPIC), featureColour(hasAPIC));
+        print("APIC, ");
+        print(featureSign(hasACPI), featureColour(hasACPI));
+        print("ACPI, ");
+        print(featureSign(hasSSE2), featureColour(hasSSE2));
+        printLine("SSE2");
     }
 }
 
