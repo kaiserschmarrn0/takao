@@ -9,18 +9,23 @@ override ISO = $(kernel).iso
 override sourceDir = $(realpath source)
 override buildDir = $(realpath build)
 
-DC = dmd
+DC = ldc2
 LD = ld
 AS = nasm
 
-DFLAGS = -O -betterC -op -I=$(sourceDir)
+DFLAGS = -O0
+
+DFLAGS_INTERNAL := $(DFLAGS) -mtriple=x86_64-elf -relocation-model=static \
+	-code-model=kernel -mattr=-sse,-sse2 -disable-red-zone \
+	-betterC -op -I=./source
+
 LDFLAGS = -nostdlib -T $(buildDir)/linker.ld
 
 realModeSource = $(shell find $(sourceDir) -type f -name '*.real')
 DSource = $(shell find $(sourceDir) -type f -name '*.d')
 ASMSource = $(shell find $(sourceDir) -type f -name '*.asm')
 
-binaries = $(realModeSource:.real=.bin) 
+binaries = $(realModeSource:.real=.bin)
 objects = $(DSource:.d=.o) $(ASMSource:.asm=.o)
 
 .PHONY: all iso test clean
@@ -31,7 +36,7 @@ all: $(binaries) $(objects)
 
 %.o: %.d
 	@echo "\033[0;35mCompiling\033[0m '$<' into '$@'..."
-	@$(DC) $(DFLAGS) -c $< $@
+	@$(DC) $(DFLAGS_INTERNAL) -c $< $@
 
 %.o: %.asm
 	@echo "\033[0;35mCompiling\033[0m '$<' into '$@'..."

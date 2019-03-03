@@ -9,6 +9,7 @@ extern(C) void main() {
     import system.cpu:        CPU, getInfo;
     import system.interrupts: enableInterrupts;
     import memory.e820:       getE820;
+    import memory.pmm:        initPMM;
 
     initTerm();
 
@@ -22,6 +23,7 @@ extern(C) void main() {
     enableInterrupts();
 
     getE820();
+    initPMM();
 
     error("End of the kernel");
 }
