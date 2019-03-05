@@ -6,11 +6,11 @@ module memory.pmm;
 
 import memory.constants;
 
-private immutable size_t bitmapReallocStep = 1;
+private immutable auto bitmapReallocStep = 1;
 
-private __gshared uint* memoryBitmap;
+private __gshared uint*  memoryBitmap;
 private __gshared uint[] initialBitmap = [0xFFFFFF7F];
-private __gshared uint* tempBitmap;
+private __gshared uint*  tempBitmap;
 
 // 32 entries because initialBitmap is a single dword.
 private __gshared size_t bitmapEntries = 32;
@@ -18,29 +18,51 @@ private __gshared size_t bitmapEntries = 32;
 private __gshared size_t currentPointer = bitmapBase;
 
 private bool readBitmap(size_t i) {
-    import ldc.llvmasm;
+    // import ldc.llvmasm;
 
     i -= bitmapBase;
+
+    bool ret = false;
+
+    asm {
+        mov RAX, bitmapBase;
+        mov RBX, i;
+        bt [RAX], RBX;
+        setc ret;
+    }
+
+    return ret;/*
 
     return __asm!bool("btq $2, [$1] ; setc $0",
                       "=r,r,r,~{memory}",
                       bitmapBase, i
-    );
+    );*/
 }
 
 private void writeBitmap(size_t i, bool val) {
-    import ldc.llvmasm;
+    // import ldc.llvmasm;
 
     i -= bitmapBase;
 
-    if (val)
-        __asm("btsq $1, [$0]",
+    if (val) {
+        /*__asm("btsq $1, [$0]",
               "r,r,~{memory}",
-              bitmapBase, i);
-    else
-        __asm("btrq $1, [$0]",
+              bitmapBase, i);*/
+        asm {
+            mov RAX, bitmapBase;
+            mov RBX, i;
+            bts [RAX], RBX;
+        }
+    } else {
+        /*__asm("btrq $1, [$0]",
               "r,r,~{memory}",
-              bitmapBase, i);
+              bitmapBase, i);*/
+        asm {
+            mov RAX, bitmapBase;
+            mov RBX, i;
+            btr [RAX], RBX;
+        }
+     }
 }
 
 void initPMM() {
@@ -74,12 +96,15 @@ void initPMM() {
         size_t alignedBase;
 
         if (e820Map[i].base % pageSize) {
-            alignedBase = e820Map[i].base + (pageSize - (e820Map[i].base % pageSize));
+            alignedBase = e820Map[i].base +
+                          (pageSize - (e820Map[i].base % pageSize));
         } else alignedBase = e820Map[i].base;
 
         size_t alignedLength = (e820Map[i].length / pageSize) * pageSize;
 
-        if ((e820Map[i].base % pageSize) && alignedLength) alignedLength -= pageSize;
+        if ((e820Map[i].base % pageSize) && alignedLength) {
+            alignedLength -= pageSize;
+        }
 
         for (size_t j = 0; j * pageSize < alignedLength; j++) {
             size_t addr = alignedBase + j * pageSize;
@@ -90,15 +115,18 @@ void initPMM() {
 
             // Reallocate bitmap
             if (addr >= (memoryBase + bitmapEntries * pageSize)) {
-                size_t currentBitmapSizeInPages = ((bitmapEntries / 32) * uint.sizeof) / pageSize;
-                size_t newBitmapSizeInPages = currentBitmapSizeInPages + bitmapReallocStep;
+                size_t currentBitmapSizeInPages = ((bitmapEntries / 32) *
+                                                  uint.sizeof) / pageSize;
+                size_t newBitmapSizeInPages = currentBitmapSizeInPages +
+                                              bitmapReallocStep;
                 tempBitmap = cast(uint*)pmmAlloc(newBitmapSizeInPages);
 
                 if (!tempBitmap) {
                     error("pmmAlloc failure in initPMM()");
                 }
 
-                tempBitmap = cast(uint*)(cast(size_t)tempBitmap + physicalMemoryOffset);
+                tempBitmap = cast(uint*)(cast(size_t)tempBitmap +
+                             physicalMemoryOffset);
 
                 // Copy over previous bitmap
                 for (size_t k = 0;
@@ -106,12 +134,15 @@ void initPMM() {
                      k++) tempBitmap[k] = memoryBitmap[k];
 
                 // Fill in the rest
-                for (size_t k = (currentBitmapSizeInPages * pageSize) / uint.sizeof;
+                for (size_t k = (currentBitmapSizeInPages * pageSize) /
+                     uint.sizeof;
                      k < (newBitmapSizeInPages * pageSize) / uint.sizeof;
                      k++) tempBitmap[k] = 0xFFFFFFFF;
 
-                bitmapEntries += ((pageSize / uint.sizeof) * 32) * bitmapReallocStep;
-                uint* oldBitmap = cast(uint*)(cast(size_t)memoryBitmap - physicalMemoryOffset);
+                bitmapEntries += ((pageSize / uint.sizeof) * 32) *
+                                 bitmapReallocStep;
+                auto oldBitmap = cast(uint*)(cast(size_t)memoryBitmap -
+                                  physicalMemoryOffset);
                 memoryBitmap = tempBitmap;
                 pmmFree(oldBitmap, currentBitmapSizeInPages);
             }
@@ -126,29 +157,27 @@ void* pmmAlloc(size_t pageCount) {
     size_t currentPageCount = pageCount;
 
     for (size_t i = 0; i < bitmapEntries; i++) {
-        if (currentPointer == bitmapBase + bitmapEntries)
+        if (currentPointer == bitmapBase + bitmapEntries) {
             currentPointer = bitmapBase;
-        if (!readBitmap(currentPointer++)) {
-            if (!--currentPageCount)
-                goto found;
-        } else {
-            currentPageCount = pageCount;
         }
+
+        if (!readBitmap(currentPointer++)) {
+            if (!--currentPageCount) goto found;
+        } else currentPageCount = pageCount;
     }
 
     return null;
 
 found:;
     size_t start = currentPointer - pageCount;
-    for (size_t i = 0; i < pageCount; i++)
-        writeBitmap(i, true);
+
+    for (auto i = 0; i < pageCount; i++) writeBitmap(i, true);
 
     return cast(void*)(start * pageSize);
 }
 
 void pmmFree(void* pointer, size_t pageCount) {
-    size_t start = cast(size_t)pointer / pageSize;
+    auto start = cast(size_t)pointer / pageSize;
 
-    for (size_t i = start; i < (start + pageCount); i++)
-        writeBitmap(i, false);
+    for (auto i = start; i < (start + pageCount); i++) writeBitmap(i, false);
 }

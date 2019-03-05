@@ -5,7 +5,7 @@ ENTRY(start)
 
 SECTIONS
 {
-    physicalKernelOffset = 0xffffffffc0000000;
+    physicalKernelOffset = 0xFFFFFFFFC0000000;
     . = physicalKernelOffset + 1M;
 
     .text ALIGN(4K) : AT(ADDR(.text) - physicalKernelOffset)

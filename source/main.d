@@ -5,11 +5,11 @@
 module main;
 
 extern(C) void main() {
-    import io.term:           Colour, initTerm, printLine, error;
+    import io.term:           initTerm, printLine, error;
     import system.cpu:        CPU, getInfo;
     import system.interrupts: enableInterrupts;
     import memory.e820:       getE820;
-    import memory.pmm:        initPMM;
+    import memory.pmm:        initPMM, pmmAlloc, pmmFree;
 
     initTerm();
 
@@ -19,11 +19,19 @@ extern(C) void main() {
     cpu.print();
     cpu.enableFeatures();
     cpu.checkDependencies();
-
+error("lol");
     enableInterrupts();
 
     getE820();
     initPMM();
+
+    for (auto d = 0; d < 24; d++) {
+        import util.convert: toHex;
+
+        auto x = pmmAlloc(48);
+        printLine(toHex(cast(ulong)x));
+        pmmFree(x, 48);
+    }
 
     error("End of the kernel");
 }

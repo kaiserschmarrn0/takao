@@ -6,17 +6,20 @@ module system.interrupts;
 
 import system.cpu;
 
+private extern extern (C) void flushIRQs();
+
 void enableInterrupts() {
     import system.interrupts.idt:  setIDT;
     import system.interrupts.apic: enableAPIC;
-  
+
     // Disable the interrupts
     asm {
         cli;
     }
 
-    enableAPIC();
     setIDT();
+    flushIRQs();
+    enableAPIC();
 
     // Finish setting up the interrupts by enabling them
     asm {

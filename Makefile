@@ -9,15 +9,13 @@ override ISO = $(kernel).iso
 override sourceDir = $(realpath source)
 override buildDir = $(realpath build)
 
-DC = ldc2
+DC = dmd
 LD = ld
 AS = nasm
 
-DFLAGS = -O0
+DFLAGS = -O
 
-DFLAGS_INTERNAL := $(DFLAGS) -mtriple=x86_64-elf -relocation-model=static \
-	-code-model=kernel -mattr=-sse,-sse2 -disable-red-zone \
-	-betterC -op -I=./source
+DFLAGS_INTERNAL := $(DFLAGS) -betterC -op -I=./source
 
 LDFLAGS = -nostdlib -T $(buildDir)/linker.ld
 
@@ -58,7 +56,7 @@ iso: all
 test: iso
 	qemu-system-x86_64 -m 2G -net none -enable-kvm -monitor stdio \
 	-drive file=$(ISO),index=0,media=disk,format=raw \
-    -cpu host
+	-cpu host
 
 clean:
-	rm -rf $(objects) $(binaries) $(image) $(ISO)
+	rm -f $(objects) $(binaries) $(image) $(ISO)

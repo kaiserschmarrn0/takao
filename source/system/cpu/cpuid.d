@@ -48,7 +48,7 @@ enum CPUIDinRCXwithRAX1 : ulong {
     // CR8           = 1 << 4,  // CR8 is present
     // ABM           = 1 << 5,  // Advanced bit manipulation (lzcnt and popcnt)
     // SSE4A         = 1 << 6,  // SSE4A support
-    // MISALIGNSSE   = 1 << 7,  // Misaligned SSE mode 
+    // MISALIGNSSE   = 1 << 7,  // Misaligned SSE mode
     // 3DNOWPREFETCH = 1 << 8,  // 3DNow! PREFETCH and PREFETCHW instructions
     // OSVW          = 1 << 9,  // OS Visible Workaround
     // IBS           = 1 << 10, // Instruction Based Sampling
@@ -162,19 +162,15 @@ struct CPUID {
 
     void print() {
         import util.convert: toBinary;
-        import io.term:      Colour, print, printLine;
+        import io.term:      print, printLine;
 
         string featureSign(bool c) {
-            return c ? "+" : "-";
-        }
-
-        Colour featureColour(bool c) {
-            return c ? Colour.LightGreen : Colour.LightRed;
+            return c ? "\x1b[32m+\x1b[37m" : "\x1b[31m-\x1b[37m";
         }
 
         printLine("CPUID:");
         printLine("\tRAX=1");
-        
+
         print("\tRCX=");
         printLine(toBinary(RCXWithRAX1));
 
@@ -182,24 +178,24 @@ struct CPUID {
         printLine(toBinary(RDXWithRAX1));
 
         printLine("\tRAX=0x80000001");
-        
+
         print("\tRCX=");
         printLine(toBinary(RCXWithRAX0x80000001));
 
         print("\tRDX=");
         printLine(toBinary(RDXWithRAX0x80000001));
 
-        print(featureSign(hasSSE3), featureColour(hasSSE3));
+        print(featureSign(hasSSE3));
         print("SSE3, ");
-        print(featureSign(hasx2APIC), featureColour(hasx2APIC));
+        print(featureSign(hasx2APIC));
         print("x2APIC, ");
-        print(featureSign(hasMSR), featureColour(hasMSR));
+        print(featureSign(hasMSR));
         print("MSR, ");
-        print(featureSign(hasAPIC), featureColour(hasAPIC));
+        print(featureSign(hasAPIC));
         print("APIC, ");
-        print(featureSign(hasACPI), featureColour(hasACPI));
+        print(featureSign(hasACPI));
         print("ACPI, ");
-        print(featureSign(hasSSE2), featureColour(hasSSE2));
+        print(featureSign(hasSSE2));
         printLine("SSE2");
     }
 }
@@ -218,7 +214,7 @@ CPUID getCPUID() {
         mov RAX, 0x80000001;
         cpuid;
         mov c2, RCX;
-        mov d2, RDX;   
+        mov d2, RDX;
     }
 
     cpuid.RCXWithRAX1          = c;
