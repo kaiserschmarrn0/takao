@@ -7,31 +7,27 @@ module main;
 extern(C) void main() {
     import io.term:           initTerm, printLine, error;
     import system.cpu:        CPU, getInfo;
-    import system.interrupts: enableInterrupts;
+    import system.interrupts: firstStageInterrupts, secondStageInterrupts;
     import memory.e820:       getE820;
-    import memory.pmm:        initPMM, pmmAlloc, pmmFree;
+    import memory.pmm:        initPMM, alloc, free;
+    import memory.vmm:        initVMM;
 
     initTerm();
 
     printLine("Reached main(), booting up...\t\t\t\t\t\t\t\t:kongoudisgust:");
 
+    firstStageInterrupts();
+
     auto cpu = getInfo();
     cpu.print();
     cpu.enableFeatures();
     cpu.checkDependencies();
-error("lol");
-    enableInterrupts();
 
     getE820();
     initPMM();
+    initVMM();
 
-    for (auto d = 0; d < 24; d++) {
-        import util.convert: toHex;
-
-        auto x = pmmAlloc(48);
-        printLine(toHex(cast(ulong)x));
-        pmmFree(x, 48);
-    }
+    secondStageInterrupts();
 
     error("End of the kernel");
 }

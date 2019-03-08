@@ -4,24 +4,24 @@
 
 module system.interrupts;
 
-import system.cpu;
+void firstStageInterrupts() {
+    import system.interrupts.idt: setIDT;
 
-private extern extern (C) void flushIRQs();
-
-void enableInterrupts() {
-    import system.interrupts.idt:  setIDT;
-    import system.interrupts.apic: enableAPIC;
-
-    // Disable the interrupts
     asm {
         cli;
     }
 
     setIDT();
+}
+
+private extern extern (C) void flushIRQs();
+
+void secondStageInterrupts() {
+    import system.interrupts.apic: enableAPIC;
+
     flushIRQs();
     enableAPIC();
 
-    // Finish setting up the interrupts by enabling them
     asm {
         sti;
     }

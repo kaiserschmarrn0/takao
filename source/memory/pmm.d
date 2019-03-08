@@ -17,57 +17,9 @@ private __gshared size_t bitmapEntries = 32;
 
 private __gshared size_t currentPointer = bitmapBase;
 
-private bool readBitmap(size_t i) {
-    // import ldc.llvmasm;
-
-    i -= bitmapBase;
-
-    bool ret = false;
-
-    asm {
-        mov RAX, bitmapBase;
-        mov RBX, i;
-        bt [RAX], RBX;
-        setc ret;
-    }
-
-    return ret;/*
-
-    return __asm!bool("btq $2, [$1] ; setc $0",
-                      "=r,r,r,~{memory}",
-                      bitmapBase, i
-    );*/
-}
-
-private void writeBitmap(size_t i, bool val) {
-    // import ldc.llvmasm;
-
-    i -= bitmapBase;
-
-    if (val) {
-        /*__asm("btsq $1, [$0]",
-              "r,r,~{memory}",
-              bitmapBase, i);*/
-        asm {
-            mov RAX, bitmapBase;
-            mov RBX, i;
-            bts [RAX], RBX;
-        }
-    } else {
-        /*__asm("btrq $1, [$0]",
-              "r,r,~{memory}",
-              bitmapBase, i);*/
-        asm {
-            mov RAX, bitmapBase;
-            mov RBX, i;
-            btr [RAX], RBX;
-        }
-     }
-}
-
 void initPMM() {
-    import memory.e820: e820Map;
     import io.term:     error, printLine;
+    import memory.e820: e820Map;
 
     printLine("PMM: Initialising");
 
@@ -152,9 +104,8 @@ void initPMM() {
     }
 }
 
-/* Allocate physical memory. */
 void* pmmAlloc(size_t pageCount) {
-    size_t currentPageCount = pageCount;
+    auto currentPageCount = pageCount;
 
     for (size_t i = 0; i < bitmapEntries; i++) {
         if (currentPointer == bitmapBase + bitmapEntries) {
@@ -168,8 +119,8 @@ void* pmmAlloc(size_t pageCount) {
 
     return null;
 
-found:;
-    size_t start = currentPointer - pageCount;
+found:
+    auto start = currentPointer - pageCount;
 
     for (auto i = 0; i < pageCount; i++) writeBitmap(i, true);
 
@@ -180,4 +131,80 @@ void pmmFree(void* pointer, size_t pageCount) {
     auto start = cast(size_t)pointer / pageSize;
 
     for (auto i = start; i < (start + pageCount); i++) writeBitmap(i, false);
+}
+
+private bool readBitmap(size_t i) {
+    // import ldc.llvmasm;
+
+    i -= bitmapBase;
+
+    bool ret = false;
+
+    asm {
+        mov RAX, bitmapBase;
+        mov RBX, i;
+        bt [RAX], RBX;
+        setc ret;
+    }
+
+    return ret;
+    // return __asm!bool("btq $2, [$1] ; setc $0",
+    //                   "=r,r,r,~{memory}",
+    //                   bitmapBase, i);
+}
+
+private void writeBitmap(size_t i, bool val) {
+    // import ldc.llvmasm;
+
+    i -= bitmapBase;
+
+    if (val) {
+        // __asm("btsq $1, [$0]",
+        //       "r,r,~{memory}",
+        //       bitmapBase, i);
+        asm {
+            mov RAX, bitmapBase;
+            mov RBX, i;
+            bts [RAX], RBX;
+        }
+    } else {
+        // __asm("btrq $1, [$0]",
+        //       "r,r,~{memory}",
+        //       bitmapBase, i);
+        asm {
+            mov RAX, bitmapBase;
+            mov RBX, i;
+            btr [RAX], RBX;
+        }
+     }
+}
+
+private struct allocMetadata {
+    size_t pages;
+    size_t size;
+}
+
+void* alloc(size_t size) {
+    size_t pageCount = (size + pageSize - 1) / pageSize;
+
+    auto ptr = cast(ubyte*)pmmAlloc(pageCount + 1);
+
+    if (!ptr) return null;
+
+    auto metadata = cast(allocMetadata*)ptr;
+    ptr          += pageSize;
+
+    metadata.pages = pageCount;
+    metadata.size  = size;
+
+    // Zero pages.
+    for (auto i = 0; i < (pageCount * pageSize); i++) ptr[i] = 0;
+
+    return cast(void*)ptr;
+}
+
+void free(void* ptr) {
+    auto metadata = cast(allocMetadata*)(cast(size_t)ptr - pageSize);
+
+    pmmFree(cast(void*)metadata, metadata.pages + 1);
 }

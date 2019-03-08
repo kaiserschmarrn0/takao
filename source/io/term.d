@@ -11,7 +11,7 @@ private immutable auto termRows    = 25;
 private immutable auto videoBottom = (termRows * termColumns) - 1;
 private immutable auto tabSize     = 4;
 
-private __gshared char* videoMemory   = cast(char*)(cast(size_t)0xB8000 + physicalMemoryOffset);
+private __gshared char* videoMemory   = cast(char*)(0xB8000 + physicalMemoryOffset);
 private __gshared uint  cursorOffset  = 0;
 private __gshared bool  cursorEnabled = true;
 private __gshared ubyte textPalette   = 0x07;
@@ -42,8 +42,10 @@ private void drawCursor() {
 
 private void scroll() {
     // Move the text up by one row
-    for (size_t i = 0; i <= videoBottom - termColumns; i++)
+    for (auto i = 0; i <= videoBottom - termColumns; i++) {
         videoMemory[i] = videoMemory[i + termColumns];
+    }
+
     // Clear the last line of the screen
     for (size_t i = videoBottom; i > videoBottom - termColumns; i -= 2) {
         videoMemory[i]     = textPalette;
@@ -74,16 +76,6 @@ private void clearTermNoMove() {
     drawCursor();
 }
 
-void enableCursor() {
-    cursorEnabled = true;
-    drawCursor();
-}
-
-void disableCursor() {
-    cursorEnabled = false;
-    clearCursor();
-}
-
 private const ubyte[] ansiColours = [0, 4, 2, 6, 1, 5, 3, 7];
 
 private void sgr() {
@@ -99,7 +91,7 @@ private void sgr() {
     }
 }
 
-private void escape_parse(char c) {
+private void parseEscapeSequence(char c) {
     if (c >= '0' && c <= '9') {
         *escValue  *= 10;
         *escValue  += c - '0';
@@ -224,7 +216,7 @@ void setCursorPosition(int x, int y) {
 
 void print(char c) {
     if (escape) {
-        escape_parse(c);
+        parseEscapeSequence(c);
         return;
     }
 
@@ -295,7 +287,7 @@ void error(string message) {
     print("\x1b[31mThe kernel reported an error\x1b[37m: ");
     printLine(message);
 
-    printLine("The system will be halted");
+    printLine("\x1b[45mThe system will be halted\x1b[40m");
 
     printRegisters();
 
@@ -310,6 +302,7 @@ void printRegisters() {
     asm {
         mov rbp, RBP;
         mov rsp, RSP;
+
         mov RAX, CR0;
         mov cr0, RAX;
         mov RAX, CR2;
