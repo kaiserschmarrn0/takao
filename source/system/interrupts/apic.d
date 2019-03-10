@@ -32,9 +32,9 @@ void disablePIC() {
     outb(0xA0, 0x11);
     wait();
 
-    outb(0x21, 0xEF); // Move master to its new offset
+    outb(0x21, 0xA0); // Move master to its new offset
     wait();
-    outb(0xA1, 0xF7); // Same with the slave PIC
+    outb(0xA1, 0xA8); // Same with the slave PIC
     wait();
 
     outb(0x21, 4); // Tell master that the slave PIC is at IRQ2 (0000 0100)
@@ -55,6 +55,8 @@ void disablePIC() {
 
     // We can tell the PIC to shut (mask all of its interrupts) passing 0xFF to
     // its data ports.
-    outb(0xA1, 0xFF);
     outb(0x21, 0xFF);
+    wait();
+    outb(0xA1, 0xFF);
+    wait();
 }

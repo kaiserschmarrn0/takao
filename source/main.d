@@ -9,7 +9,7 @@ extern(C) void main() {
     import system.cpu:        CPU, getInfo;
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
     import memory.e820:       getE820;
-    import memory.pmm:        initPMM, alloc, free;
+    import memory.pmm:        initPMM;
     import memory.vmm:        initVMM;
 
     initTerm();

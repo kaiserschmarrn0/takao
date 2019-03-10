@@ -5,28 +5,27 @@
 module system.interrupts.idt;
 
 // The strategy for interrupts in this kernel is thus:
-// We will be using interrupts from 255 backwards for hardware interrupts 
+// We will be using interrupts from 255 backwards for hardware interrupts
 // delivered by the APIC.
 // Interrupts 0 to 31 are used for CPU exceptions.
-// Interrupts 32 through 128 will be used as software interrupts, which gives 
+// Interrupts 32 through 128 will be used as software interrupts, which gives
 // us ~100 interrupts.
-// We do not use DOS-like interrupts where the function is selected through 
+// We do not use DOS-like interrupts where the function is selected through
 // values in registers, in order to:
 //     1. Reduce number of instructions necessary for common syscalls.
 //     2. Have less clobbered registers.
-// The 129th interrupt is for misc software interrupts: this is where rarely 
-// used interrupts go and these use DOS-like model (i.e. number in some 
+// The 129th interrupt is for misc software interrupts: this is where rarely
+// used interrupts go and these use DOS-like model (i.e. number in some
 // register) for selecting exact function.
 
 struct IDTDescriptor {
     ushort offsetLow;    // Offset bits 0..15
     ushort selector;     // A code segment selector in GDT or LDT
-    ushort flags;        // Various flags, namely:
-                         // 0..2: Interrupt stack table
-                         // 3..7: zero
-                         // 8..11: type
-                         // 12: zero
-                         // 13..14: descriptor privilege level
+    ubyte ist;           // Interrupt Stack Table
+    ubyte flags;         // Various flags, namely:
+                         // 0..4: type
+                         // 5: zero
+                         // 6..7: descriptor privilege level
                          // 15: segment present flag
     ushort offsetMiddle; // Offset bits 16..31
     uint   offsetHigh;   // Offset bits 32..63
@@ -95,7 +94,8 @@ void registerInterruptHandler(ubyte number, void function() handler) {
 
     idt[number].offsetLow    = cast(ushort) address;
     idt[number].selector     = 0x08;
-    idt[number].flags        = 0x8E00;
+    idt[number].ist          = 0x00;
+    idt[number].flags        = 0x8E;
     idt[number].offsetMiddle = cast(ushort) (address >> 16);
     idt[number].offsetHigh   = cast(uint)   (address >> 32);
     idt[number].reserved     = 0;

@@ -5,12 +5,12 @@
 [bits 32]
 
 ; Declare constants for the multiboot header.
-FLAGS    equ  0                 ; This is the Multiboot 'flag' field
-MAGIC    equ  0x1BADB002        ; 'magic number' lets bootloader find the header
-CHECKSUM equ -(MAGIC + FLAGS)   ; Checksum of above, to prove we are multiboot
+flags    equ  0                 ; This is the Multiboot 'flag' field
+magic    equ  0x1BADB002        ; 'magic number' lets bootloader find the header
+checksum equ -(flags + magic)   ; Checksum of above, to prove we are multiboot
 
 section .multiboot
 align 4
-    dd MAGIC
-    dd FLAGS
-    dd CHECKSUM
+    dd magic
+    dd flags
+    dd checksum
