@@ -15,7 +15,7 @@ void* alloc(size_t size) {
 
     size_t pageCount = (size + pageSize - 1) / pageSize;
 
-    auto ptr = cast(ubyte*)pmmAlloc(pageCount + 1);
+    auto ptr = cast(ubyte*)pmmAlloc(pageCount + 1, true);
 
     if (!ptr) return null;
 
@@ -24,11 +24,6 @@ void* alloc(size_t size) {
 
     metadata.pages = pageCount;
     metadata.size  = size;
-
-    // Zero pages.
-    foreach (i; 0..pageCount * pageSize) {
-        ptr[i] = 0;
-    }
 
     return cast(void*)ptr;
 }

@@ -24,7 +24,7 @@ void initPMM() {
     print("PMM: Initialising\n");
 
     memoryBitmap = &initialBitmap[0];
-    tempBitmap = cast(uint*)pmmAlloc(bitmapReallocStep);
+    tempBitmap = cast(uint*)pmmAlloc(bitmapReallocStep, false);
 
     if (!tempBitmap) error("pmmAlloc failure in initPMM()");
 
@@ -69,7 +69,7 @@ void initPMM() {
                                                   uint.sizeof) / pageSize;
                 size_t newBitmapSizeInPages = currentBitmapSizeInPages +
                                               bitmapReallocStep;
-                tempBitmap = cast(uint*)pmmAlloc(newBitmapSizeInPages);
+                tempBitmap = cast(uint*)pmmAlloc(newBitmapSizeInPages, false);
 
                 if (!tempBitmap) error("pmmAlloc failure in initPMM()");
 
@@ -102,12 +102,13 @@ void initPMM() {
     }
 }
 
-void* pmmAlloc(size_t pageCount) {
+void* pmmAlloc(size_t pageCount, bool zero) {
     auto currentPageCount = pageCount;
 
     foreach (i; 0..bitmapEntries) {
         if (currentPointer == bitmapBase + bitmapEntries) {
-            currentPointer = bitmapBase;
+            currentPointer   = bitmapBase;
+            currentPageCount = pageCount;
         }
 
         if (!readBitmap(currentPointer++)) {
@@ -124,7 +125,17 @@ found:
         writeBitmap(i, true);
     }
 
-    return cast(void*)(start * pageSize);
+    void *ret = cast(void*)(start * pageSize);
+
+    if (zero) {
+        auto ptr = cast(ulong*)ret;
+
+        foreach (i; 0..(pageCount * pageSize) / ulong.sizeof) {
+            ptr[i] = 0;
+        }
+    }
+
+    return ret;
 }
 
 void pmmFree(void* pointer, size_t pageCount) {

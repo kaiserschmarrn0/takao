@@ -9,13 +9,15 @@ override ISO = $(kernel).iso
 override sourceDir = $(realpath source)
 override buildDir = $(realpath build)
 
-DC = dmd
+DC = ldc2
 LD = ld
 AS = nasm
 
-DFLAGS = -O
+DFLAGS = -O2 -g
 
-DFLAGS_INTERNAL := $(DFLAGS) -betterC -op -I=./source
+DFLAGS_INTERNAL := $(DFLAGS) -mtriple=x86_64-elf -relocation-model=static \
+	-code-model=kernel -mattr=-sse,-sse2,-ssse3,-sse3 -disable-red-zone \
+	-betterC -op -I=./source
 
 LDFLAGS = -nostdlib -T $(buildDir)/linker.ld
 

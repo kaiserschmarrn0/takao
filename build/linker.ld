@@ -10,23 +10,23 @@ SECTIONS
 
     .text ALIGN(4K) : AT(ADDR(.text) - physicalKernelOffset)
     {
-        *(.multiboot)
-        *(.text*)
+        KEEP(*(.multiboot))
+        KEEP(*(.text*))
     }
 
     .rodata ALIGN(4K) : AT(ADDR(.rodata) - physicalKernelOffset)
     {
-        *(.rodata*)
+        KEEP(*(.rodata*))
     }
 
     .data ALIGN(4K) : AT(ADDR(.data) - physicalKernelOffset)
     {
-        *(.data*)
+        KEEP(*(.data*))
     }
 
     .bss ALIGN(4K) : AT(ADDR(.bss) - physicalKernelOffset)
     {
-		*(COMMON)
-		*(.bss)
+		KEEP(*(COMMON))
+		KEEP(*(.bss))
     }
 }

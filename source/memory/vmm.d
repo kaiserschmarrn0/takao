@@ -19,7 +19,7 @@ void initVMM() {
 
     // We will map the first 4GiB of memory, this saves issues
     // with MMIO hardware that lies on addresses < 4GiB later on.
-    pageMap = cast(PageTableEntry*)(cast(size_t)pmmAlloc(1) +
+    pageMap = cast(PageTableEntry*)(cast(size_t)pmmAlloc(1, true) +
                     physicalMemoryOffset);
 
     // Catch allocation failure
@@ -93,7 +93,7 @@ int mapPage(PageTableEntry* pagemap, size_t virtualAddress,
                physicalMemoryOffset);
     } else {
         // Allocate a page for the pdpt.
-        pdpt = cast(PageTableEntry*)(cast(size_t)pmmAlloc(1) +
+        pdpt = cast(PageTableEntry*)(cast(size_t)pmmAlloc(1, true) +
                physicalMemoryOffset);
 
         // Catch allocation failure
@@ -109,7 +109,7 @@ int mapPage(PageTableEntry* pagemap, size_t virtualAddress,
              physicalMemoryOffset);
     } else {
         // Allocate a page for the pd.
-        pd = cast(PageTableEntry*)(cast(size_t)pmmAlloc(1) +
+        pd = cast(PageTableEntry*)(cast(size_t)pmmAlloc(1, true) +
              physicalMemoryOffset);
 
         // Catch allocation failure
@@ -125,7 +125,7 @@ int mapPage(PageTableEntry* pagemap, size_t virtualAddress,
              physicalMemoryOffset);
     } else {
         // Allocate a page for the pt.
-        pt = cast(PageTableEntry*)(cast(size_t)pmmAlloc(1) +
+        pt = cast(PageTableEntry*)(cast(size_t)pmmAlloc(1, true) +
              physicalMemoryOffset);
 
         // Catch allocation failure
