@@ -42,7 +42,7 @@ private void drawCursor() {
 
 private void scroll() {
     // Move the text up by one row
-    for (auto i = 0; i <= videoBottom - termColumns; i++) {
+    foreach (i; 0..videoBottom - termColumns + 1) {
         videoMemory[i] = videoMemory[i + termColumns];
     }
 
@@ -267,16 +267,12 @@ void print(string message) {
     foreach (ubyte c; message) print(c);
 }
 
-void printLine(string message) {
-    print(message);
-    print('\n');
-}
-
 void warning(string message) {
     import system.state: halt;
 
     print("\x1b[35mThe kernel reported a warning\x1b[37m: ");
-    printLine(message);
+    print(message);
+    print('\n');
 
     printRegisters();
 }
@@ -285,9 +281,10 @@ void error(string message) {
     import system.state: halt;
 
     print("\x1b[31mThe kernel reported an error\x1b[37m: ");
-    printLine(message);
+    print(message);
+    print('\n');
 
-    printLine("\x1b[45mThe system will be halted\x1b[40m");
+    print("\x1b[45mThe system will be halted\x1b[40m\n");
 
     printRegisters();
 
@@ -316,15 +313,18 @@ void printRegisters() {
     print("RBP=");
     print(toHex(rbp));
     print(", RSP=");
-    printLine(toHex(rsp));
+    print(toHex(rsp));
+    print('\n');
 
     print("CR0=");
     print(toHex(cr0));
     print(", CR2=");
     print(toHex(cr2));
     print(", CR3=");
-    printLine(toHex(cr3));
+    print(toHex(cr3));
+    print('\n');
 
     print("CR4=");
-    printLine(toHex(cr4));
+    print(toHex(cr4));
+    print('\n');
 }

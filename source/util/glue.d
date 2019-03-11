@@ -4,20 +4,18 @@
 
 module utils.glue;
 
-extern (C) void __assert(const(char)* exp, const(char)* file, uint line) {
+extern (C) void __assert(const(char)* exp, const(char)* file, const(char)* line) {
     import io.term: error;
-    /*
-    error("failed assertion: %s", exp);
-    error("file: %s", file);
-    error("line: %u", line);
-    */
+
     error("Failed assertion!");
 }
 
-extern (C) void* memset(void *s, int c, size_t n) {
+extern (C) void* memset(void* s, int c, size_t n) {
     auto pointer = cast(ubyte*) s;
 
-    for (auto i = 0; i < n; i++) pointer[i] = cast(ubyte) c;
+    foreach (i; 0..n) {
+        pointer[i] = cast(ubyte) c;
+    }
 
     return s;
 }

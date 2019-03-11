@@ -54,7 +54,6 @@ void setIDT() {
         lidt [idtPointer];
     }
 
-    // Exception handlers
     registerInterruptHandler(0,  &DEHandler );
     registerInterruptHandler(1,  &DBHandler );
     registerInterruptHandler(2,  &NMIHandler);
@@ -80,16 +79,18 @@ void setIDT() {
     registerInterruptHandler(30, &SXHandler);
     // 31 is reserved.
 
-    // Then set all entries as unhandled interrupts
-    for (ubyte vec = 32; vec < 129; vec++) {
-        registerInterruptHandler(vec, &defaultHandler);
+    foreach (vec; 32..129) {
+        registerInterruptHandler(vec, &defaultSoftwareHandler);
     }
 
-    // And the misc software interrupt
     registerInterruptHandler(129, &miscSoftwareHandler);
+
+    foreach (vec; 130..256) {
+        registerInterruptHandler(vec, &defaultHardwareHandler);
+    }
 }
 
-void registerInterruptHandler(ubyte number, void function() handler) {
+void registerInterruptHandler(uint number, void function() handler) {
     ulong address = cast(ulong) handler;
 
     idt[number].offsetLow    = cast(ushort) address;

@@ -13,10 +13,10 @@ struct E820Entry {
 
 __gshared E820Entry[256] e820Map;
 
-private extern extern (C) void get_e820(E820Entry*);
+private extern extern(C) void get_e820(E820Entry*);
 
 void getE820() {
-    import io.term:      print, printLine;
+    import io.term:      print;
     import util.convert: toHex, toDecimal;
 
     size_t memorySize = 0;
@@ -24,27 +24,27 @@ void getE820() {
     get_e820(&e820Map[0]);
 
     // Print the memory map
-    printLine("E820:");
+    print("E820 Memory map:\n");
 
-    for (auto i = 0; e820Map[i].type; i++) {
+    foreach (entry; e820Map) {
+        if (!entry.type) break;
+
         print("\t[");
-        print(toHex(e820Map[i].base));
+        print(toHex(entry.base));
         print(" -> ");
-        print(toHex(e820Map[i].base + e820Map[i].length));
+        print(toHex(entry.base + entry.length));
         print("] ");
-        print(toHex(e820Map[i].length));
+        print(toHex(entry.length));
         print(" <");
-        print(e820Type(e820Map[i].type));
-        printLine(">");
+        print(e820Type(entry.type));
+        print(">\n");
 
-        if (e820Map[i].type == 1) {
-            memorySize += e820Map[i].length;
-        }
+        if (entry.type == 1) memorySize += entry.length;
     }
 
-    print("E820: Total usable memory: ");
+    print("\tTotal usable memory: ");
     print(toDecimal(memorySize / 1024 / 1024));
-    printLine(" MiB");
+    print(" MiB\n");
 }
 
 private string e820Type(uint type) {

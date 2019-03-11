@@ -465,22 +465,20 @@ private extern(C) void exceptionEntry(uint exceptionNumber, bool hasErrorCode) {
 }
 
 private extern(C) void exceptionHandler(InterruptStackState* stack, uint exception) {
-    import io.term: error, print, printLine;
+    import io.term: error, print;
     import util.convert: toHex;
 
-    print("ss:        "); printLine(toHex(stack.ss));
-    print("rsp:       "); printLine(toHex(stack.rsp));
-    print("rflags:    "); printLine(toHex(stack.rflags));
-    print("cs:        "); printLine(toHex(stack.cs));
-    print("rip:       "); printLine(toHex(stack.rip));
+    print("ss:        "); print(toHex(stack.ss));     print('\n');
+    print("rsp:       "); print(toHex(stack.rsp));    print('\n');
+    print("rflags:    "); print(toHex(stack.rflags)); print('\n');
+    print("cs:        "); print(toHex(stack.cs));     print('\n');
+    print("rip:       "); print(toHex(stack.rip));    print('\n');
 
     if (stack.errorCode) {
-        print("errorCode: "); printLine(toHex(stack.errorCode));
+        print("errorCode: "); print(toHex(stack.errorCode)); print('\n');
     }
 
     if (stack.cs & 0b111) {
         error("Whatever was called in user space");
-    }
-
-    error(exceptionName[exception]);
+    } else error(exceptionName[exception]);
 }

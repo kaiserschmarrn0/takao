@@ -5,7 +5,7 @@
 module main;
 
 extern(C) void main() {
-    import io.term:           initTerm, printLine, error;
+    import io.term:           initTerm, print, error;
     import system.cpu:        CPU, getInfo;
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
     import memory.e820:       getE820;
@@ -14,7 +14,7 @@ extern(C) void main() {
 
     initTerm();
 
-    printLine("Reached main(), booting up...\t\t\t\t\t\t\t\t:kongoudisgust:");
+    print("Reached main(), booting up...\t\t\t\t\t\t\t\t:kongoudisgust:\n");
 
     firstStageInterrupts();
 
@@ -28,6 +28,10 @@ extern(C) void main() {
     initVMM();
 
     secondStageInterrupts();
+
+    print("\tIs anyone there?\n");
+    print("\tOh...\n");
+    print("\tHi!\n");
 
     error("End of the kernel");
 }

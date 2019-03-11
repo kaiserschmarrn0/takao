@@ -11,11 +11,11 @@ alias PageTableEntry = size_t;
 __gshared PageTableEntry* pageMap;
 
 void initVMM() {
-    import io.term:     error, printLine;
+    import io.term:     print, error;
     import memory.e820: e820Map;
     import memory.pmm:  pmmAlloc;
 
-    printLine("VMM: Initialising");
+    print("VMM: Initialising\n");
 
     // We will map the first 4GiB of memory, this saves issues
     // with MMIO hardware that lies on addresses < 4GiB later on.
@@ -29,7 +29,7 @@ void initVMM() {
 
     // Identity map the first 32 MiB and map 32 MiB for the phys mem area, and
     // 32 MiB for the kernel in the higher half
-    for (auto i = 0; i < 0x2000000 / pageSize; i++) {
+    foreach (i; 0..0x2000000 / pageSize) {
         size_t addr = i * pageSize;
         mapPage(pageMap, addr, addr, 0x03);
         mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
@@ -45,7 +45,7 @@ void initVMM() {
     }
 
     // Forcefully map the first 4 GiB for I/O into the higher half
-    for (auto i = 0; i < 0x100000000 / pageSize; i++) {
+    foreach (i; 0..0x100000000 / pageSize) {
         size_t addr = i * pageSize;
         mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
     }

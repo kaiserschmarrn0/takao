@@ -18,21 +18,19 @@ private __gshared size_t bitmapEntries = 32;
 private __gshared size_t currentPointer = bitmapBase;
 
 void initPMM() {
-    import io.term:     error, printLine;
+    import io.term:     print, error;
     import memory.e820: e820Map;
 
-    printLine("PMM: Initialising");
+    print("PMM: Initialising\n");
 
     memoryBitmap = &initialBitmap[0];
     tempBitmap = cast(uint*)pmmAlloc(bitmapReallocStep);
 
-    if (!tempBitmap) {
-        error("pmmAlloc failure in initPMM()");
-    }
+    if (!tempBitmap) error("pmmAlloc failure in initPMM()");
 
-    tempBitmap = cast(uint*)(cast(size_t)tempBitmap + physicalMemoryOffset);
+    tempBitmap = cast(uint*)(cast(ulong)tempBitmap + physicalMemoryOffset);
 
-    for (size_t i = 0; i < (bitmapReallocStep * pageSize) / uint.sizeof; i++) {
+    foreach (i; 0..bitmapReallocStep * pageSize / uint.sizeof) {
         tempBitmap[i] = 0xFFFFFFFF;
     }
 
@@ -44,7 +42,7 @@ void initPMM() {
     // fits in that region and if the region type indicates the area itself
     // is usable, write that page as free in the bitmap. Otherwise, mark the
     // page as used.
-    for (size_t i = 0; e820Map[i].type; i++) {
+    for (auto i = 0; e820Map[i].type; i++) {
         size_t alignedBase;
 
         if (e820Map[i].base % pageSize) {
@@ -58,12 +56,12 @@ void initPMM() {
             alignedLength -= pageSize;
         }
 
-        for (size_t j = 0; j * pageSize < alignedLength; j++) {
+        for (auto j = 0; j * pageSize < alignedLength; j++) {
             size_t addr = alignedBase + j * pageSize;
 
             size_t page = addr / pageSize;
 
-            if (addr < (memoryBase + pageSize)) continue;
+            if (addr < memoryBase + pageSize) continue;
 
             // Reallocate bitmap
             if (addr >= (memoryBase + bitmapEntries * pageSize)) {
@@ -73,28 +71,28 @@ void initPMM() {
                                               bitmapReallocStep;
                 tempBitmap = cast(uint*)pmmAlloc(newBitmapSizeInPages);
 
-                if (!tempBitmap) {
-                    error("pmmAlloc failure in initPMM()");
-                }
+                if (!tempBitmap) error("pmmAlloc failure in initPMM()");
 
                 tempBitmap = cast(uint*)(cast(size_t)tempBitmap +
                              physicalMemoryOffset);
 
                 // Copy over previous bitmap
-                for (size_t k = 0;
-                     k < (currentBitmapSizeInPages * pageSize) / uint.sizeof;
-                     k++) tempBitmap[k] = memoryBitmap[k];
+                foreach (k;
+                         0..currentBitmapSizeInPages * pageSize / uint.sizeof) {
+                    tempBitmap[k] = memoryBitmap[k];
+                }
 
                 // Fill in the rest
-                for (size_t k = (currentBitmapSizeInPages * pageSize) /
+                for (auto k = (currentBitmapSizeInPages * pageSize) /
                      uint.sizeof;
-                     k < (newBitmapSizeInPages * pageSize) / uint.sizeof;
-                     k++) tempBitmap[k] = 0xFFFFFFFF;
+                     k < (newBitmapSizeInPages * pageSize) / uint.sizeof; k++) {
+                    tempBitmap[k] = 0xFFFFFFFF;
+                }
 
                 bitmapEntries += ((pageSize / uint.sizeof) * 32) *
                                  bitmapReallocStep;
-                auto oldBitmap = cast(uint*)(cast(size_t)memoryBitmap -
-                                  physicalMemoryOffset);
+                auto oldBitmap = cast(uint*)(cast(ulong)memoryBitmap -
+                                 physicalMemoryOffset);
                 memoryBitmap = tempBitmap;
                 pmmFree(oldBitmap, currentBitmapSizeInPages);
             }
@@ -107,7 +105,7 @@ void initPMM() {
 void* pmmAlloc(size_t pageCount) {
     auto currentPageCount = pageCount;
 
-    for (size_t i = 0; i < bitmapEntries; i++) {
+    foreach (i; 0..bitmapEntries) {
         if (currentPointer == bitmapBase + bitmapEntries) {
             currentPointer = bitmapBase;
         }
@@ -122,7 +120,9 @@ void* pmmAlloc(size_t pageCount) {
 found:
     auto start = currentPointer - pageCount;
 
-    for (auto i = 0; i < pageCount; i++) writeBitmap(i, true);
+    foreach (i; 0..pageCount) {
+        writeBitmap(i, true);
+    }
 
     return cast(void*)(start * pageSize);
 }
@@ -130,12 +130,12 @@ found:
 void pmmFree(void* pointer, size_t pageCount) {
     auto start = cast(size_t)pointer / pageSize;
 
-    for (auto i = start; i < (start + pageCount); i++) writeBitmap(i, false);
+    for (auto i = start; i < (start + pageCount); i++) {
+        writeBitmap(i, false);
+    }
 }
 
 private bool readBitmap(size_t i) {
-    // import ldc.llvmasm;
-
     i -= bitmapBase;
 
     bool ret = false;
@@ -148,63 +148,22 @@ private bool readBitmap(size_t i) {
     }
 
     return ret;
-    // return __asm!bool("btq $2, [$1] ; setc $0",
-    //                   "=r,r,r,~{memory}",
-    //                   bitmapBase, i);
 }
 
 private void writeBitmap(size_t i, bool val) {
-    // import ldc.llvmasm;
-
     i -= bitmapBase;
 
     if (val) {
-        // __asm("btsq $1, [$0]",
-        //       "r,r,~{memory}",
-        //       bitmapBase, i);
         asm {
             mov RAX, bitmapBase;
             mov RBX, i;
             bts [RAX], RBX;
         }
     } else {
-        // __asm("btrq $1, [$0]",
-        //       "r,r,~{memory}",
-        //       bitmapBase, i);
         asm {
             mov RAX, bitmapBase;
             mov RBX, i;
             btr [RAX], RBX;
         }
      }
-}
-
-private struct allocMetadata {
-    size_t pages;
-    size_t size;
-}
-
-void* alloc(size_t size) {
-    size_t pageCount = (size + pageSize - 1) / pageSize;
-
-    auto ptr = cast(ubyte*)pmmAlloc(pageCount + 1);
-
-    if (!ptr) return null;
-
-    auto metadata = cast(allocMetadata*)ptr;
-    ptr          += pageSize;
-
-    metadata.pages = pageCount;
-    metadata.size  = size;
-
-    // Zero pages.
-    for (auto i = 0; i < (pageCount * pageSize); i++) ptr[i] = 0;
-
-    return cast(void*)ptr;
-}
-
-void free(void* ptr) {
-    auto metadata = cast(allocMetadata*)(cast(size_t)ptr - pageSize);
-
-    pmmFree(cast(void*)metadata, metadata.pages + 1);
 }

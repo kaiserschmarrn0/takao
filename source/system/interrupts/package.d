@@ -14,7 +14,7 @@ void firstStageInterrupts() {
     setIDT();
 }
 
-private extern extern (C) void flushIRQs();
+private extern extern(C) void flushIRQs();
 
 void secondStageInterrupts() {
     import system.interrupts.apic: enableAPIC;

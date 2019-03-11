@@ -10,12 +10,12 @@ struct CPU {
     CPUID cpuid;
 
     void enableFeatures() {
-        import io.term: printLine;
+        import io.term: print;
 
-        if (cpuid.hasSSE3) {
-            // How does one SSE3 lul
+        /*if (cpuid.hasSSE3) {
+            TODO: Enable SSE3
             printLine("SSE3 was detected and enabled successfully");
-        } else if (cpuid.hasSSE2) {
+        } else*/ if (cpuid.hasSSE2) {
             asm {
                 mov RAX, CR0;     // To set up SSE2:
                 mov RBX, 1 << 2;
@@ -29,7 +29,7 @@ struct CPU {
                 mov CR4, RAX;     //     1 << 10 = CR4.OSXMMEXCPT bit (bit 10)
             }
 
-            printLine("SSE2 was detected and enabled successfully");
+            print("SSE2 was detected and enabled successfully\n");
         }
     }
 
@@ -46,9 +46,9 @@ struct CPU {
     }
 
     void print() {
-        import io.term: printLine;
+        import io.term: print;
 
-        printLine("CPU Information:");
+        print("CPU Information:\n");
         cpuid.print;
     }
 }
@@ -57,7 +57,7 @@ CPU getInfo() {
     import system.cpu.cpuid: getCPUID;
 
     CPU cpu = {
-        cpuid: getCPUID() 
+        cpuid: getCPUID()
     };
 
     return cpu;

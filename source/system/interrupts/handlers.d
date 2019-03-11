@@ -4,13 +4,20 @@
 
 module system.interrupts.handlers;
 
-import io.term: warning, error;
+void defaultSoftwareHandler() {
+    import io.term: error;
 
-// Generic interrupt handler
-void defaultHandler() {
-    error("An unhandled interrupt was raised!");
+    error("An unhandled software interrupt was raised!");
+}
+
+void defaultHardwareHandler() {
+    import io.term: error;
+
+    error("An unhandled hardware interrupt was raised!");
 }
 
 void miscSoftwareHandler() {
-    warning("The Misc software handler interrupt is not implemented yet");
+    import io.term: warning;
+
+    warning("The misc software handler interrupt is not implemented yet");
 }

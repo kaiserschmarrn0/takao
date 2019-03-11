@@ -145,11 +145,6 @@ enum CPUIDinRDXwithRAX1 : ulong {
 }*/
 
 struct CPUID {
-    ulong RCXWithRAX1;
-    ulong RCXWithRAX0x80000001;
-    ulong RDXWithRAX1;
-    ulong RDXWithRAX0x80000001;
-
     // RCX, RAX = 1
     bool hasSSE3;
     bool hasx2APIC;
@@ -161,30 +156,13 @@ struct CPUID {
     bool hasSSE2;
 
     void print() {
-        import util.convert: toBinary;
-        import io.term:      print, printLine;
+        import io.term: print;
 
         string featureSign(bool c) {
             return c ? "\x1b[32m+\x1b[37m" : "\x1b[31m-\x1b[37m";
         }
 
-        printLine("CPUID:");
-        printLine("\tRAX=1");
-
-        print("\tRCX=");
-        printLine(toBinary(RCXWithRAX1));
-
-        print("\tRDX=");
-        printLine(toBinary(RDXWithRAX1));
-
-        printLine("\tRAX=0x80000001");
-
-        print("\tRCX=");
-        printLine(toBinary(RCXWithRAX0x80000001));
-
-        print("\tRDX=");
-        printLine(toBinary(RDXWithRAX0x80000001));
-
+        print("CPUID: ");
         print(featureSign(hasSSE3));
         print("SSE3, ");
         print(featureSign(hasx2APIC));
@@ -196,13 +174,12 @@ struct CPUID {
         print(featureSign(hasACPI));
         print("ACPI, ");
         print(featureSign(hasSSE2));
-        printLine("SSE2");
+        print("SSE2");
+        print('\n');
     }
 }
 
 CPUID getCPUID() {
-    CPUID cpuid;
-
     ulong c, d, c2, d2;
 
     asm {
@@ -217,18 +194,15 @@ CPUID getCPUID() {
         mov d2, RDX;
     }
 
-    cpuid.RCXWithRAX1          = c;
-    cpuid.RCXWithRAX0x80000001 = c2;
-    cpuid.RDXWithRAX1          = d;
-    cpuid.RDXWithRAX0x80000001 = d2;
+    CPUID cpuid = {
+        hasSSE3:   (c & CPUIDinRCXwithRAX1.SSE3)   != 0,
+        hasx2APIC: (c & CPUIDinRCXwithRAX1.x2APIC) != 0,
 
-    cpuid.hasSSE3   = (c & CPUIDinRCXwithRAX1.SSE3)   != 0;
-    cpuid.hasx2APIC = (c & CPUIDinRCXwithRAX1.x2APIC) != 0;
-
-    cpuid.hasMSR  = (d & CPUIDinRDXwithRAX1.MSR)  != 0;
-    cpuid.hasAPIC = (d & CPUIDinRDXwithRAX1.APIC) != 0;
-    cpuid.hasACPI = (d & CPUIDinRDXwithRAX1.ACPI) != 0;
-    cpuid.hasSSE2 = (d & CPUIDinRDXwithRAX1.SSE2) != 0;
+        hasMSR:  (d & CPUIDinRDXwithRAX1.MSR)  != 0,
+        hasAPIC: (d & CPUIDinRDXwithRAX1.APIC) != 0,
+        hasACPI: (d & CPUIDinRDXwithRAX1.ACPI) != 0,
+        hasSSE2: (d & CPUIDinRDXwithRAX1.SSE2) != 0
+    };
 
     return cpuid;
 }
