@@ -8,6 +8,7 @@ extern(C) void main() {
     import io.term:           initTerm, print, error;
     import system.cpu:        CPU, getInfo;
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
+    import system.acpi:       initACPI;
     import memory.e820:       getE820;
     import memory.pmm:        initPMM;
     import memory.vmm:        initVMM;
@@ -26,6 +27,8 @@ extern(C) void main() {
     getE820();
     initPMM();
     initVMM();
+
+    initACPI();
 
     secondStageInterrupts();
 
