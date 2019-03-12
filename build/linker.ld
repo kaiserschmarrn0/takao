@@ -26,7 +26,7 @@ SECTIONS
 
     .bss ALIGN(4K) : AT(ADDR(.bss) - physicalKernelOffset)
     {
-		KEEP(*(COMMON))
-		KEEP(*(.bss))
+        KEEP(*(COMMON))
+        KEEP(*(.bss))
     }
 }

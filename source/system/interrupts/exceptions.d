@@ -457,28 +457,28 @@ private extern(C) void exceptionEntry(uint exceptionNumber, bool hasErrorCode) {
         jnz L1;
         push 0;
 
-      L1:;
+    L1:;
         mov ESI, EDI;
         mov RDI, RSP;
         call exceptionHandler;
     }
 }
 
-private extern(C) void exceptionHandler(InterruptStackState* stack, uint exception) {
-    import io.term: error, print;
+private extern(C) void exceptionHandler(InterruptStackState* stack,
+                                        uint exception) {
+    import io.term:      print, panic;
     import util.convert: toHex;
 
-    print("ss:        "); print(toHex(stack.ss));     print('\n');
-    print("rsp:       "); print(toHex(stack.rsp));    print('\n');
-    print("rflags:    "); print(toHex(stack.rflags)); print('\n');
-    print("cs:        "); print(toHex(stack.cs));     print('\n');
-    print("rip:       "); print(toHex(stack.rip));    print('\n');
-
-    if (stack.errorCode) {
-        print("errorCode: "); print(toHex(stack.errorCode)); print('\n');
-    }
+    print("SS:         %s\n", toHex(stack.ss));
+    print("RSP:        %s\n", toHex(stack.rsp));
+    print("RFLAGS:     %s\n", toHex(stack.rflags));
+    print("CS:         %s\n", toHex(stack.cs));
+    print("RIP:        %s\n", toHex(stack.rip));
+    print("Error code: %s\n", toHex(stack.errorCode));
 
     if (stack.cs & 0b111) {
-        error("Whatever was called in user space");
-    } else error(exceptionName[exception]);
+        print("The exception was called with CPL != 0\n");
+    }
+
+    panic(exceptionName[exception]);
 }

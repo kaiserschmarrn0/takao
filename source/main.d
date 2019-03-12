@@ -5,7 +5,7 @@
 module main;
 
 extern(C) void main() {
-    import io.term:           initTerm, print, error;
+    import io.term:           initTerm, print, panic;
     import system.cpu:        CPU, getInfo;
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
     import system.acpi:       initACPI;
@@ -32,9 +32,7 @@ extern(C) void main() {
 
     secondStageInterrupts();
 
-    print("\tIs anyone there?\n");
-    print("\tOh...\n");
-    print("\tHi!\n");
+    print("\t%s\n\t%s\n\t%s\n", "Is anyone there?", "Oh..", "Hi!");
 
-    error("End of the kernel");
+    panic("End of the kernel");
 }

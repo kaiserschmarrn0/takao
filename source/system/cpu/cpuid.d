@@ -162,20 +162,12 @@ struct CPUID {
             return c ? "\x1b[32m+\x1b[37m" : "\x1b[31m-\x1b[37m";
         }
 
-        print("CPUID: ");
-        print(featureSign(hasSSE3));
-        print("SSE3, ");
-        print(featureSign(hasx2APIC));
-        print("x2APIC, ");
-        print(featureSign(hasMSR));
-        print("MSR, ");
-        print(featureSign(hasAPIC));
-        print("APIC, ");
-        print(featureSign(hasACPI));
-        print("ACPI, ");
-        print(featureSign(hasSSE2));
-        print("SSE2");
-        print('\n');
+        print("CPUID: \n");
+
+        print("%sSSE3, %sx2APIC, %sMSR, %sAPIC, %sACPI, %sSSE2\n",
+              featureSign(hasSSE3), featureSign(hasx2APIC),
+              featureSign(hasMSR), featureSign(hasAPIC),
+              featureSign(hasACPI), featureSign(hasSSE2));
     }
 }
 

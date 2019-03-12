@@ -5,15 +5,15 @@
 module system.interrupts.handlers;
 
 void defaultSoftwareHandler() {
-    import io.term: error;
+    import io.term: panic;
 
-    error("An unhandled software interrupt was raised!");
+    panic("An unhandled software interrupt was raised!");
 }
 
 void defaultHardwareHandler() {
-    import io.term: error;
+    import io.term: panic;
 
-    error("An unhandled hardware interrupt was raised!");
+    panic("An unhandled hardware interrupt was raised!");
 }
 
 void miscSoftwareHandler() {

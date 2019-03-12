@@ -11,7 +11,7 @@ alias PageTableEntry = size_t;
 __gshared PageTableEntry* pageMap;
 
 void initVMM() {
-    import io.term:     print, error;
+    import io.term:     print, panic;
     import memory.e820: e820Map;
     import memory.pmm:  pmmAlloc;
 
@@ -24,20 +24,21 @@ void initVMM() {
 
     // Catch allocation failure
     if (cast(size_t)pageMap == physicalMemoryOffset) {
-        error("pmmAlloc failure in initVMM()");
+        panic("pmmAlloc failure in initVMM()");
     }
 
     // Identity map the first 32 MiB and map 32 MiB for the phys mem area, and
     // 32 MiB for the kernel in the higher half
     foreach (i; 0..0x2000000 / pageSize) {
-        size_t addr = i * pageSize;
+        auto addr = i * pageSize;
+
         mapPage(pageMap, addr, addr, 0x03);
         mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
         mapPage(pageMap, kernelPhysicalMemoryOffset + addr, addr, 0x03);
     }
 
     // Reload new pagemap
-    auto newCR3 = cast(size_t)pageMap - physicalMemoryOffset;
+    auto newCR3 = cast(ulong)pageMap - physicalMemoryOffset;
 
     asm {
         mov RAX, newCR3;
@@ -46,7 +47,8 @@ void initVMM() {
 
     // Forcefully map the first 4 GiB for I/O into the higher half
     foreach (i; 0..0x100000000 / pageSize) {
-        size_t addr = i * pageSize;
+        auto addr = i * pageSize;
+
         mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
     }
 
@@ -64,7 +66,7 @@ void initVMM() {
         if (e820Map[i].base % pageSize) alignedLength += pageSize;
 
         for (auto j = 0; j * pageSize < alignedLength; j++) {
-            size_t addr = alignedBase + j * pageSize;
+            auto addr = alignedBase + j * pageSize;
 
             // Skip over first 4 GiB
             if (addr < 0x100000000) continue;
@@ -151,7 +153,9 @@ fail3:
         }
 
         // Table is not free
-        if (pd[i] & 0x1) goto fail1;
+        if (pd[i] & 0x1) {
+            goto fail1;
+        }
     }
 
 fail2:
@@ -163,7 +167,9 @@ fail2:
         }
 
         // Table is not free
-        if (pdpt[i] & 0x1) goto fail1;
+        if (pdpt[i] & 0x1) {
+            goto fail1;
+        }
     }
 
 fail1:

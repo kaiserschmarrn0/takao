@@ -19,7 +19,7 @@ void getE820() {
     import io.term:      print;
     import util.convert: toHex, toDecimal;
 
-    size_t memorySize = 0;
+    auto memorySize = 0;
 
     get_e820(&e820Map[0]);
 
@@ -29,22 +29,14 @@ void getE820() {
     foreach (entry; e820Map) {
         if (!entry.type) break;
 
-        print("\t[");
-        print(toHex(entry.base));
-        print(" -> ");
-        print(toHex(entry.base + entry.length));
-        print("] ");
-        print(toHex(entry.length));
-        print(" <");
-        print(e820Type(entry.type));
-        print(">\n");
+        print("\t[%s -> %s] %s <%s>\n", toHex(entry.base),
+              toHex(entry.base + entry.length), toHex(entry.length),
+              e820Type(entry.type));
 
         if (entry.type == 1) memorySize += entry.length;
     }
 
-    print("\tTotal usable memory: ");
-    print(toDecimal(memorySize / 1024 / 1024));
-    print(" MiB\n");
+    print("\tTotal usable memory: %s MiB\n", toDecimal(memorySize / 1024 / 1024));
 }
 
 private string e820Type(uint type) {

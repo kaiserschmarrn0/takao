@@ -34,14 +34,14 @@ struct CPU {
     }
 
     void checkDependencies() {
-        import io.term: error;
+        import io.term: panic;
 
         if (!cpuid.hasMSR) {
-            error("No MSR wont allow enabling certain features");
+            panic("No MSR wont allow enabling certain features");
         }
 
         if (!cpuid.hasAPIC && !cpuid.hasx2APIC) {
-            error("x2APIC/APIC is needed for interrupts");
+            panic("x2APIC/APIC is needed for interrupts");
         }
     }
 

@@ -53,9 +53,9 @@ __gshared RSDT* rsdt;
 __gshared XSDT* xsdt;
 
 void initACPI() {
-    import util.convert:     toDecimal;
+    import util.convert:     toDecimal, toHex;
     import util.lib:         areEquals;
-    import io.term:          print, error;
+    import io.term:          print, panic;
     import memory.constants: physicalMemoryOffset;
     import system.acpi.madt: initMADT;
 
@@ -74,12 +74,11 @@ void initACPI() {
         }
     }
 
-    error("Non-ACPI compliant system");
+    panic("Non-ACPI compliant system");
     return;
 
 RSDPFound:
-    print("\tACPI available, revision ");
-    print(toDecimal(cast(ulong)rsdp.revision));
+    print("\tACPI available, revision %s", toDecimal(rsdp.revision));
 
     if (rsdp.revision >= 2 && rsdp.xsdt) {
         print(", using the XSDT\n");
@@ -98,6 +97,8 @@ RSDPFound:
 
 void* findSDT(string signature) {
     import util.lib:         areEquals;
+    import io.term: print;
+    import util.convert: toHex;
     import memory.constants: physicalMemoryOffset;
 
     SDT* pointer;
@@ -112,7 +113,6 @@ void* findSDT(string signature) {
         }
     } else {
         foreach (i; 0..rsdt.sdt.length) {
-
             pointer = cast(SDT*)(rsdt.sdtPointers[i] + physicalMemoryOffset);
 
             if (areEquals(cast(char*)pointer.signature, signature, 4)) {

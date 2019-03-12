@@ -37,7 +37,9 @@ private void clearCursor() {
 }
 
 private void drawCursor() {
-    if (cursorEnabled) videoMemory[cursorOffset + 1] = cursorPalette;
+    if (cursorEnabled) {
+        videoMemory[cursorOffset + 1] = cursorPalette;
+    }
 }
 
 private void scroll() {
@@ -80,13 +82,12 @@ private const ubyte[] ansiColours = [0, 4, 2, 6, 1, 5, 3, 7];
 
 private void sgr() {
     if (escValue0 >= 30 && escValue0 <= 37) {
-        ubyte pal = getTextPalette();
-        pal = (pal & cast(ubyte)0xF0) | ansiColours[escValue0 - 30];
+        auto pal = getTextPalette();
+        pal = cast(ubyte)((pal & 0xF0) | ansiColours[escValue0 - 30]);
         setTextPalette(pal);
     } else if (escValue0 >= 40 && escValue0 <= 47) {
-        ubyte pal = getTextPalette();
-        pal = (pal & cast(ubyte)0x0F) |
-              cast(ubyte)(ansiColours[escValue0 - 40] << 4);
+        auto pal = getTextPalette();
+        pal = cast(ubyte)((pal & 0x0F) | (ansiColours[escValue0 - 40] << 4));
         setTextPalette(pal);
     }
 }
@@ -108,7 +109,9 @@ private void parseEscapeSequence(char c) {
 
             return;
         case 'A':
-            if (escDefault0) escValue0 = 1;
+            if (escDefault0) {
+                escValue0 = 1;
+            }
 
             if (escValue0 > getCursorPositionY()) {
                 escValue0 = getCursorPositionY();
@@ -118,7 +121,9 @@ private void parseEscapeSequence(char c) {
                               getCursorPositionY() - escValue0);
             break;
         case 'B':
-            if (escDefault0) escValue0 = 1;
+            if (escDefault0) {
+                escValue0 = 1;
+            }
 
             if (getCursorPositionY() + escValue0 > termRows - 1) {
                 escValue0 = (termRows - 1) - getCursorPositionY();
@@ -128,32 +133,48 @@ private void parseEscapeSequence(char c) {
                               getCursorPositionY() + escValue0);
             break;
         case 'C':
-            if (escDefault0)
+            if (escDefault0) {
                 escValue0 = 1;
-            if ((getCursorPositionX() + escValue0) > (termColumns / 2 - 1))
+            }
+
+            if ((getCursorPositionX() + escValue0) > (termColumns / 2 - 1)) {
                 escValue0 = (termColumns / 2 - 1) - getCursorPositionX();
+            }
+
             setCursorPosition(getCursorPositionX() + escValue0,
-                                getCursorPositionY());
+                              getCursorPositionY());
             break;
         case 'D':
-            if (escDefault0)
+            if (escDefault0) {
                 escValue0 = 1;
-            if (escValue0 > getCursorPositionX())
+            }
+
+            if (escValue0 > getCursorPositionX()) {
                 escValue0 = getCursorPositionX();
+            }
+
             setCursorPosition(getCursorPositionX() - escValue0,
-                                getCursorPositionY());
+                              getCursorPositionY());
             break;
         case 'H':
             escValue0--;
             escValue1--;
 
-            if (escDefault0) escValue0 = 0;
+            if (escDefault0) {
+                escValue0 = 0;
+            }
 
-            if (escDefault1) escValue1 = 0;
+            if (escDefault1) {
+                escValue1 = 0;
+            }
 
-            if (escValue1 >= termColumns / 2) escValue1 = (termColumns / 2) - 1;
+            if (escValue1 >= termColumns / 2) {
+                escValue1 = (termColumns / 2) - 1;
+            }
 
-            if (escValue0 >= termRows) escValue0 = termRows - 1;
+            if (escValue0 >= termRows) {
+                escValue0 = termRows - 1;
+            }
 
             setCursorPosition(escValue1, escValue0);
 
@@ -222,8 +243,10 @@ void print(char c) {
 
     switch (c) {
         case '\t':
-            if ((getCursorPositionX() / tabSize + 1) * tabSize >= termColumns)
+            if ((getCursorPositionX() / tabSize + 1) * tabSize >= termColumns) {
                 break;
+            }
+
             setCursorPosition((getCursorPositionX() / tabSize + 1) * tabSize,
                               getCursorPositionY());
             break;
@@ -264,31 +287,51 @@ void print(char c) {
 }
 
 void print(string message) {
-    foreach (ubyte c; message) print(c);
+    foreach (c; message) {
+        print(c);
+    }
+}
+
+void print(string[] messages ...) {
+    auto n       = 1;
+    auto message = messages[0];
+
+    for (auto i = 0; i < message.length; i++) {
+        if (message[i] != '%') {
+            print(message[i]);
+            continue;
+        }
+
+        if (++i < message.length) {
+            switch (message[i]) {
+                case 's':
+                    print(messages[n]);
+                    n += 1;
+                    break;
+                default:
+                    print('%');
+                    print(message[i]);
+            }
+        } else print('%');
+    }
 }
 
 void warning(string message) {
-    import system.state: halt;
-
-    print("\x1b[35mThe kernel reported a warning\x1b[37m: ");
-    print(message);
-    print('\n');
-
+    print("\x1b[35mThe kernel reported a warning\x1b[37m: %s\n", message);
     printRegisters();
 }
 
-void error(string message) {
-    import system.state: halt;
-
-    print("\x1b[31mThe kernel reported an error\x1b[37m: ");
-    print(message);
-    print('\n');
-
+void panic(string message) {
+    print("\x1b[31mThe kernel panicked!\x1b[37m: %s\n", message);
     print("\x1b[45mThe system will be halted\x1b[40m\n");
-
     printRegisters();
 
-    halt();
+    asm {
+        cli;
+    L1:;
+        hlt;
+        jmp L1;
+    }
 }
 
 void printRegisters() {
@@ -310,21 +353,7 @@ void printRegisters() {
         mov cr4, RAX;
     }
 
-    print("RBP=");
-    print(toHex(rbp));
-    print(", RSP=");
-    print(toHex(rsp));
-    print('\n');
-
-    print("CR0=");
-    print(toHex(cr0));
-    print(", CR2=");
-    print(toHex(cr2));
-    print(", CR3=");
-    print(toHex(cr3));
-    print('\n');
-
-    print("CR4=");
-    print(toHex(cr4));
-    print('\n');
+    print("RBP=%s, RSP=%s\n", toHex(rbp), toHex(rsp));
+    print("CR0=%s, CR2=%s, CR3=%s\n",toHex(cr0), toHex(cr2), toHex(cr3));
+    print("CR4=%s\n", toHex(cr4));
 }

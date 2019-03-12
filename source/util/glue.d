@@ -5,12 +5,12 @@
 module util.glue;
 
 extern (C) void __assert(const(char)* exp, const(char)* file, const(char)* line) {
-    import io.term: error;
+    import io.term: panic;
 
-    error("Failed assertion!");
+    panic("Failed assertion!");
 }
 
-extern (C) void* memset(void* s, int c, size_t n) {
+extern (C) void* memset(void* s, int c, uint n) {
     auto pointer = cast(ubyte*) s;
 
     foreach (i; 0..n) {

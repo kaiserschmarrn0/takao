@@ -63,28 +63,28 @@ struct MADTNMI {
 __gshared MADT* madt;
 
 __gshared MADTLocalAPIC** madtLocalAPICs;
-__gshared ulong           madtLocalAPICID;
+__gshared ulong           madtLocalAPICID = 0;
 
 __gshared MADTIOAPIC** madtIOAPICs;
-__gshared ulong        madtIOAPICID;
+__gshared ulong        madtIOAPICID = 0;
 
 __gshared MADTISO** madtISOs;
-__gshared ulong     madtISOID;
+__gshared ulong     madtISOID = 0;
 
 __gshared MADTNMI** madtNMIs;
-__gshared ulong     madtNMIID;
+__gshared ulong     madtNMIID = 0;
 
 void initMADT() {
     import util.convert: toDecimal;
     import util.lib:     areEquals;
-    import io.term:      print, error;
+    import io.term:      print, panic;
     import system.acpi:  findSDT;
     import memory.alloc: alloc;
 
     madt = cast(MADT*)findSDT("APIC");
 
     if (!madt) {
-        error("The MADT is not available");
+        panic("The MADT is not available");
     }
 
     // We wont find more than 256 of each (I hope)
@@ -92,4 +92,29 @@ void initMADT() {
     madtIOAPICs    = cast(MADTIOAPIC**)   alloc(256);
     madtISOs       = cast(MADTISO**)      alloc(256);
     madtNMIs       = cast(MADTNMI**)      alloc(256);
+
+    // parse the MADT entries
+    for (ubyte* madtPtr = cast(ubyte*)(&madt.entriesBeginning);
+        cast(ulong)madtPtr < cast(ulong)madt + madt.sdt.length;
+        madtPtr += *(madtPtr + 1)) {
+        switch (*(madtPtr)) {
+            case 0:
+                // Processor local APIC
+                madtLocalAPICs[madtLocalAPICID++] = cast(MADTLocalAPIC*)madtPtr;
+                break;
+            case 1:
+                // I/O APIC
+                madtIOAPICs[madtIOAPICID++] = cast(MADTIOAPIC*)madtPtr;
+                break;
+            case 2:
+                // Interrupt Source Override
+                madtISOs[madtISOID++] = cast(MADTISO*)madtPtr;
+                break;
+            case 4:
+                // NMI
+                madtNMIs[madtNMIID++] = cast(MADTNMI*)madtPtr;
+                break;
+            default:
+        }
+    }
 }

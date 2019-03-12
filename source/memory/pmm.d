@@ -18,7 +18,7 @@ private __gshared size_t bitmapEntries = 32;
 private __gshared size_t currentPointer = bitmapBase;
 
 void initPMM() {
-    import io.term:     print, error;
+    import io.term:     print, panic;
     import memory.e820: e820Map;
 
     print("PMM: Initialising\n");
@@ -26,7 +26,9 @@ void initPMM() {
     memoryBitmap = &initialBitmap[0];
     tempBitmap = cast(uint*)pmmAlloc(bitmapReallocStep, false);
 
-    if (!tempBitmap) error("pmmAlloc failure in initPMM()");
+    if (!tempBitmap) {
+        panic("pmmAlloc failure in initPMM()");
+    }
 
     tempBitmap = cast(uint*)(cast(ulong)tempBitmap + physicalMemoryOffset);
 
@@ -61,7 +63,9 @@ void initPMM() {
 
             size_t page = addr / pageSize;
 
-            if (addr < memoryBase + pageSize) continue;
+            if (addr < memoryBase + pageSize) {
+                continue;
+            }
 
             // Reallocate bitmap
             if (addr >= (memoryBase + bitmapEntries * pageSize)) {
@@ -71,7 +75,9 @@ void initPMM() {
                                               bitmapReallocStep;
                 tempBitmap = cast(uint*)pmmAlloc(newBitmapSizeInPages, false);
 
-                if (!tempBitmap) error("pmmAlloc failure in initPMM()");
+                if (!tempBitmap) {
+                    panic("pmmAlloc failure in initPMM()");
+                }
 
                 tempBitmap = cast(uint*)(cast(size_t)tempBitmap +
                              physicalMemoryOffset);
