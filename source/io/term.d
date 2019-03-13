@@ -236,6 +236,12 @@ void setCursorPosition(int x, int y) {
 }
 
 void print(char c) {
+    import io.ports: outb;
+
+    debug {
+        outb(0xe9, c);
+    }
+
     if (escape) {
         parseEscapeSequence(c);
         return;

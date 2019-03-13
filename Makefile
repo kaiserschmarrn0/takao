@@ -13,11 +13,15 @@ DC = ldc2
 LD = ld.lld
 AS = nasm
 
-DFLAGS = -O2 -gc
+DFLAGS = -O2
 
 DFLAGS_INTERNAL := $(DFLAGS) -mtriple=x86_64-elf -relocation-model=static \
 	-code-model=kernel -mattr=-sse,-sse2,-sse3,-ssse3 -disable-red-zone \
 	-betterC -op -I=./source
+
+ifeq ($(DEBUG), on)
+DFLAGS_INTERNAL := $(DFLAGS_INTERNAL) -gc -d-debug=1
+endif
 
 LDFLAGS = -nostdlib -T $(buildDir)/linker.ld
 
@@ -55,10 +59,23 @@ iso: all
 	@grub-mkrescue -o $(ISO) isodir
 	@rm -rf isodir
 
-test: iso
-	@qemu-system-x86_64 -m 2G -net none -enable-kvm -monitor stdio \
+QEMU_FLAGS := -m 2G -net none \
 	-drive file=$(ISO),index=0,media=disk,format=raw \
-	-cpu host -d cpu_reset
+
+ifeq ($(KVM), on)
+QEMU_FLAGS := $(QEMU_FLAGS) -enable-kvm -cpu host
+endif
+
+ifeq ($(DEBUG), off)
+QEMU_FLAGS := $(QEMU_FLAGS) -monitor stdio
+endif
+
+ifeq ($(DEBUG), on)
+QEMU_FLAGS := $(QEMU_FLAGS) -debugcon stdio
+endif
+
+test: iso
+	@qemu-system-x86_64 $(QEMU_FLAGS)
 
 clean:
 	@rm -f $(objects) $(binaries) $(image) $(ISO)
