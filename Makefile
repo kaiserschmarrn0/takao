@@ -10,7 +10,7 @@ override sourceDir = source
 override buildDir = build
 
 DC = ldc2
-LD = ld.lld
+LD = ld
 AS = nasm
 
 DFLAGS = -O2
@@ -66,7 +66,7 @@ ifeq ($(KVM), on)
 QEMU_FLAGS := $(QEMU_FLAGS) -enable-kvm -cpu host
 endif
 
-ifeq ($(DEBUG), off)
+ifneq ($(DEBUG), on)
 QEMU_FLAGS := $(QEMU_FLAGS) -monitor stdio
 endif
 
