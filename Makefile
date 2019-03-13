@@ -10,7 +10,7 @@ override sourceDir = source
 override buildDir = build
 
 DC = ldc2
-LD = ld
+LD = ld.lld
 AS = nasm
 
 DFLAGS = -O2 -gc
@@ -58,7 +58,7 @@ iso: all
 test: iso
 	@qemu-system-x86_64 -m 2G -net none -enable-kvm -monitor stdio \
 	-drive file=$(ISO),index=0,media=disk,format=raw \
-	-cpu host
+	-cpu host -d cpu_reset
 
 clean:
 	@rm -f $(objects) $(binaries) $(image) $(ISO)

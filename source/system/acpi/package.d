@@ -23,7 +23,7 @@ struct RSDP {
 struct SDT {
     align(1):
 
-    ubyte[3] signature;
+    ubyte[4] signature;
     uint     length;
     ubyte    revision;
     ubyte    checksum;

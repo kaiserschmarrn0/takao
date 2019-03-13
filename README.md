@@ -16,9 +16,9 @@ happen, so it doesn't have a specific version number.
 Make sure you have installed:
 
 * `git` (only if you are using it to download the source)
-* `dmd`
+* `ldc`, a LLVM based D compiler.
+* `lld`, the LLVM Linker.
 * `make`
-* `binutils` (doesn't need an specific version)
 
 With all of that covered, just clone the source with `git` if you dont
 have it already with:
