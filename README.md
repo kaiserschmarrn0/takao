@@ -17,7 +17,7 @@ Make sure you have installed:
 
 * `git` (only if you are using it to download the source)
 * `ldc`, a LLVM based D compiler.
-* `lld`, the LLVM Linker.
+* `binutils`, for `ld`.
 * `make`
 
 With all of that covered, just clone the source with `git` if you dont
@@ -31,7 +31,8 @@ cd takao
 And next lets build the source with:
 
 ```bash
-make all
+make all         # Add DEBUG=on for a debug build
+make KVM=on test # Add DEBUG here too to match the debug build
 ```
 
 One can clean the build tree with `make clean` and even test the kernel with

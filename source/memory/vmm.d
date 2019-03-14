@@ -11,9 +11,9 @@ alias PageTableEntry = size_t;
 __gshared PageTableEntry* pageMap;
 
 void initVMM() {
-    import io.term:     print, panic;
-    import memory.e820: e820Map;
-    import memory.pmm:  pmmAlloc;
+    import memory.e820:   e820Map;
+    import memory.pmm:    pmmAlloc;
+    import util.messages: print, panic;
 
     print("VMM: Initialising\n");
 

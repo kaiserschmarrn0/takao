@@ -5,13 +5,14 @@
 module main;
 
 extern(C) void main() {
-    import io.term:           initTerm, print, panic;
-    import system.cpu:        CPU, getInfo;
+    import io.term:           initTerm;
+    import system.cpu:        initCPU;
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
     import system.acpi:       initACPI;
     import memory.e820:       getE820;
     import memory.pmm:        initPMM;
     import memory.vmm:        initVMM;
+    import util.messages:     print, panic;
 
     initTerm();
 
@@ -19,10 +20,7 @@ extern(C) void main() {
 
     firstStageInterrupts();
 
-    auto cpu = getInfo();
-    cpu.print();
-    cpu.enableFeatures();
-    cpu.checkDependencies();
+    initCPU();
 
     getE820();
     initPMM();
@@ -31,8 +29,6 @@ extern(C) void main() {
     initACPI();
 
     secondStageInterrupts();
-
-    print("\t%s\n\t%s\n\t%s\n", "Is anyone there?", "Oh..", "Hi!");
 
     panic("End of the kernel");
 }

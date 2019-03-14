@@ -5,7 +5,7 @@
 module util.glue;
 
 extern (C) void __assert(const(char)* exp, const(char)* file, const(char)* line) {
-    import io.term: panic;
+    import util.messages: panic;
 
     panic("Failed assertion!");
 }

@@ -412,7 +412,7 @@ private struct InterruptStackState {
     ulong ss;
 }
 
-private immutable string[] exceptionName = [
+private immutable char*[] exceptionName = [
     "Division By 0 (#UD)",
     "Debug (#DE)",
     "Non Maskable Interrupt (NMI)",
@@ -466,15 +466,14 @@ private extern(C) void exceptionEntry(uint exceptionNumber, bool hasErrorCode) {
 
 private extern(C) void exceptionHandler(InterruptStackState* stack,
                                         uint exception) {
-    import io.term:      print, panic;
-    import util.convert: toHex;
+    import util.messages: print, panic;
 
-    print("SS:         %s\n", toHex(stack.ss));
-    print("RSP:        %s\n", toHex(stack.rsp));
-    print("RFLAGS:     %s\n", toHex(stack.rflags));
-    print("CS:         %s\n", toHex(stack.cs));
-    print("RIP:        %s\n", toHex(stack.rip));
-    print("Error code: %s\n", toHex(stack.errorCode));
+    print("SS:         %x\n", stack.ss);
+    print("RSP:        %x\n", stack.rsp);
+    print("RFLAGS:     %x\n", stack.rflags);
+    print("CS:         %x\n", stack.cs);
+    print("RIP:        %x\n", stack.rip);
+    print("Error code: %x\n", stack.errorCode);
 
     if (stack.cs & 0b111) {
         print("The exception was called with CPL != 0\n");

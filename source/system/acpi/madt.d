@@ -75,11 +75,9 @@ __gshared MADTNMI** madtNMIs;
 __gshared ulong     madtNMIID = 0;
 
 void initMADT() {
-    import util.convert: toDecimal;
-    import util.lib:     areEquals;
-    import io.term:      print, panic;
-    import system.acpi:  findSDT;
-    import memory.alloc: alloc;
+    import system.acpi:   findSDT;
+    import memory.alloc:  alloc;
+    import util.messages: panic;
 
     madt = cast(MADT*)findSDT("APIC");
 

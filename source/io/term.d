@@ -192,7 +192,7 @@ private void parseEscapeSequence(char c) {
             }
             break;
         default:
-            print('?');
+            putChar('?');
     }
 
     escValue    = &escValue0;
@@ -235,7 +235,7 @@ void setCursorPosition(int x, int y) {
     drawCursor();
 }
 
-void print(char c) {
+void putChar(char c) {
     import io.ports: outb;
 
     debug {
@@ -290,76 +290,4 @@ void print(char c) {
 
             drawCursor();
     }
-}
-
-void print(string message) {
-    foreach (c; message) {
-        print(c);
-    }
-}
-
-void print(string[] messages ...) {
-    auto n       = 1;
-    auto message = messages[0];
-
-    for (auto i = 0; i < message.length; i++) {
-        if (message[i] != '%') {
-            print(message[i]);
-            continue;
-        }
-
-        if (++i < message.length) {
-            switch (message[i]) {
-                case 's':
-                    print(messages[n]);
-                    n += 1;
-                    break;
-                default:
-                    print('%');
-                    print(message[i]);
-            }
-        } else print('%');
-    }
-}
-
-void warning(string message) {
-    print("\x1b[35mThe kernel reported a warning\x1b[37m: %s\n", message);
-    printRegisters();
-}
-
-void panic(string message) {
-    print("\x1b[31mThe kernel panicked!\x1b[37m: %s\n", message);
-    print("\x1b[45mThe system will be halted\x1b[40m\n");
-    printRegisters();
-
-    asm {
-        cli;
-    L1:;
-        hlt;
-        jmp L1;
-    }
-}
-
-void printRegisters() {
-    import util.convert: toHex;
-
-    ulong rbp, rsp, cr0, cr2, cr3, cr4;
-
-    asm {
-        mov rbp, RBP;
-        mov rsp, RSP;
-
-        mov RAX, CR0;
-        mov cr0, RAX;
-        mov RAX, CR2;
-        mov cr2, RAX;
-        mov RAX, CR3;
-        mov cr3, RAX;
-        mov RAX, CR4;
-        mov cr4, RAX;
-    }
-
-    print("RBP=%s, RSP=%s\n", toHex(rbp), toHex(rsp));
-    print("CR0=%s, CR2=%s, CR3=%s\n",toHex(cr0), toHex(cr2), toHex(cr3));
-    print("CR4=%s\n", toHex(cr4));
 }

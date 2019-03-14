@@ -5,19 +5,19 @@
 module system.interrupts.handlers;
 
 void defaultSoftwareHandler() {
-    import io.term: panic;
+    import util.messages: panic;
 
-    panic("An unhandled software interrupt was raised!");
+    panic(cast(char*)"An unhandled software interrupt was raised!");
 }
 
 void defaultHardwareHandler() {
-    import io.term: panic;
+    import util.messages: panic;
 
-    panic("An unhandled hardware interrupt was raised!");
+    panic(cast(char*)"An unhandled hardware interrupt was raised!");
 }
 
 void miscSoftwareHandler() {
-    import io.term: warning;
+    import util.messages: w = warning;
 
-    warning("The misc software handler interrupt is not implemented yet");
+    w(cast(char*)"The misc software handler interrupt is not implemented yet");
 }

@@ -18,8 +18,8 @@ private __gshared size_t bitmapEntries = 32;
 private __gshared size_t currentPointer = bitmapBase;
 
 void initPMM() {
-    import io.term:     print, panic;
-    import memory.e820: e820Map;
+    import memory.e820:   e820Map;
+    import util.messages: print, panic;
 
     print("PMM: Initialising\n");
 

@@ -6,11 +6,11 @@ module util.convert;
 
 immutable char[] conversionTable = "0123456789ABCDEF";
 
-__gshared char[18] hexBuffer;
-__gshared char[20] decimalBuffer;
-__gshared char[66] binaryBuffer;
+__gshared char[19] hexBuffer;
+__gshared char[21] decimalBuffer;
+__gshared char[67] binaryBuffer;
 
-string toHex(ulong number){
+char* toHex(ulong number){
     hexBuffer[0] = '0';
     hexBuffer[1] = 'x';
 
@@ -19,19 +19,23 @@ string toHex(ulong number){
         number /= 16;
     }
 
-    return cast(string) hexBuffer;
+    hexBuffer[18] = '\0';
+
+    return &hexBuffer[0];
 }
 
-string toDecimal(ulong number){
+char* toDecimal(ulong number){
     for (auto i = 19; i >= 0; i--) {
         decimalBuffer[i] = conversionTable[number % 10];
         number /= 10;
     }
 
-    return cast(string) decimalBuffer;
+    decimalBuffer[20] = '\0';
+
+    return &decimalBuffer[0];
 }
 
-string toBinary(ulong number){
+char* toBinary(ulong number){
     binaryBuffer[0] = '0';
     binaryBuffer[1] = 'b';
 
@@ -40,5 +44,7 @@ string toBinary(ulong number){
         number /= 2;
     }
 
-    return cast(string) binaryBuffer;
+    binaryBuffer[66] = '\0';
+
+    return &binaryBuffer[0];
 }

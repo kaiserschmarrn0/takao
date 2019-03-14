@@ -16,42 +16,42 @@ __gshared E820Entry[256] e820Map;
 private extern extern(C) void get_e820(E820Entry*);
 
 void getE820() {
-    import io.term:      print;
-    import util.convert: toHex, toDecimal;
-
-    auto memorySize = 0;
+    import util.messages: print;
 
     get_e820(&e820Map[0]);
 
-    // Print the memory map
-    print("E820 Memory map:\n");
+    debug {
+        auto memorySize = 0;
 
-    foreach (entry; e820Map) {
-        if (!entry.type) break;
+        print("E820 Memory map:\n");
 
-        print("\t[%s -> %s] %s <%s>\n", toHex(entry.base),
-              toHex(entry.base + entry.length), toHex(entry.length),
-              e820Type(entry.type));
+        foreach (entry; e820Map) {
+            if (!entry.type) break;
 
-        if (entry.type == 1) memorySize += entry.length;
+            print("\t[%x -> %x] %x <%s>\n", entry.base,
+                  entry.base + entry.length, entry.length,
+                  e820Type(entry.type));
+
+            if (entry.type == 1) memorySize += entry.length;
+        }
+
+        print("\tTotal usable memory: %u MiB\n", memorySize / 1024 / 1024);
     }
-
-    print("\tTotal usable memory: %s MiB\n", toDecimal(memorySize / 1024 / 1024));
 }
 
-private string e820Type(uint type) {
+private char* e820Type(uint type) {
     switch (type) {
         case 1:
-            return "Usable RAM";
+            return cast(char*)"Usable RAM";
         case 2:
-            return "Reserved";
+            return cast(char*)"Reserved";
         case 3:
-            return "ACPI-Reclaim";
+            return cast(char*)"ACPI-Reclaim";
         case 4:
-            return "ACPI-NVS";
+            return cast(char*)"ACPI-NVS";
         case 5:
-            return "Bad memory";
+            return cast(char*)"Bad memory";
         default:
-            return "???";
+            return cast(char*)"???";
     }
 }

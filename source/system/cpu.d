@@ -1,8 +1,8 @@
-// cpuid.d - CPUID
+// cpu.d - CPU state and features
 // (C) 2019 the takao authors (AUTHORS.md). All rights reserved
 // This code is governed by a license that can be found in LICENSE.md
 
-module system.cpu.cpuid;
+module system.cpu;
 
 // CPUID bits in registers
 enum CPUIDinRCXwithRAX1 : ulong {
@@ -154,24 +154,13 @@ struct CPUID {
     bool hasAPIC;
     bool hasACPI;
     bool hasSSE2;
-
-    void print() {
-        import io.term: print;
-
-        string featureSign(bool c) {
-            return c ? "\x1b[32m+\x1b[37m" : "\x1b[31m-\x1b[37m";
-        }
-
-        print("CPUID: \n");
-
-        print("%sSSE3, %sx2APIC, %sMSR, %sAPIC, %sACPI, %sSSE2\n",
-              featureSign(hasSSE3), featureSign(hasx2APIC),
-              featureSign(hasMSR), featureSign(hasAPIC),
-              featureSign(hasACPI), featureSign(hasSSE2));
-    }
 }
 
-CPUID getCPUID() {
+__gshared CPUID cpuid;
+
+void initCPU() {
+    import util.messages: print, panic;
+
     ulong c, d, c2, d2;
 
     asm {
@@ -186,15 +175,55 @@ CPUID getCPUID() {
         mov d2, RDX;
     }
 
-    CPUID cpuid = {
-        hasSSE3:   (c & CPUIDinRCXwithRAX1.SSE3)   != 0,
-        hasx2APIC: (c & CPUIDinRCXwithRAX1.x2APIC) != 0,
+    cpuid.hasSSE3   = (c & CPUIDinRCXwithRAX1.SSE3)   != 0;
+    cpuid.hasx2APIC = (c & CPUIDinRCXwithRAX1.x2APIC) != 0;
 
-        hasMSR:  (d & CPUIDinRDXwithRAX1.MSR)  != 0,
-        hasAPIC: (d & CPUIDinRDXwithRAX1.APIC) != 0,
-        hasACPI: (d & CPUIDinRDXwithRAX1.ACPI) != 0,
-        hasSSE2: (d & CPUIDinRDXwithRAX1.SSE2) != 0
-    };
+    cpuid.hasMSR  = (d & CPUIDinRDXwithRAX1.MSR)  != 0;
+    cpuid.hasAPIC = (d & CPUIDinRDXwithRAX1.APIC) != 0;
+    cpuid.hasACPI = (d & CPUIDinRDXwithRAX1.ACPI) != 0;
+    cpuid.hasSSE2 = (d & CPUIDinRDXwithRAX1.SSE2) != 0;
 
-    return cpuid;
+    debug {
+        char* featureSign(bool c) {
+            return c ? cast(char*)"\x1b[32m+\x1b[37m" :
+                       cast(char*)"\x1b[31m-\x1b[37m";
+        }
+
+        print("CPUID: \n");
+
+        print("%sSSE3, %sx2APIC, %sMSR, %sAPIC, %sACPI, %sSSE2\n",
+              featureSign(cpuid.hasSSE3), featureSign(cpuid.hasx2APIC),
+              featureSign(cpuid.hasMSR),  featureSign(cpuid.hasAPIC),
+              featureSign(cpuid.hasACPI), featureSign(cpuid.hasSSE2));
+    }
+
+    // Check dependencies of the system
+    if (!cpuid.hasMSR) {
+        panic("No MSR wont allow enabling certain features");
+    }
+
+    if (!cpuid.hasAPIC && !cpuid.hasx2APIC) {
+        panic("x2APIC/APIC is needed for interrupts");
+    }
+
+    // Enabling things
+    if (cpuid.hasSSE3) {
+        // TODO: Enable SSE3
+        debug print("SSE3 was detected and enabled successfully");
+    } else if (cpuid.hasSSE2) {
+        asm {
+            mov RAX, CR0;     // To set up SSE2:
+            mov RBX, 1 << 2;
+            not RBX;          // CRO = (CRO & ~(1 << 2)) |  1 << 1
+            and RAX, RBX;     //     1 << 2 = CR0.EM bit (bit 2)
+            or RAX, 1 << 1;   //     1 << 1 = CR0.MP bit (bit 1)
+            mov CR0, RAX;
+                              // CR4 = CR4 | 1 << 9 | 1 << 10
+            mov RAX, CR4;     //     = CR4 | 3 << 9
+            or RAX, 3 << 9;   //     1 << 9  = CR4.OSFXSR bit (bit 9)
+            mov CR4, RAX;     //     1 << 10 = CR4.OSXMMEXCPT bit (bit 10)
+        }
+
+        debug print("SSE2 was detected and enabled successfully\n");
+    }
 }
