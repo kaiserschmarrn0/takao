@@ -53,6 +53,7 @@ __gshared RSDT* rsdt;
 __gshared XSDT* xsdt;
 
 void initACPI() {
+    import io.qemu:          qemuPrint;
     import memory.constants: physicalMemoryOffset;
     import system.acpi.madt: initMADT;
     import util.lib:         areEquals;
@@ -77,15 +78,21 @@ void initACPI() {
     return;
 
 RSDPFound:
-    debug print("\tACPI available, revision %u", rsdp.revision);
+    debug {
+        qemuPrint("\tACPI available, revision %u", rsdp.revision);
+    }
 
     if (rsdp.revision >= 2 && rsdp.xsdt) {
-        debug print(", using the XSDT\n");
+        debug {
+            qemuPrint(", using the XSDT\n");
+        }
 
         rsdt = null;
         xsdt = cast(XSDT*)(rsdp.xsdt + physicalMemoryOffset);
     } else {
-        debug print(", using the RSDT\n");
+        debug {
+            qemuPrint(", using the RSDT\n");
+        }
 
         rsdt = cast(RSDT*)(rsdp.rsdt + physicalMemoryOffset);
         xsdt = null;
@@ -94,7 +101,7 @@ RSDPFound:
     initMADT();
 }
 
-void* findSDT(string signature) {
+void* findSDT(const char* signature) {
     import memory.constants: physicalMemoryOffset;
     import util.lib:         areEquals;
 

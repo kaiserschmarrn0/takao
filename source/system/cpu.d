@@ -159,7 +159,10 @@ struct CPUID {
 __gshared CPUID cpuid;
 
 void initCPU() {
+    import io.qemu:       qemuPrint;
     import util.messages: print, panic;
+
+    print("CPU: Obtaining information and enabling features\n");
 
     ulong c, d, c2, d2;
 
@@ -185,16 +188,15 @@ void initCPU() {
 
     debug {
         char* featureSign(bool c) {
-            return c ? cast(char*)"\x1b[32m+\x1b[37m" :
-                       cast(char*)"\x1b[31m-\x1b[37m";
+            return c ? cast(char*)"+" : cast(char*)"-";
         }
 
-        print("CPUID: \n");
+        qemuPrint("CPUID:\n");
 
-        print("%sSSE3, %sx2APIC, %sMSR, %sAPIC, %sACPI, %sSSE2\n",
-              featureSign(cpuid.hasSSE3), featureSign(cpuid.hasx2APIC),
-              featureSign(cpuid.hasMSR),  featureSign(cpuid.hasAPIC),
-              featureSign(cpuid.hasACPI), featureSign(cpuid.hasSSE2));
+        qemuPrint("%sSSE3, %sx2APIC, %sMSR, %sAPIC, %sACPI, %sSSE2\n",
+                  featureSign(cpuid.hasSSE3), featureSign(cpuid.hasx2APIC),
+                  featureSign(cpuid.hasMSR),  featureSign(cpuid.hasAPIC),
+                  featureSign(cpuid.hasACPI), featureSign(cpuid.hasSSE2));
     }
 
     // Check dependencies of the system
@@ -209,7 +211,9 @@ void initCPU() {
     // Enabling things
     if (cpuid.hasSSE3) {
         // TODO: Enable SSE3
-        debug print("SSE3 was detected and enabled successfully");
+        debug {
+            qemuPrint("SSE3 was detected and enabled successfully\n");
+        }
     } else if (cpuid.hasSSE2) {
         asm {
             mov RAX, CR0;     // To set up SSE2:
@@ -224,6 +228,8 @@ void initCPU() {
             mov CR4, RAX;     //     1 << 10 = CR4.OSXMMEXCPT bit (bit 10)
         }
 
-        debug print("SSE2 was detected and enabled successfully\n");
+        debug {
+            qemuPrint("SSE2 was detected and enabled successfully\n");
+        }
     }
 }

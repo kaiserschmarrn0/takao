@@ -4,7 +4,7 @@
 
 module util.lib;
 
-bool areEquals(const char* dst, string src, ulong count) {
+bool areEquals(const char* dst, const char* src, ulong count) {
     foreach (i; 0..count) {
         if (dst[i] != src[i]) {
             return false;
