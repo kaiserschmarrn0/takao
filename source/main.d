@@ -9,6 +9,7 @@ extern(C) void main() {
     import system.cpu:        initCPU;
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
     import system.acpi:       initACPI;
+    import system.pit:        enablePIT;
     import memory.e820:       getE820;
     import memory.pmm:        initPMM;
     import memory.vmm:        initVMM;
@@ -29,6 +30,8 @@ extern(C) void main() {
     initACPI();
 
     secondStageInterrupts();
+
+    enablePIT();
 
     panic("End of the kernel");
 }

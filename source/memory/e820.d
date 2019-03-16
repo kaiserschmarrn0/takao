@@ -16,7 +16,6 @@ __gshared E820Entry[256] e820Map;
 private extern extern(C) void get_e820(E820Entry*);
 
 void getE820() {
-    import io.qemu:       qemuPrint;
     import util.messages: print;
 
     print("E820: Obtaining memory map\n");
@@ -26,19 +25,17 @@ void getE820() {
     debug {
         auto memorySize = 0;
 
-        qemuPrint("E820 Memory map:\n");
-
         foreach (entry; e820Map) {
             if (!entry.type) break;
 
-            qemuPrint("\t[%x -> %x] %x <%s>\n", entry.base,
+            print("\t[%x -> %x] %x <%s>\n", entry.base,
                   entry.base + entry.length, entry.length,
                   e820Type(entry.type));
 
             if (entry.type == 1) memorySize += entry.length;
         }
 
-        qemuPrint("\tTotal usable memory: %u MiB\n", memorySize / 1024 / 1024);
+        print("\tTotal usable memory: %u MiB\n", memorySize / 1024 / 1024);
     }
 }
 

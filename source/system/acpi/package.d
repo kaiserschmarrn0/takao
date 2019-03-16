@@ -38,14 +38,14 @@ struct RSDT {
     align(1):
 
     SDT    sdt;
-    uint[] sdtPointers;
+    uint   sdtPointers;
 }
 
 struct XSDT {
     align(1):
 
     SDT     sdt;
-    ulong[] sdtPointers;
+    ulong   sdtPointers;
 }
 
 __gshared RSDP* rsdp;
@@ -53,7 +53,6 @@ __gshared RSDT* rsdt;
 __gshared XSDT* xsdt;
 
 void initACPI() {
-    import io.qemu:          qemuPrint;
     import memory.constants: physicalMemoryOffset;
     import system.acpi.madt: initMADT;
     import util.lib:         areEquals;
@@ -79,19 +78,19 @@ void initACPI() {
 
 RSDPFound:
     debug {
-        qemuPrint("\tACPI available, revision %u", rsdp.revision);
+        print("\tAvailable, revision %u", rsdp.revision);
     }
 
     if (rsdp.revision >= 2 && rsdp.xsdt) {
         debug {
-            qemuPrint(", using the XSDT\n");
+            print(", using the XSDT\n");
         }
 
         rsdt = null;
         xsdt = cast(XSDT*)(rsdp.xsdt + physicalMemoryOffset);
     } else {
         debug {
-            qemuPrint(", using the RSDT\n");
+            print(", using the RSDT\n");
         }
 
         rsdt = cast(RSDT*)(rsdp.rsdt + physicalMemoryOffset);
@@ -109,7 +108,7 @@ void* findSDT(const char* signature) {
 
     if (xsdt) {
         foreach (i; 0..xsdt.sdt.length) {
-            pointer = cast(SDT*)(xsdt.sdtPointers[i] + physicalMemoryOffset);
+            pointer = cast(SDT*)((&xsdt.sdtPointers)[i] + physicalMemoryOffset);
 
             if (areEquals(cast(char*)pointer.signature, signature, 4)) {
                 return cast(void*)pointer;
@@ -117,7 +116,7 @@ void* findSDT(const char* signature) {
         }
     } else {
         foreach (i; 0..rsdt.sdt.length) {
-            pointer = cast(SDT*)(rsdt.sdtPointers[i] + physicalMemoryOffset);
+            pointer = cast(SDT*)((&rsdt.sdtPointers)[i] + physicalMemoryOffset);
 
             if (areEquals(cast(char*)pointer.signature, signature, 4)) {
                 return cast(void*)pointer;

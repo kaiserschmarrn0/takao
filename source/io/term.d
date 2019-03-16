@@ -236,10 +236,10 @@ void setCursorPosition(int x, int y) {
 }
 
 void putChar(char c) {
-    import io.qemu: qemuPrint;
+    import io.qemu: qemuPutChar;
 
     debug {
-        qemuPrint(c);
+        qemuPutChar(c);
     }
 
     if (escape) {

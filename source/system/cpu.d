@@ -159,7 +159,6 @@ struct CPUID {
 __gshared CPUID cpuid;
 
 void initCPU() {
-    import io.qemu:       qemuPrint;
     import util.messages: print, panic;
 
     print("CPU: Obtaining information and enabling features\n");
@@ -188,15 +187,14 @@ void initCPU() {
 
     debug {
         char* featureSign(bool c) {
-            return c ? cast(char*)"+" : cast(char*)"-";
+            return c ? cast(char*)"\x1b[32m+\x1b[37m" :
+                       cast(char*)"\x1b[31m-\x1b[37m";
         }
 
-        qemuPrint("CPUID:\n");
-
-        qemuPrint("%sSSE3, %sx2APIC, %sMSR, %sAPIC, %sACPI, %sSSE2\n",
-                  featureSign(cpuid.hasSSE3), featureSign(cpuid.hasx2APIC),
-                  featureSign(cpuid.hasMSR),  featureSign(cpuid.hasAPIC),
-                  featureSign(cpuid.hasACPI), featureSign(cpuid.hasSSE2));
+        print("\tCPUID: %sSSE3, %sx2APIC, %sMSR, %sAPIC, %sACPI, %sSSE2\n",
+              featureSign(cpuid.hasSSE3), featureSign(cpuid.hasx2APIC),
+              featureSign(cpuid.hasMSR),  featureSign(cpuid.hasAPIC),
+              featureSign(cpuid.hasACPI), featureSign(cpuid.hasSSE2));
     }
 
     // Check dependencies of the system
@@ -212,7 +210,7 @@ void initCPU() {
     if (cpuid.hasSSE3) {
         // TODO: Enable SSE3
         debug {
-            qemuPrint("SSE3 was detected and enabled successfully\n");
+            print("\tSSE3 was detected and enabled successfully\n");
         }
     } else if (cpuid.hasSSE2) {
         asm {
@@ -229,7 +227,7 @@ void initCPU() {
         }
 
         debug {
-            qemuPrint("SSE2 was detected and enabled successfully\n");
+            print("\tSSE2 was detected and enabled successfully\n");
         }
     }
 }

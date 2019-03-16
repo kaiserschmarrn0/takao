@@ -4,8 +4,34 @@
 
 module system.interrupts.apic;
 
+import memory.constants: physicalMemoryOffset;
+import system.acpi.madt;
+
+__gshared uint* localAPICEOIPointer;
+
 void enableAPIC() {
+    import util.messages:    print;
+
+    debug {
+        print("\tDisabling PIC...\n");
+    }
+
     disablePIC();
+
+    debug {
+        print("\tInstalling non-maskable interrupts (NMIs)...\n");
+    }
+
+    installLocalAPICNMIs();
+
+    debug {
+        print("\tEnabling local APIC...\n");
+    }
+
+    enableLocalAPIC();
+
+    auto localAPICBase = madt.localControllerAddress + physicalMemoryOffset;
+    localAPICEOIPointer = cast(uint*)(localAPICBase + 0xB0);
 }
 
 void disablePIC() {
@@ -59,4 +85,43 @@ void disablePIC() {
     wait();
     outb(0xA1, 0xFF);
     wait();
+}
+
+void installLocalAPICNMIs() {
+    foreach (i; 0..madtNMIID) {
+        // Reserve vectors 0x90 .. length of(madtNMIs) for NMIs.
+        setLocalAPICNMI(0x90 + i, madtNMIs[i].flags, madtNMIs[i].lint);
+    }
+}
+
+void setLocalAPICNMI(ulong vector, ushort flags, ubyte lint) {
+    auto nmi = cast(uint)(800 | vector);
+
+    if (flags & 2) {
+        nmi |= (1 << 13);
+    }
+
+    if (flags & 8) {
+        nmi |= (1 << 15);
+    }
+
+    if (lint == 1) {
+        writeLocalAPIC(0x360, nmi);
+    } else if (lint == 0) {
+        writeLocalAPIC(0x350, nmi);
+    }
+}
+
+void enableLocalAPIC() {
+    writeLocalAPIC(0xF0, readLocalAPIC(0xF0) | 0x1FF);
+}
+
+uint readLocalAPIC(uint reg) {
+    auto base = madt.localControllerAddress + physicalMemoryOffset;
+    return *(cast(uint*)(base + reg));
+}
+
+void writeLocalAPIC(uint reg, uint data) {
+    auto base = madt.localControllerAddress + physicalMemoryOffset;
+    *(cast(uint*)(base + reg)) = data;
 }
