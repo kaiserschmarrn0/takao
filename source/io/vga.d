@@ -11,7 +11,8 @@ private immutable auto termRows    = 25;
 private immutable auto videoBottom = (termRows * termColumns) - 1;
 private immutable auto tabSize     = 4;
 
-private __gshared char* videoMemory   = cast(char*)(0xB8000 + physicalMemoryOffset);
+private __gshared char* buffer   = cast(char*)(0xB8000 + physicalMemoryOffset);
+
 private __gshared uint  cursorOffset  = 0;
 private __gshared bool  cursorEnabled = true;
 private __gshared ubyte textPalette   = 0x07;
@@ -36,8 +37,8 @@ private void clearTerm() {
     clearCursor();
 
     for (auto i = 0; i < videoBottom; i += 2) {
-        videoMemory[i]     = ' ';
-        videoMemory[i + 1] = textPalette;
+        buffer[i]     = ' ';
+        buffer[i + 1] = textPalette;
     }
 
     cursorOffset = 0;
@@ -46,24 +47,24 @@ private void clearTerm() {
 
 private void drawCursor() {
     if (cursorEnabled) {
-        videoMemory[cursorOffset + 1] = cursorPalette;
+        buffer[cursorOffset + 1] = cursorPalette;
     }
 }
 
 private void clearCursor() {
-    videoMemory[cursorOffset + 1] = textPalette;
+    buffer[cursorOffset + 1] = textPalette;
 }
 
 private void scroll() {
     // Move the text up by one row
     foreach (i; 0..videoBottom - termColumns + 1) {
-        videoMemory[i] = videoMemory[i + termColumns];
+        buffer[i] = buffer[i + termColumns];
     }
 
     // Clear the last line of the screen
     for (size_t i = videoBottom; i > videoBottom - termColumns; i -= 2) {
-        videoMemory[i]     = textPalette;
-        videoMemory[i - 1] = ' ';
+        buffer[i]     = textPalette;
+        buffer[i - 1] = ' ';
     }
 }
 
@@ -71,8 +72,8 @@ private void clearTermNoMove() {
     clearCursor();
 
     for (auto i = 0; i < videoBottom; i += 2) {
-        videoMemory[i]     = ' ';
-        videoMemory[i + 1] = textPalette;
+        buffer[i]     = ' ';
+        buffer[i + 1] = textPalette;
     }
 
     drawCursor();
@@ -268,14 +269,14 @@ void vgaPutChar(char c) {
             if (cursorOffset) {
                 clearCursor();
                 cursorOffset -= 2;
-                videoMemory[cursorOffset] = ' ';
+                buffer[cursorOffset] = ' ';
                 drawCursor();
             }
 
             break;
         default:
             clearCursor();
-            videoMemory[cursorOffset] = cast(ubyte)c;
+            buffer[cursorOffset] = cast(ubyte)c;
 
             if (cursorOffset >= (videoBottom - 1)) {
                 scroll();

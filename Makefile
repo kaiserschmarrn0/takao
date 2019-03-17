@@ -10,27 +10,39 @@ override sourceDir = source
 override buildDir = build
 
 DC = ldc2
-LD = ld
+LD = ld.lld
 AS = nasm
 
 DFLAGS = -O2
+
+LDFLAGS = --oformat elf_amd64 --Bstatic --nostdlib -T $(buildDir)/linker.ld
 
 DFLAGS_INTERNAL := $(DFLAGS) -mtriple=x86_64-elf -relocation-model=static \
 	-code-model=kernel -mattr=-sse,-sse2,-sse3,-ssse3 -disable-red-zone \
 	-betterC -op -I=./source
 
-ifeq ($(DEBUG), on)
-DFLAGS_INTERNAL := $(DFLAGS_INTERNAL) -gc -d-debug=1
+QEMU_FLAGS := -m 5G -net none \
+	-drive file=$(ISO),index=0,media=disk,format=raw \
+
+ifneq ($(DEBUG), on)
+QEMU_FLAGS := $(QEMU_FLAGS) -monitor stdio
 endif
 
-LDFLAGS = -nostdlib -T $(buildDir)/linker.ld
+ifeq ($(DEBUG), on)
+DFLAGS_INTERNAL := $(DFLAGS_INTERNAL) -gc -d-debug=1
+QEMU_FLAGS := $(QEMU_FLAGS) -debugcon stdio
+endif
+
+ifeq ($(KVM), on)
+QEMU_FLAGS := $(QEMU_FLAGS) -enable-kvm -cpu host
+endif
 
 realModeSource = $(shell find $(sourceDir) -type f -name '*.real')
-DSource = $(shell find $(sourceDir) -type f -name '*.d')
-ASMSource = $(shell find $(sourceDir) -type f -name '*.asm')
+dSource = $(shell find $(sourceDir) -type f -name '*.d')
+asmSource = $(shell find $(sourceDir) -type f -name '*.asm')
 
 binaries = $(realModeSource:.real=.bin)
-objects = $(DSource:.d=.o) $(ASMSource:.asm=.o)
+objects = $(dSource:.d=.o) $(asmSource:.asm=.o)
 
 .PHONY: all iso test clean
 
@@ -58,21 +70,6 @@ iso: all
 	@sed -i "s/IMAGE/$(image)/g" isodir/boot/grub/grub.cfg
 	@grub-mkrescue -o $(ISO) isodir
 	@rm -rf isodir
-
-QEMU_FLAGS := -m 2G -net none \
-	-drive file=$(ISO),index=0,media=disk,format=raw \
-
-ifeq ($(KVM), on)
-QEMU_FLAGS := $(QEMU_FLAGS) -enable-kvm -cpu host
-endif
-
-ifneq ($(DEBUG), on)
-QEMU_FLAGS := $(QEMU_FLAGS) -monitor stdio
-endif
-
-ifeq ($(DEBUG), on)
-QEMU_FLAGS := $(QEMU_FLAGS) -debugcon stdio
-endif
 
 test: iso
 	@qemu-system-x86_64 $(QEMU_FLAGS)

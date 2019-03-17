@@ -10,11 +10,11 @@ extern (C) void __assert(const(char)* exp, const(char)* file, const(char)* line)
     panic("Failed assertion!");
 }
 
-extern (C) void* memset(void* s, int c, uint n) {
-    auto pointer = cast(ubyte*) s;
+extern (C) void* memset(void* s, int c, ulong n) {
+    auto pointer = cast(ubyte*)s;
 
     foreach (i; 0..n) {
-        pointer[i] = cast(ubyte) c;
+        pointer[i] = cast(ubyte)c;
     }
 
     return s;

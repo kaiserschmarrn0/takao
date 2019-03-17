@@ -18,12 +18,12 @@ private extern extern(C) void get_e820(E820Entry*);
 void getE820() {
     import util.term: print;
 
-    print("E820: Obtaining memory map\n");
+    print("Obtaining the E820 memory map...\n");
 
     get_e820(&e820Map[0]);
 
     debug {
-        auto memorySize = 0;
+        ulong memorySize = 0;
 
         foreach (entry; e820Map) {
             if (!entry.type) break;

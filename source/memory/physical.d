@@ -1,8 +1,8 @@
-// pmm.d - Physical memory manager
+// physical.d - Physical memory management
 // (C) 2019 the takao authors (AUTHORS.md). All rights reserved
 // This code is governed by a license that can be found in LICENSE.md
 
-module memory.pmm;
+module memory.physical;
 
 import memory.constants;
 
@@ -17,17 +17,17 @@ private __gshared size_t bitmapEntries = 32;
 
 private __gshared size_t currentPointer = bitmapBase;
 
-void initPMM() {
+void initPhysicalBitmap() {
     import memory.e820: e820Map;
     import util.term:   print, panic;
 
-    print("PMM: Initialising\n");
+    print("Initialising the physical memory bitmap...\n");
 
     memoryBitmap = &initialBitmap[0];
     tempBitmap   = cast(uint*)pmmAlloc(bitmapReallocStep, false);
 
     if (!tempBitmap) {
-        panic("pmmAlloc failure in initPMM()");
+        panic("pmmAlloc failure in initPhysicalBitmap()");
     }
 
     tempBitmap = cast(uint*)(cast(ulong)tempBitmap + physicalMemoryOffset);
@@ -131,10 +131,10 @@ found:
         writeBitmap(i, true);
     }
 
-    void *ret = cast(void*)(start * pageSize);
+    void* ret = cast(void*)(start * pageSize);
 
     if (zero) {
-        auto ptr = cast(ulong*)ret;
+        auto ptr = cast(ulong*)(cast(ulong)ret + physicalMemoryOffset);
 
         foreach (i; 0..(pageCount * pageSize) / ulong.sizeof) {
             ptr[i] = 0;

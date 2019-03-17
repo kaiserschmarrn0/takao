@@ -8,7 +8,7 @@ void initCPU() {
     import system.cpu.cpuid: getCPUID, checkFeatures, enableFeatures;
     import util.term:        print;
 
-    print("CPU: Obtaining information and enabling features...\n");
+    print("Obtaining CPU information and enabling features...\n");
 
     getCPUID();
 

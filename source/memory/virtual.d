@@ -1,8 +1,8 @@
-// vmm.d - Virtual memory manager
+// virtual.d - Virtual memory management
 // (C) 2019 the takao authors (AUTHORS.md). All rights reserved
 // This code is governed by a license that can be found in LICENSE.md
 
-module memory.vmm;
+module memory.virtual;
 
 import memory.constants;
 
@@ -10,12 +10,12 @@ alias PageTableEntry = ulong;
 
 __gshared PageTableEntry* pageMap;
 
-void initVMM() {
-    import memory.e820: e820Map;
-    import memory.pmm:  pmmAlloc;
-    import util.term:   print, panic;
+void mapGlobalMemory() {
+    import memory.e820:     e820Map;
+    import memory.physical: pmmAlloc;
+    import util.term:       print, panic;
 
-    print("VMM: Initialising\n");
+    print("Mapping the first 4GiB of memory...\n");
 
     // We will map the first 4GiB of memory, this saves issues
     // with MMIO hardware that lies on addresses < 4GiB later on.
@@ -24,17 +24,54 @@ void initVMM() {
 
     // Catch allocation failure
     if (cast(size_t)pageMap == physicalMemoryOffset) {
-        panic("pmmAlloc failure in initVMM()");
+        panic("pmmAlloc failure in mapGlobalMemory()");
     }
 
     // Identity map the first 32 MiB and map 32 MiB for the phys mem area, and
     // 32 MiB for the kernel in the higher half
-    foreach (i; 0..0x2000000 / pageSize) {
-        auto addr = i * pageSize;
+    foreach (i; 0..(0x2000000 / pageSize)) {
+        ulong addr = i * pageSize;
 
         mapPage(pageMap, addr, addr, 0x03);
         mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
         mapPage(pageMap, kernelPhysicalMemoryOffset + addr, addr, 0x03);
+    }
+
+    // Forcefully map from the first 32 MiB to the the first 4 GiB for I/O
+    // into the higher half
+    foreach (ulong i; (0x2000000 / pageSize)..(0x100000000 / pageSize)) {
+        ulong addr = i * pageSize;
+
+        mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
+    }
+
+    // Then use the e820 to map all the available memory (saves on allocation
+    // time and it's easier).
+    // The physical memory is mapped at the beginning of the higher half
+    // (entry 256 of the pml4) onwards.
+    // TODO: This page faults (#PF), fixing it wouldnt be that bad
+    for (auto i = 0; e820Map[i].type; i++) {
+        size_t alignedBase   = e820Map[i].base - (e820Map[i].base % pageSize);
+        size_t alignedLength = (e820Map[i].length * pageSize) / pageSize;
+
+        if (e820Map[i].length % pageSize) {
+            alignedLength += pageSize;
+        }
+
+        if (e820Map[i].base % pageSize) {
+            alignedLength += pageSize;
+        }
+
+        for (ulong j = 0; j * pageSize < alignedLength; j++) {
+            ulong addr = alignedBase + j * pageSize;
+
+            // Skip over first 4 GiB
+            if (addr < 0x100000000) {
+                continue;
+            }
+
+            mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
+        }
     }
 
     // Reload new pagemap
@@ -44,43 +81,13 @@ void initVMM() {
         mov RAX, newCR3;
         mov CR3, RAX;
     }
-
-    // Forcefully map the first 4 GiB for I/O into the higher half
-    foreach (i; 0..0x100000000 / pageSize) {
-        auto addr = i * pageSize;
-
-        mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
-    }
-
-    // Then use the e820 to map all the available memory (saves on allocation
-    // time and it's easier).
-    // The physical memory is mapped at the beginning of the higher half
-    // (entry 256 of the pml4) onwards.
-    for (auto i = 0; e820Map[i].type; i++) {
-        size_t alignedBase   = e820Map[i].base - (e820Map[i].base % pageSize);
-        size_t alignedLength = (e820Map[i].length + pageSize - 1) &
-                               ~(pageSize - 1);
-
-        if (e820Map[i].length % pageSize) alignedLength += pageSize;
-
-        if (e820Map[i].base % pageSize) alignedLength += pageSize;
-
-        for (auto j = 0; j * pageSize < alignedLength; j++) {
-            auto addr = alignedBase + j * pageSize;
-
-            // Skip over first 4 GiB
-            if (addr < 0x100000000) continue;
-
-            mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
-        }
-    }
 }
 
 // map physaddr -> virtaddr using pml4 pointer
 // Returns 0 on success, -1 on failure
 int mapPage(PageTableEntry* pagemap, size_t virtualAddress,
             size_t physicalAddress, size_t flags) {
-    import memory.pmm: pmmAlloc, pmmFree;
+    import memory.physical: pmmAlloc, pmmFree;
 
     // Calculate the indices in the various tables using the virtual address
     size_t pml4Entry = (virtualAddress & (cast(size_t)0x1FF << 39)) >> 39;
@@ -99,7 +106,9 @@ int mapPage(PageTableEntry* pagemap, size_t virtualAddress,
                physicalMemoryOffset);
 
         // Catch allocation failure
-        if (cast(size_t)pdpt == physicalMemoryOffset) goto fail1;
+        if (cast(size_t)pdpt == physicalMemoryOffset) {
+            goto fail1;
+        }
 
         // Present + writable + user (0b111)
         pagemap[pml4Entry] = cast(PageTableEntry)(cast(size_t)pdpt -
@@ -115,7 +124,9 @@ int mapPage(PageTableEntry* pagemap, size_t virtualAddress,
              physicalMemoryOffset);
 
         // Catch allocation failure
-        if (cast(size_t)pdpt == physicalMemoryOffset) goto fail2;
+        if (cast(size_t)pdpt == physicalMemoryOffset) {
+            goto fail2;
+        }
 
         // Present + writable + user (0b111)
         pdpt[pdptEntry] = cast(PageTableEntry)(cast(size_t)pd -
@@ -177,7 +188,7 @@ fail1:
 }
 
 int unmapPage(PageTableEntry* pagemap, size_t virtualAddress) {
-    import memory.pmm: pmmFree;
+    import memory.physical: pmmFree;
 
     // Calculate the indices in the various tables using the virtual address
     size_t pml4Entry = (virtualAddress & (cast(size_t)0x1FF << 39)) >> 39;

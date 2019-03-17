@@ -10,8 +10,8 @@ extern(C) void main() {
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
     import system.acpi:       getACPIInfo;
     import memory.e820:       getE820;
-    import memory.pmm:        initPMM;
-    import memory.vmm:        initVMM;
+    import memory.physical:   initPhysicalBitmap;
+    import memory.virtual:    mapGlobalMemory;
     import util.term:         print, panic;
 
     initVGA();
@@ -23,8 +23,8 @@ extern(C) void main() {
     initCPU();
 
     getE820();
-    initPMM();
-    initVMM();
+    initPhysicalBitmap();
+    mapGlobalMemory();
 
     getACPIInfo();
 

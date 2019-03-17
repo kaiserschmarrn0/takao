@@ -11,13 +11,17 @@ private struct allocMetadata {
 
 void* alloc(size_t size) {
     import memory.constants;
-    import memory.pmm: pmmAlloc;
+    import memory.physical: pmmAlloc;
 
     size_t pageCount = (size + pageSize - 1) / pageSize;
 
     auto ptr = cast(ubyte*)pmmAlloc(pageCount + 1, true);
 
-    if (!ptr) return null;
+    if (!ptr) {
+        return null;
+    }
+
+    ptr += physicalMemoryOffset;
 
     auto metadata = cast(allocMetadata*)ptr;
     ptr          += pageSize;
@@ -30,9 +34,10 @@ void* alloc(size_t size) {
 
 void free(void* ptr) {
     import memory.constants;
-    import memory.pmm: pmmFree;
+    import memory.physical: pmmFree;
 
     auto metadata = cast(allocMetadata*)(cast(ulong)ptr - pageSize);
+    auto metadataPhys = cast(void*)(cast(ulong)metadata - physicalMemoryOffset);
 
-    pmmFree(cast(void*)metadata, metadata.pages + 1);
+    pmmFree(metadataPhys, metadata.pages + 1);
 }

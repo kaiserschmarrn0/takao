@@ -281,7 +281,8 @@ void GPHandler() {
 // - A reserved bit in the page directory or table entries is set to 1.
 // The saved instruction pointer points to the instruction which caused the
 // exception.
-// Error Code: 31              4               0
+// Error Code:
+//             31              4               0
 //            +---+--  --+---+---+---+---+---+---+
 //            |   Reserved   | I | R | U | W | P |
 //            +---+--  --+---+---+---+---+---+---+
