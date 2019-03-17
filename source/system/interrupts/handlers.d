@@ -4,20 +4,53 @@
 
 module system.interrupts.handlers;
 
-void defaultSoftwareHandler() {
-    import util.messages: panic;
+void defaultInterruptHandler() {
+    import util.term: panic;
 
-    panic(cast(char*)"An unhandled software interrupt was raised!");
+    panic("An unhandled interrupt ocurred!");
 }
 
-void defaultHardwareHandler() {
-    import util.messages: panic;
-
-    panic(cast(char*)"An unhandled hardware interrupt was raised!");
+void irq0Handler() {
+    // PIT code
 }
 
-void miscSoftwareHandler() {
-    import util.messages: w = warning;
+void irq1Handler() {
+    // Keyboard driver
+}
 
-    w(cast(char*)"The misc software handler interrupt is not implemented yet");
+void apicNMIHandler() {
+    import system.interrupts.apic: eoiLocalAPIC;
+    import util.term:              panic;
+
+    eoiLocalAPIC();
+
+    panic("Non-maskable APIC interrupt (NMI) occured. Possible hardware issue");
+}
+
+void masterPICHandler() {
+    import io.ports:  outb;
+    import util.term: panic;
+
+    outb(0x20, 0x20);
+
+    panic("An spurious interrupt sent by the master PIC occured");
+}
+
+void slavePICHandler() {
+    import io.ports:  outb;
+    import util.term: panic;
+
+    outb(0xA0, 0x20);
+    outb(0x20, 0x20);
+
+    panic("An spurious interrupt sent by the slave PIC occured");
+}
+
+void apicSpuriousHandler() {
+    import system.interrupts.apic: eoiLocalAPIC;
+    import util.term:              panic;
+
+    eoiLocalAPIC();
+
+    panic("Spurious APIC interrupt occured");
 }

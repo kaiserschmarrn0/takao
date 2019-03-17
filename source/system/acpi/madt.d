@@ -75,9 +75,9 @@ __gshared MADTNMI** madtNMIs;
 __gshared ulong     madtNMIID = 0;
 
 void initMADT() {
-    import system.acpi:   findSDT;
-    import memory.alloc:  alloc;
-    import util.messages: panic;
+    import system.acpi:  findSDT;
+    import memory.alloc: alloc;
+    import util.term:    panic;
 
     madt = cast(MADT*)findSDT("APIC");
 

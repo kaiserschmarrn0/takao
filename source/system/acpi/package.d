@@ -52,11 +52,11 @@ __gshared RSDP* rsdp;
 __gshared RSDT* rsdt;
 __gshared XSDT* xsdt;
 
-void initACPI() {
+void getACPIInfo() {
     import memory.constants: physicalMemoryOffset;
     import system.acpi.madt: initMADT;
     import util.lib:         areEquals;
-    import util.messages:    print, panic;
+    import util.term:        print, panic;
 
     print("ACPI: Initialising\n");
 

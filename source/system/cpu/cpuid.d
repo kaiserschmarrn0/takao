@@ -1,8 +1,8 @@
-// cpu.d - CPU state and features
+// cpuid.d - CPU features and enabling
 // (C) 2019 the takao authors (AUTHORS.md). All rights reserved
 // This code is governed by a license that can be found in LICENSE.md
 
-module system.cpu;
+module system.cpu.cpuid;
 
 // CPUID bits in registers
 enum CPUIDinRCXwithRAX1 : ulong {
@@ -158,10 +158,8 @@ struct CPUID {
 
 __gshared CPUID cpuid;
 
-void initCPU() {
-    import util.messages: print, panic;
-
-    print("CPU: Obtaining information and enabling features\n");
+void getCPUID() {
+    import util.term: print;
 
     ulong c, d, c2, d2;
 
@@ -196,8 +194,11 @@ void initCPU() {
               featureSign(cpuid.hasMSR),  featureSign(cpuid.hasAPIC),
               featureSign(cpuid.hasACPI), featureSign(cpuid.hasSSE2));
     }
+}
 
-    // Check dependencies of the system
+void checkFeatures() {
+    import util.term: panic;
+
     if (!cpuid.hasMSR) {
         panic("No MSR wont allow enabling certain features");
     }
@@ -205,8 +206,11 @@ void initCPU() {
     if (!cpuid.hasAPIC && !cpuid.hasx2APIC) {
         panic("x2APIC/APIC is needed for interrupts");
     }
+}
 
-    // Enabling things
+void enableFeatures() {
+    import util.term: print;
+
     if (cpuid.hasSSE3) {
         // TODO: Enable SSE3
         debug {

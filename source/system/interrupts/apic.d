@@ -10,7 +10,7 @@ import system.acpi.madt;
 __gshared uint* localAPICEOIPointer;
 
 void enableAPIC() {
-    import util.messages:    print;
+    import util.term: print;
 
     debug {
         print("\tDisabling PIC...\n");
@@ -124,4 +124,8 @@ uint readLocalAPIC(uint reg) {
 void writeLocalAPIC(uint reg, uint data) {
     auto base = madt.localControllerAddress + physicalMemoryOffset;
     *(cast(uint*)(base + reg)) = data;
+}
+
+void eoiLocalAPIC() {
+    writeLocalAPIC(0xB0, 0);
 }

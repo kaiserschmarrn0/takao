@@ -466,7 +466,7 @@ private extern(C) void exceptionEntry(uint exceptionNumber, bool hasErrorCode) {
 
 private extern(C) void exceptionHandler(InterruptStackState* stack,
                                         uint exception) {
-    import util.messages: print, panic;
+    import util.term: print, panic;
 
     print("SS:         %x\n", stack.ss);
     print("RSP:        %x\n", stack.rsp);

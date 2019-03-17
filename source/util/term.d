@@ -6,10 +6,15 @@ module util.messages;
 
 public import core.stdc.stdarg;
 
-void print(char message) {
-    import io.term: putChar;
+void print(char character) {
+    import io.vga:  vgaPutChar;
+    import io.qemu: qemuPutChar;
 
-    putChar(message);
+    debug {
+        qemuPutChar(character);
+    }
+
+    vgaPutChar(character);
 }
 
 void print(const char* message) {
@@ -57,6 +62,11 @@ extern(C) void print(const char* format, ...) {
 
 void warning(const char* message) {
     print("\x1b[35mThe kernel reported a warning\x1b[37m: %s\n", message);
+    printControlRegisters();
+}
+
+void error(const char* message) {
+    print("\x1b[33mThe kernel reported an error\x1b[37m: %s\n", message);
     printControlRegisters();
 }
 

@@ -5,17 +5,16 @@
 module main;
 
 extern(C) void main() {
-    import io.term:           initTerm;
+    import io.vga:            initVGA;
     import system.cpu:        initCPU;
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
-    import system.acpi:       initACPI;
-    import system.pit:        enablePIT;
+    import system.acpi:       getACPIInfo;
     import memory.e820:       getE820;
     import memory.pmm:        initPMM;
     import memory.vmm:        initVMM;
-    import util.messages:     print, panic;
+    import util.term:         print, panic;
 
-    initTerm();
+    initVGA();
 
     print("Reached main(), booting up...\t\t\t\t\t\t\t\t:kongoudisgust:\n");
 
@@ -27,11 +26,9 @@ extern(C) void main() {
     initPMM();
     initVMM();
 
-    initACPI();
+    getACPIInfo();
 
     secondStageInterrupts();
-
-    enablePIT();
 
     panic("End of the kernel");
 }

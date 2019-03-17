@@ -1,8 +1,8 @@
-// term.d - VGA textmode terminal
+// vga.d - VGA textmode driver
 // (C) 2019 the takao authors (AUTHORS.md). All rights reserved
 // This code is governed by a license that can be found in LICENSE.md
 
-module io.term;
+module io.vga;
 
 import memory.constants;
 
@@ -24,7 +24,7 @@ private __gshared int   escDefault0   = 1;
 private __gshared int   escDefault1   = 1;
 private __gshared int*  escDefault    = &escDefault0;
 
-void initTerm() {
+void initVGA() {
     import io.ports: outb;
 
     outb(0x3D4, 0x0A);
@@ -32,14 +32,26 @@ void initTerm() {
     clearTerm();
 }
 
-private void clearCursor() {
-    videoMemory[cursorOffset + 1] = textPalette;
+private void clearTerm() {
+    clearCursor();
+
+    for (auto i = 0; i < videoBottom; i += 2) {
+        videoMemory[i]     = ' ';
+        videoMemory[i + 1] = textPalette;
+    }
+
+    cursorOffset = 0;
+    drawCursor();
 }
 
 private void drawCursor() {
     if (cursorEnabled) {
         videoMemory[cursorOffset + 1] = cursorPalette;
     }
+}
+
+private void clearCursor() {
+    videoMemory[cursorOffset + 1] = textPalette;
 }
 
 private void scroll() {
@@ -55,18 +67,6 @@ private void scroll() {
     }
 }
 
-void clearTerm() {
-    clearCursor();
-
-    for (auto i = 0; i < videoBottom; i += 2) {
-        videoMemory[i]     = ' ';
-        videoMemory[i + 1] = textPalette;
-    }
-
-    cursorOffset = 0;
-    drawCursor();
-}
-
 private void clearTermNoMove() {
     clearCursor();
 
@@ -78,7 +78,7 @@ private void clearTermNoMove() {
     drawCursor();
 }
 
-private const ubyte[] ansiColours = [0, 4, 2, 6, 1, 5, 3, 7];
+private immutable ubyte[] ansiColours = [0, 4, 2, 6, 1, 5, 3, 7];
 
 private void sgr() {
     if (escValue0 >= 30 && escValue0 <= 37) {
@@ -137,7 +137,7 @@ private void parseEscapeSequence(char c) {
                 escValue0 = 1;
             }
 
-            if ((getCursorPositionX() + escValue0) > (termColumns / 2 - 1)) {
+            if (getCursorPositionX() + escValue0 > termColumns / 2 - 1) {
                 escValue0 = (termColumns / 2 - 1) - getCursorPositionX();
             }
 
@@ -192,7 +192,7 @@ private void parseEscapeSequence(char c) {
             }
             break;
         default:
-            putChar('?');
+            vgaPutChar('?');
     }
 
     escValue    = &escValue0;
@@ -204,44 +204,38 @@ private void parseEscapeSequence(char c) {
     escape      = false;
 }
 
-void setCursorPalette(ubyte c) {
+private void setCursorPalette(ubyte c) {
     cursorPalette = c;
     drawCursor();
 }
 
-ubyte getCursorPalette() {
+private ubyte getCursorPalette() {
     return cursorPalette;
 }
 
-void setTextPalette(ubyte c) {
+private void setTextPalette(ubyte c) {
     textPalette = c;
 }
 
-ubyte getTextPalette() {
+private ubyte getTextPalette() {
     return textPalette;
 }
 
-int getCursorPositionX() {
+private int getCursorPositionX() {
     return (cursorOffset % termColumns) / 2;
 }
 
-int getCursorPositionY() {
+private int getCursorPositionY() {
     return cursorOffset / termColumns;
 }
 
-void setCursorPosition(int x, int y) {
+private void setCursorPosition(int x, int y) {
     clearCursor();
     cursorOffset = y * termColumns + x * 2;
     drawCursor();
 }
 
-void putChar(char c) {
-    import io.qemu: qemuPutChar;
-
-    debug {
-        qemuPutChar(c);
-    }
-
+void vgaPutChar(char c) {
     if (escape) {
         parseEscapeSequence(c);
         return;

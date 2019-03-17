@@ -18,13 +18,13 @@ private __gshared size_t bitmapEntries = 32;
 private __gshared size_t currentPointer = bitmapBase;
 
 void initPMM() {
-    import memory.e820:   e820Map;
-    import util.messages: print, panic;
+    import memory.e820: e820Map;
+    import util.term:   print, panic;
 
     print("PMM: Initialising\n");
 
     memoryBitmap = &initialBitmap[0];
-    tempBitmap = cast(uint*)pmmAlloc(bitmapReallocStep, false);
+    tempBitmap   = cast(uint*)pmmAlloc(bitmapReallocStep, false);
 
     if (!tempBitmap) {
         panic("pmmAlloc failure in initPMM()");

@@ -6,14 +6,14 @@ module memory.vmm;
 
 import memory.constants;
 
-alias PageTableEntry = size_t;
+alias PageTableEntry = ulong;
 
 __gshared PageTableEntry* pageMap;
 
 void initVMM() {
-    import memory.e820:   e820Map;
-    import memory.pmm:    pmmAlloc;
-    import util.messages: print, panic;
+    import memory.e820: e820Map;
+    import memory.pmm:  pmmAlloc;
+    import util.term:   print, panic;
 
     print("VMM: Initialising\n");
 
