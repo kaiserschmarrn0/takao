@@ -37,40 +37,40 @@ void setIDT() {
     };
 
     // Set all the interrupts at first
-    foreach (i; 0..256) {
+    foreach (uint i; 0..idt.length) {
         registerInterruptHandler(i, &defaultInterruptHandler);
     }
 
-    registerInterruptHandler(0,  &DEHandler);
-    registerInterruptHandler(1,  &DBHandler);
-    registerInterruptHandler(2,  &NMIHandler);
-    registerInterruptHandler(3,  &BPHandler);
-    registerInterruptHandler(4,  &OFHandler);
-    registerInterruptHandler(5,  &BRHandler);
-    registerInterruptHandler(6,  &UDHandler);
-    registerInterruptHandler(7,  &NMHandler);
-    registerInterruptHandler(8,  &DFHandler);
-    registerInterruptHandler(9,  &CSOHandler);
-    registerInterruptHandler(10, &TSHandler);
-    registerInterruptHandler(11, &NPHandler);
-    registerInterruptHandler(12, &SSHandler);
-    registerInterruptHandler(13, &GPHandler);
-    registerInterruptHandler(14, &PFHandler);
-    // 15 is reserved.
-    registerInterruptHandler(16, &MFHandler);
-    registerInterruptHandler(17, &ACHandler);
-    registerInterruptHandler(18, &MCHandler);
-    registerInterruptHandler(19, &XFHandler);
-    registerInterruptHandler(20, &VEHandler);
-    // 21 to 29 are reserved.
-    registerInterruptHandler(30, &SXHandler);
-    // 31 is reserved.
+    registerInterruptHandler(0x0, &DEHandler);
+    registerInterruptHandler(0x1, &DBHandler);
+    registerInterruptHandler(0x2, &NMIHandler);
+    registerInterruptHandler(0x3, &BPHandler);
+    registerInterruptHandler(0x4, &OFHandler);
+    registerInterruptHandler(0x5, &BRHandler);
+    registerInterruptHandler(0x6, &UDHandler);
+    registerInterruptHandler(0x7, &NMHandler);
+    registerInterruptHandler(0x8, &DFHandler);
+    registerInterruptHandler(0x9, &CSOHandler);
+    registerInterruptHandler(0xA, &TSHandler);
+    registerInterruptHandler(0xB, &NPHandler);
+    registerInterruptHandler(0xC, &SSHandler);
+    registerInterruptHandler(0xD, &GPHandler);
+    registerInterruptHandler(0xE, &PFHandler);
+    // 0xF is reserved.
+    registerInterruptHandler(0x10, &MFHandler);
+    registerInterruptHandler(0x11, &ACHandler);
+    registerInterruptHandler(0x12, &MCHandler);
+    registerInterruptHandler(0x13, &XFHandler);
+    registerInterruptHandler(0x14, &VEHandler);
+    // 0x15..0x1D are reserved.
+    registerInterruptHandler(0x1E, &SXHandler);
+    // 0x1F is reserved.
 
-    registerInterruptHandler(32, &irq0Handler);
-    registerInterruptHandler(33, &irq1Handler);
+    registerInterruptHandler(0x20, &pitHandler);
+    registerInterruptHandler(0x21, &keyboardHandler);
 
     foreach (i; 0..16) {
-        registerInterruptHandler(144 + i, &apicNMIHandler);
+        registerInterruptHandler(0x90 + i, &apicNMIHandler);
     }
 
     foreach (i; 0..8) {

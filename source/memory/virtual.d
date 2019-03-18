@@ -15,7 +15,7 @@ void mapGlobalMemory() {
     import memory.physical: pmmAlloc;
     import util.term:       print, panic;
 
-    print("Mapping the first 4GiB of memory...\n");
+    print("Mapping the global address space...\n");
 
     // We will map the first 4GiB of memory, this saves issues
     // with MMIO hardware that lies on addresses < 4GiB later on.
@@ -37,9 +37,17 @@ void mapGlobalMemory() {
         mapPage(pageMap, kernelPhysicalMemoryOffset + addr, addr, 0x03);
     }
 
+    // Reload new pagemap
+    auto newCR3 = cast(ulong)pageMap - physicalMemoryOffset;
+
+    asm {
+        mov RAX, newCR3;
+        mov CR3, RAX;
+    }
+
     // Forcefully map from the first 32 MiB to the the first 4 GiB for I/O
     // into the higher half
-    foreach (ulong i; (0x2000000 / pageSize)..(0x100000000 / pageSize)) {
+    foreach (ulong i; 0..(0x100000000 / pageSize)) {
         ulong addr = i * pageSize;
 
         mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
@@ -72,14 +80,6 @@ void mapGlobalMemory() {
 
             mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
         }
-    }
-
-    // Reload new pagemap
-    auto newCR3 = cast(ulong)pageMap - physicalMemoryOffset;
-
-    asm {
-        mov RAX, newCR3;
-        mov CR3, RAX;
     }
 }
 

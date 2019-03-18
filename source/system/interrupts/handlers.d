@@ -10,11 +10,11 @@ void defaultInterruptHandler() {
     panic("An unhandled interrupt ocurred!");
 }
 
-void irq0Handler() {
+void pitHandler() {
     // PIT code
 }
 
-void irq1Handler() {
+void keyboardHandler() {
     // Keyboard driver
 }
 
@@ -52,5 +52,5 @@ void apicSpuriousHandler() {
 
     eoiLocalAPIC();
 
-    panic("Spurious APIC interrupt occured");
+    panic("An spurious interrupt sent by the APIC occured");
 }

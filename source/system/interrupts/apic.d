@@ -30,7 +30,7 @@ void enableAPIC() {
 
     enableLocalAPIC();
 
-    auto localAPICBase = madt.localControllerAddress + physicalMemoryOffset;
+    size_t localAPICBase = madt.localControllerAddress + physicalMemoryOffset;
     localAPICEOIPointer = cast(uint*)(localAPICBase + 0xB0);
 }
 
@@ -58,7 +58,7 @@ void disablePIC() {
     outb(0xA0, 0x11);
     wait();
 
-    outb(0x21, 0xA0); // Move master to its new offset
+    outb(0x21, 0xA0); // Move master to its new offset in the IDT
     wait();
     outb(0xA1, 0xA8); // Same with the slave PIC
     wait();
@@ -68,7 +68,7 @@ void disablePIC() {
     outb(0xA1, 2); // Tell the slave PIC its cascade identity (0000 0010)
     wait();
 
-    outb(0x21, 1); // 1 =  8086/88 (MCS-80/85) mode
+    outb(0x21, 1); // 1 = 8086/88 (MCS-80/85) mode
     wait();
     outb(0xA1, 1);
     wait();
@@ -89,7 +89,7 @@ void disablePIC() {
 
 void installLocalAPICNMIs() {
     foreach (i; 0..madtNMIID) {
-        // Reserve vectors 0x90 .. length of(madtNMIs) for NMIs.
+        // Reserve vectors 0x90 .. length of(madtNMIs) for NMIs
         setLocalAPICNMI(0x90 + i, madtNMIs[i].flags, madtNMIs[i].lint);
     }
 }

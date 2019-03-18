@@ -202,7 +202,7 @@ void TSHandler() {
     asm {
         naked;
 
-        mov RDI, 10;
+        mov RDI, 0xA;
         mov RSI, 1;
         call exceptionEntry;
     }
@@ -220,7 +220,7 @@ void NPHandler() {
     asm {
         naked;
 
-        mov RDI, 11;
+        mov RDI, 0xB;
         mov RSI, 1;
         call exceptionEntry;
     }
@@ -245,7 +245,7 @@ void SSHandler() {
     asm {
         naked;
 
-        mov RDI, 12;
+        mov RDI, 0xC;
         mov RSI, 1;
         call exceptionEntry;
     }
@@ -266,7 +266,7 @@ void GPHandler() {
     asm {
         naked;
 
-        mov RDI, 13;
+        mov RDI, 0xD;
         mov RSI, 1;
         call exceptionEntry;
     }
@@ -298,7 +298,7 @@ void PFHandler() {
     asm {
         naked;
 
-        mov RDI, 14;
+        mov RDI, 0xE;
         mov RSI, 1;
         call exceptionEntry;
     }
@@ -318,7 +318,7 @@ void MFHandler() {
     asm {
         naked;
 
-        mov RDI, 16;
+        mov RDI, 0x10;
         mov RSI, 0;
         call exceptionEntry;
     }
@@ -336,7 +336,7 @@ void ACHandler() {
     asm {
         naked;
 
-        mov RDI, 17;
+        mov RDI, 0x11;
         mov RSI, 0;
         call exceptionEntry;
     }
@@ -354,7 +354,7 @@ void MCHandler() {
     asm {
         naked;
 
-        mov RDI, 18;
+        mov RDI, 0x12;
         mov RSI, 0;
         call exceptionEntry;
     }
@@ -372,7 +372,7 @@ void XFHandler() {
     asm {
         naked;
 
-        mov RDI, 19;
+        mov RDI, 0x13;
         mov RSI, 0;
         call exceptionEntry;
     }
@@ -385,7 +385,7 @@ void VEHandler() {
     asm {
         naked;
 
-        mov RDI, 20;
+        mov RDI, 0x14;
         mov RSI, 0;
         call exceptionEntry;
     }
@@ -398,13 +398,13 @@ void SXHandler() {
     asm {
         naked;
 
-        mov RDI, 30;
+        mov RDI, 0x1E;
         mov RSI, 0;
         call exceptionEntry;
     }
 }
 
-private struct InterruptStackState {
+private struct ExceptionStackState {
     ulong errorCode;
     ulong rip;
     ulong cs;
@@ -435,17 +435,17 @@ private immutable char*[] exceptionName = [
     "Machine Check (#MC)",
     "SIMD Floating-Point Exception (#XF)",
     "Virtualization Exception (#VE)",
-    "Reserved (21)",
-    "Reserved (22)",
-    "Reserved (23)",
-    "Reserved (24)",
-    "Reserved (25)",
-    "Reserved (26)",
-    "Reserved (27)",
-    "Reserved (28)",
-    "Reserved (29)",
+    "Reserved (0x15)",
+    "Reserved (0x16)",
+    "Reserved (0x17)",
+    "Reserved (0x18)",
+    "Reserved (0x19)",
+    "Reserved (0x1A)",
+    "Reserved (0x1B)",
+    "Reserved (0x1C)",
+    "Reserved (0x1D)",
     "Security Exception (#SX)",
-    "Reserved (31)"
+    "Reserved (0x1F)"
 ];
 
 private extern(C) void exceptionEntry(uint exceptionNumber, bool hasErrorCode) {
@@ -465,7 +465,7 @@ private extern(C) void exceptionEntry(uint exceptionNumber, bool hasErrorCode) {
     }
 }
 
-private extern(C) void exceptionHandler(InterruptStackState* stack,
+private extern(C) void exceptionHandler(ExceptionStackState* stack,
                                         uint exception) {
     import util.term: print, panic;
 

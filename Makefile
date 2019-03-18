@@ -21,7 +21,7 @@ DFLAGS_INTERNAL := $(DFLAGS) -mtriple=x86_64-elf -relocation-model=static \
 	-code-model=kernel -mattr=-sse,-sse2,-sse3,-ssse3 -disable-red-zone \
 	-betterC -op -I=./source
 
-QEMU_FLAGS := -m 5G -net none \
+QEMU_FLAGS := -m 2G -net none \
 	-drive file=$(ISO),index=0,media=disk,format=raw \
 
 ifneq ($(DEBUG), on)
