@@ -17,8 +17,8 @@ Make sure you have installed:
 
 * `git` (only if you are using it to download the source)
 * `ldc`, a LLVM based D compiler.
-* `binutils`, for `ld`.
-* `make`
+* `lld`, the LLVM project linker.
+* `make`.
 
 With all of that covered, just clone the source with `git` if you dont
 have it already with:

@@ -57,7 +57,6 @@ void mapGlobalMemory() {
     // time and it's easier).
     // The physical memory is mapped at the beginning of the higher half
     // (entry 256 of the pml4) onwards.
-    // TODO: This page faults (#PF), fixing it wouldnt be that bad
     for (auto i = 0; e820Map[i].type; i++) {
         size_t alignedBase   = e820Map[i].base - (e820Map[i].base % pageSize);
         size_t alignedLength = (e820Map[i].length * pageSize) / pageSize;
