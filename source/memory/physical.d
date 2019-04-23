@@ -26,9 +26,7 @@ void initPhysicalBitmap() {
     memoryBitmap = &initialBitmap[0];
     tempBitmap   = cast(uint*)pmmAlloc(bitmapReallocStep, false);
 
-    if (!tempBitmap) {
-        panic("pmmAlloc failure in initPhysicalBitmap()");
-    }
+    assert(tempBitmap);
 
     tempBitmap = cast(uint*)(cast(ulong)tempBitmap + physicalMemoryOffset);
 
@@ -75,9 +73,7 @@ void initPhysicalBitmap() {
                                               bitmapReallocStep;
                 tempBitmap = cast(uint*)pmmAlloc(newBitmapSizeInPages, false);
 
-                if (!tempBitmap) {
-                    panic("pmmAlloc failure in initPMM()");
-                }
+                assert(tempBitmap);
 
                 tempBitmap = cast(uint*)(cast(size_t)tempBitmap +
                              physicalMemoryOffset);

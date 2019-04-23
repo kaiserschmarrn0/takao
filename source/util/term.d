@@ -6,6 +6,49 @@ module util.messages;
 
 public import core.stdc.stdarg;
 
+private const char[] conversionTable = "0123456789ABCDEF";
+
+private void printInteger(ulong x) {
+    int i;
+    char[21] buf;
+
+    buf[20] = 0;
+
+    if (!x) {
+        print('0');
+        return;
+    }
+
+    for (i = 19; x; i--) {
+        buf[i] = conversionTable[x % 10];
+        x /= 10;
+    }
+
+    i++;
+    print(&buf[i]);
+}
+
+private void printHex(ulong x) {
+    int i;
+    char[17] buf;
+
+    buf[16] = 0;
+
+    if (!x) {
+        print("0x0");
+        return;
+    }
+
+    for (i = 15; x; i--) {
+        buf[i] = conversionTable[x % 16];
+        x /= 16;
+    }
+
+    i++;
+    print("0x");
+    print(&buf[i]);
+}
+
 void print(char character) {
     import io.vga:  vgaPutChar;
     import io.qemu: qemuPutChar;
@@ -24,8 +67,6 @@ void print(const char* message) {
 }
 
 extern(C) void print(const char* format, ...) {
-    import util.convert: toHex, toDecimal;
-
     va_list args;
     va_start(args, format);
 
@@ -45,12 +86,12 @@ extern(C) void print(const char* format, ...) {
                 case 'x':
                     ulong h;
                     va_arg(args, h);
-                    print(toHex(h));
+                    printHex(h);
                     break;
                 case 'u':
                     ulong h;
                     va_arg(args, h);
-                    print(toDecimal(h));
+                    printInteger(h);
                     break;
                 default:
                     print('%');
@@ -84,8 +125,6 @@ void panic(const char* message) {
 }
 
 void printControlRegisters() {
-    import util.convert: toHex;
-
     ulong cr0, cr2, cr3, cr4;
 
     asm {

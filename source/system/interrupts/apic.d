@@ -78,17 +78,10 @@ void disablePIC() {
     wait();
     outb(0xA1, slavePICMask);
     wait();
-
-    // We can tell the PIC to shut (mask all of its interrupts) passing 0xFF to
-    // its data ports.
-    outb(0x21, 0xFF);
-    wait();
-    outb(0xA1, 0xFF);
-    wait();
 }
 
 void installLocalAPICNMIs() {
-    foreach (i; 0..madtNMIID) {
+    foreach (i; 0..madtNMICount) {
         // Reserve vectors 0x90 .. length of(madtNMIs) for NMIs
         setLocalAPICNMI(0x90 + i, madtNMIs[i].flags, madtNMIs[i].lint);
     }

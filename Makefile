@@ -13,7 +13,7 @@ DC = ldc2
 LD = ld.lld
 AS = nasm
 
-DFLAGS = -O2
+DFLAGS = -O2 -mcpu=native
 
 LDFLAGS = -O2 -gc-sections
 
@@ -21,7 +21,7 @@ QEMUFLAGS = -m 2G
 
 DFLAGS_INTERNAL := $(DFLAGS) -mtriple=x86_64-elf -relocation-model=static \
 	-code-model=kernel -mattr=-sse,-sse2,-sse3,-ssse3 -disable-red-zone \
-	-betterC -op -I=./source -d-version=amd64
+	-betterC -op -enable-asserts -I=./source
 
 LDFLAGS_INTERNAL := $(LDFLAGS) --oformat elf_amd64 --Bstatic --nostdlib \
     -T $(buildDir)/linker.ld
@@ -30,7 +30,7 @@ QEMUFLAGS_INTERNAL := $(QEMUFLAGS) \
 	-drive file=$(ISO),index=0,media=disk,format=raw \
 
 ifeq ($(DEBUG), on)
-DFLAGS_INTERNAL := $(DFLAGS_INTERNAL) -gc -d-debug=1
+DFLAGS_INTERNAL := $(DFLAGS_INTERNAL) -gc -d-debug
 
 QEMUFLAGS_INTERNAL := $(QEMUFLAGS_INTERNAL) -debugcon stdio
 endif
@@ -43,25 +43,28 @@ realModeSource = $(shell find $(sourceDir) -type f -name '*.real')
 dSource        = $(shell find $(sourceDir) -type f -name '*.d')
 asmSource      = $(shell find $(sourceDir) -type f -name '*.asm')
 
+shcolour = $(shell tput sgr0)$(shell tput setaf 5)
+shreset  = $(shell tput sgr0)
+
 binaries = $(realModeSource:.real=.bin)
 objects  = $(dSource:.d=.o) $(asmSource:.asm=.o)
 
 .PHONY: all iso test clean
 
 all: $(binaries) $(objects)
-	@printf "\e[0;35m$(LD)\e[0m '$(image)'...\n"
+	@echo "$(shcolour)$(LD)$(shreset) '$(image)'..."
 	@$(LD) $(LDFLAGS_INTERNAL) $(objects) -o $(image)
 
 %.o: %.d
-	@printf "\e[0;35m$(DC)\e[0m '$@'...\n"
+	@echo "$(shcolour)$(DC)$(shreset) '$@'..."
 	@$(DC) $(DFLAGS_INTERNAL) -c $< $@
 
 %.o: %.asm
-	@printf "\e[0;35m$(AS)\e[0m '$@'...\n"
+	@echo "$(shcolour)$(AS)$(shreset) '$@'..."
 	@$(AS) $< -f elf64 -o $@
 
 %.bin: %.real
-	@printf "\e[0;35m$(AS) (Real mode)\e[0m '$@'...\n"
+	@echo "$(shcolour)$(AS) (Real mode)$(shreset) '$@'..."
 	@$(AS) $< -f bin -o $@
 
 iso: all

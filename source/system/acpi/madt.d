@@ -63,16 +63,16 @@ struct MADTNMI {
 __gshared MADT* madt;
 
 __gshared MADTLocalAPIC** madtLocalAPICs;
-__gshared ulong           madtLocalAPICID = 0;
+__gshared ulong           madtLocalAPICCount = 0;
 
 __gshared MADTIOAPIC** madtIOAPICs;
-__gshared ulong        madtIOAPICID = 0;
+__gshared ulong        madtIOAPICCount = 0;
 
 __gshared MADTISO** madtISOs;
-__gshared ulong     madtISOID = 0;
+__gshared ulong     madtISOCount = 0;
 
 __gshared MADTNMI** madtNMIs;
-__gshared ulong     madtNMIID = 0;
+__gshared ulong     madtNMICount = 0;
 
 void initMADT() {
     import system.acpi:  findSDT;
@@ -81,9 +81,7 @@ void initMADT() {
 
     madt = cast(MADT*)findSDT("APIC");
 
-    if (!madt) {
-        panic("The MADT is not available");
-    }
+    assert(madt);
 
     // We wont find more than 256 of each (I hope)
     madtLocalAPICs = cast(MADTLocalAPIC**)alloc(256);
@@ -98,19 +96,19 @@ void initMADT() {
         switch (*(madtPtr)) {
             case 0:
                 // Processor local APIC
-                madtLocalAPICs[madtLocalAPICID++] = cast(MADTLocalAPIC*)madtPtr;
+                madtLocalAPICs[madtLocalAPICCount++] = cast(MADTLocalAPIC*)madtPtr;
                 break;
             case 1:
                 // I/O APIC
-                madtIOAPICs[madtIOAPICID++] = cast(MADTIOAPIC*)madtPtr;
+                madtIOAPICs[madtIOAPICCount++] = cast(MADTIOAPIC*)madtPtr;
                 break;
             case 2:
                 // Interrupt Source Override
-                madtISOs[madtISOID++] = cast(MADTISO*)madtPtr;
+                madtISOs[madtISOCount++] = cast(MADTISO*)madtPtr;
                 break;
             case 4:
                 // NMI
-                madtNMIs[madtNMIID++] = cast(MADTNMI*)madtPtr;
+                madtNMIs[madtNMICount++] = cast(MADTNMI*)madtPtr;
                 break;
             default:
         }

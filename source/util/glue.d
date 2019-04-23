@@ -4,9 +4,11 @@
 
 module util.glue;
 
-extern (C) void __assert(const(char)* exp, const(char)* file, const(char)* line) {
-    import util.term: panic;
+extern (C) void __assert(char* exp, char* file, uint line) {
+    import util.term: print, panic;
 
+    print("In file '%s', line '%u'\n", file, line);
+    print("In '%s'\n", exp);
     panic("Failed assertion!");
 }
 

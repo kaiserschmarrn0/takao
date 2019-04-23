@@ -33,7 +33,7 @@ void masterPICHandler() {
 
     outb(0x20, 0x20);
 
-    panic("An spurious interrupt sent by the master PIC occured");
+    panic("A spurious interrupt sent by the master PIC occured");
 }
 
 void slavePICHandler() {
@@ -43,7 +43,7 @@ void slavePICHandler() {
     outb(0xA0, 0x20);
     outb(0x20, 0x20);
 
-    panic("An spurious interrupt sent by the slave PIC occured");
+    panic("A spurious interrupt sent by the slave PIC occured");
 }
 
 void apicSpuriousHandler() {
@@ -52,5 +52,5 @@ void apicSpuriousHandler() {
 
     eoiLocalAPIC();
 
-    panic("An spurious interrupt sent by the APIC occured");
+    panic("A spurious interrupt sent by the APIC occured");
 }

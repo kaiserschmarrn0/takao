@@ -197,15 +197,8 @@ void getCPUID() {
 }
 
 void checkFeatures() {
-    import util.term: panic;
-
-    if (!cpuid.hasMSR) {
-        panic("No MSR wont allow enabling certain features");
-    }
-
-    if (!cpuid.hasAPIC && !cpuid.hasx2APIC) {
-        panic("x2APIC/APIC is needed for interrupts");
-    }
+    assert(cpuid.hasMSR);
+    assert(cpuid.hasAPIC || cpuid.hasx2APIC);
 }
 
 void enableFeatures() {

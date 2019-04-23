@@ -23,9 +23,7 @@ void mapGlobalMemory() {
                     physicalMemoryOffset);
 
     // Catch allocation failure
-    if (cast(size_t)pageMap == physicalMemoryOffset) {
-        panic("pmmAlloc failure in mapGlobalMemory()");
-    }
+    assert(!(cast(size_t)pageMap == physicalMemoryOffset));
 
     // Identity map the first 32 MiB and map 32 MiB for the phys mem area, and
     // 32 MiB for the kernel in the higher half
