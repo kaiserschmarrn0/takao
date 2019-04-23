@@ -56,9 +56,9 @@ void getACPIInfo() {
     import memory.constants: physicalMemoryOffset;
     import system.acpi.madt: initMADT;
     import util.lib:         areEquals;
-    import util.term:        print, panic;
+    import util.term:        print, info, panic;
 
-    print("Searching for ACPI tables...\n");
+    info("Searching for ACPI tables...");
 
     for (auto i = 0x80000 + physicalMemoryOffset; i < 0x100000 + physicalMemoryOffset; i += 16) {
         // Skip video mem and mapped hardware

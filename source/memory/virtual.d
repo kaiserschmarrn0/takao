@@ -13,9 +13,9 @@ __gshared PageTableEntry* pageMap;
 void mapGlobalMemory() {
     import memory.e820:     e820Map;
     import memory.physical: pmmAlloc;
-    import util.term:       print, panic;
+    import util.term:       print, info, panic;
 
-    print("Mapping the global address space...\n");
+    info("Mapping the global address space...");
 
     // We will map the first 4GiB of memory, this saves issues
     // with MMIO hardware that lies on addresses < 4GiB later on.

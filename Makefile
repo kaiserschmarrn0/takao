@@ -13,7 +13,7 @@ DC = ldc2
 LD = ld.lld
 AS = nasm
 
-DFLAGS = -O2 -mcpu=native
+DFLAGS = -O2 -mcpu=native -dw
 
 LDFLAGS = -O2 -gc-sections
 
@@ -21,7 +21,7 @@ QEMUFLAGS = -m 2G
 
 DFLAGS_INTERNAL := $(DFLAGS) -mtriple=x86_64-elf -relocation-model=static \
 	-code-model=kernel -mattr=-sse,-sse2,-sse3,-ssse3 -disable-red-zone \
-	-betterC -op -enable-asserts -I=./source
+	-betterC -op -I=./source
 
 LDFLAGS_INTERNAL := $(LDFLAGS) --oformat elf_amd64 --Bstatic --nostdlib \
     -T $(buildDir)/linker.ld

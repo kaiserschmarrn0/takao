@@ -5,11 +5,9 @@
 module util.glue;
 
 extern (C) void __assert(char* exp, char* file, uint line) {
-    import util.term: print, panic;
+    import util.term: panic;
 
-    print("In file '%s', line '%u'\n", file, line);
-    print("In '%s'\n", exp);
-    panic("Failed assertion!");
+    panic("In file '%s', line '%u'\n> %s\nFailed assertion", file, line, exp);
 }
 
 extern (C) void* memset(void* s, int c, ulong n) {

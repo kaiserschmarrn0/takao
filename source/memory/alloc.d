@@ -36,7 +36,7 @@ void free(void* ptr) {
     import memory.constants;
     import memory.physical: pmmFree;
 
-    auto metadata = cast(allocMetadata*)(cast(ulong)ptr - pageSize);
+    auto metadata     = cast(allocMetadata*)(cast(ulong)ptr - pageSize);
     auto metadataPhys = cast(void*)(cast(ulong)metadata - physicalMemoryOffset);
 
     pmmFree(metadataPhys, metadata.pages + 1);

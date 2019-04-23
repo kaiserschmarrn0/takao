@@ -16,9 +16,9 @@ __gshared E820Entry[256] e820Map;
 private extern extern(C) void get_e820(E820Entry*);
 
 void getE820() {
-    import util.term: print;
+    import util.term: print, info;
 
-    print("Obtaining the E820 memory map...\n");
+    info("Obtaining the E820 memory map...");
 
     get_e820(&e820Map[0]);
 

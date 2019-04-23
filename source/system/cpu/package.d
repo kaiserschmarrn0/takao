@@ -6,9 +6,9 @@ module system.cpu;
 
 void initCPU() {
     import system.cpu.cpuid: getCPUID, checkFeatures, enableFeatures;
-    import util.term:        print;
+    import util.term:        print, info;
 
-    print("Obtaining CPU information and enabling features...\n");
+    info("Obtaining CPU information and enabling features");
 
     getCPUID();
 

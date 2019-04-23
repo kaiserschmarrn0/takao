@@ -4,7 +4,7 @@
 
 module util.lib;
 
-bool areEquals(const char* dst, const char* src, ulong count) {
+bool areEquals(const(char)* dst, const(char)* src, ulong count) {
     foreach (i; 0..count) {
         if (dst[i] != src[i]) {
             return false;
@@ -12,4 +12,25 @@ bool areEquals(const char* dst, const char* src, ulong count) {
     }
 
     return true;
+}
+
+bool areEquals(const(char)* dst, const(char)* src) {
+    size_t i;
+
+    for (i = 0; dst[i] == src[i]; i++) {
+        if ((!dst[i]) && (!src[i])) return false;
+    }
+
+    return true;
+}
+
+pragma(inline, true) extern(C) bool bitTest(uint var, uint ofs) {
+    asm {
+        naked;
+
+        xor EAX, EAX;
+        bt EDI, ESI;
+        setc AL;
+        ret;
+    }
 }
