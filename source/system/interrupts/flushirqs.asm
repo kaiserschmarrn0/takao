@@ -5,7 +5,7 @@
 section .data
 
 %define flushIRQsSize       flushIRQsEnd - flushIRQsBin
-flushIRQsBin:               incbin "source/system/interrupts/flushirqs.bin"
+flushIRQsBin:               incbin "source/real/flushirqs.bin"
 flushIRQsEnd:
 
 [bits 64]

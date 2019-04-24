@@ -61,7 +61,7 @@ void initTerm() {
     import memory.alloc: alloc;
 
     debug {
-        info("Initialising TTY...\n");
+        info("Initialising TTY...");
     }
 
     dumpVGAFont(cast(ubyte*)&font[0]);
@@ -100,7 +100,7 @@ void initTerm() {
 
     termEnabled = true;
 
-    info("Terminal ready\n");
+    info("Terminal ready");
 }
 
 private void plotPixel(int x, int y, uint hex) {
@@ -472,10 +472,6 @@ private void printHex(ulong x) {
     print(&buf[i]);
 }
 
-private void printTimeStamp() {
-    print("[    0.000000]");
-}
-
 void print(char character) {
     import io.qemu: qemuPutChar;
 
@@ -537,9 +533,7 @@ extern(C) void info(const(char)* message, ...) {
     va_list args;
     va_start(args, message);
 
-    print("\x1b[36m");
-    printTimeStamp();
-    print("::\x1b[0m ", message);
+    print("\x1b[36m::\x1b[0m ", message);
     vprint(message, args);
     print('\n');
 }
@@ -575,7 +569,7 @@ extern(C) void panic(const(char)* message, ...) {
         mov cr4, RAX;
     }
 
-    print("CR0=%x, CR2=%x, CR3=%x, CR4=%x\n", cr0, cr2, cr3, cr4);
+    print("CR0=%x CR2=%x CR3=%x CR4=%x\n", cr0, cr2, cr3, cr4);
 
     asm {
         cli;

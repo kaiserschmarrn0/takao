@@ -9,7 +9,7 @@
 section .data
 
 %define e820Size          e820End - e820Bin
-e820Bin:                  incbin "source/memory/e820.bin"
+e820Bin:                  incbin "source/real/e820.bin"
 e820End:
 
 section .text

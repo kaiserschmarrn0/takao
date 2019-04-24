@@ -204,14 +204,9 @@ void checkFeatures() {
 void enableFeatures() {
     import util.term: print;
 
-    if (cpuid.hasSSE3) {
-        // TODO: Enable SSE3
-        debug {
-            print("\tSSE3 was detected and enabled successfully\n");
-        }
-    } else if (cpuid.hasSSE2) {
+    if (cpuid.hasSSE3 || cpuid.hasSSE2) {
         asm {
-            mov RAX, CR0;     // To set up SSE2:
+            mov RAX, CR0;     // To set up SSE:
             mov RBX, 1 << 2;
             not RBX;          // CRO = (CRO & ~(1 << 2)) |  1 << 1
             and RAX, RBX;     //     1 << 2 = CR0.EM bit (bit 2)
@@ -224,7 +219,8 @@ void enableFeatures() {
         }
 
         debug {
-            print("\tSSE2 was detected and enabled successfully\n");
+            char* s = cpuid.hasSSE3 ? cast(char*)"SSE3" : cast(char*)"SSE2";
+            print("\t%s was detected and enabled successfully\n", s);
         }
     }
 }

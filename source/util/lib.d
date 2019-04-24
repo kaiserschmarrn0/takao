@@ -18,7 +18,9 @@ bool areEquals(const(char)* dst, const(char)* src) {
     size_t i;
 
     for (i = 0; dst[i] == src[i]; i++) {
-        if ((!dst[i]) && (!src[i])) return false;
+        if ((!dst[i]) && (!src[i])) {
+            return false;
+        }
     }
 
     return true;

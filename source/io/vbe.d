@@ -86,7 +86,7 @@ __gshared int vbeWidth;
 __gshared int vbeHeight;
 __gshared int vbePitch;
 
-private void edid_call() {
+private void edidCall() {
     debug {
         print("\tCalling EDID...\n");
     }
@@ -135,7 +135,7 @@ void initVBE() {
         print("\tProduct revision: %s\n", cast(char*)(cast(size_t)vbeInfo.productReview + physicalMemoryOffset));
     }
 
-    edid_call();
+    edidCall();
 
     debug {
         print("\tTarget resolution: %ux%u\n", cast(uint)vbeWidth, cast(uint)vbeHeight);
