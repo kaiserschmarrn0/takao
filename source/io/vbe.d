@@ -70,10 +70,10 @@ struct GetVBE {
     ushort mode;
 }
 
-extern(C) void getVBEInfo(VBEInfo*);
-extern(C) void getEDIDInfo(EDIDInfo*);
-extern(C) void getVBEModeInfo(GetVBE*);
-extern(C) void setVBEMode(ushort);
+private extern(C) void getVBEInfo(VBEInfo*);
+private extern(C) void getEDIDInfo(EDIDInfo*);
+private extern(C) void getVBEModeInfo(GetVBE*);
+private extern(C) void setVBEMode(ushort);
 
 private __gshared VBEInfo      vbeInfo;
 private __gshared EDIDInfo     edidInfo;
@@ -99,7 +99,7 @@ private void edidCall() {
     vbeHeight += (edidInfo.detTimingDesc1[7] & 0xF0) << 4;
 
     if (!vbeWidth || !vbeHeight) {
-        warning("EDID returned 0, defaulting to 1024x768\n");
+        warning("EDID returned 0, defaulting to 1024x768");
         vbeWidth  = 1024;
         vbeHeight = 768;
     }
@@ -144,7 +144,7 @@ void initVBE() {
     // Try to set the mode
     getVBE.vbeMode = cast(uint)(cast(size_t)&vbeMode - kernelPhysicalMemoryOffset);
 
-    for (size_t i = 0; videoModes[i] != 0xFFFF; i++) {
+    for (auto i = 0; videoModes[i] != 0xFFFF; i++) {
         getVBE.mode = videoModes[i];
         getVBEModeInfo(&getVBE);
 

@@ -13,7 +13,7 @@ struct E820Entry {
 
 __gshared E820Entry[256] e820Map;
 
-private extern extern(C) void get_e820(E820Entry*);
+private extern(C) void get_e820(E820Entry*);
 
 void getE820() {
     import util.term: print, info;
@@ -25,8 +25,10 @@ void getE820() {
     debug {
         ulong memorySize = 0;
 
-        foreach (entry; e820Map) {
-            if (!entry.type) break;
+        foreach(entry; e820Map) {
+            if (!entry.type) {
+                break;
+            }
 
             print("\t[%x -> %x] %x <%s>\n", entry.base,
                   entry.base + entry.length, entry.length,

@@ -26,7 +26,7 @@ bool areEquals(const(char)* dst, const(char)* src) {
     return true;
 }
 
-pragma(inline, true) extern(C) bool bitTest(uint var, uint ofs) {
+extern(C) bool bitTest(uint var, uint ofs) {
     asm {
         naked;
 

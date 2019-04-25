@@ -6,13 +6,15 @@ module main;
 
 extern(C) void main() {
     import io.vbe:            initVBE;
-    import system.cpu:        initCPU;
+    import system.cpu.smp:    initSMP;
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
     import system.acpi:       getACPIInfo;
     import memory.e820:       getE820;
     import memory.physical:   initPhysicalBitmap;
     import memory.virtual:    mapGlobalMemory;
     import util.term:         initTerm, info, panic;
+
+    firstStageInterrupts();
 
     getE820();
     initPhysicalBitmap();
@@ -23,13 +25,11 @@ extern(C) void main() {
 
     info("Reached main(), booting up...                  :kongoudisgust:");
 
-    firstStageInterrupts();
-
-    initCPU();
-
     getACPIInfo();
 
     secondStageInterrupts();
+
+    initSMP();
 
     panic("End of the kernel");
 }

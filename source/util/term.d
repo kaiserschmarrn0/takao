@@ -547,6 +547,16 @@ extern(C) void warning(const(char)* message, ...) {
     print('\n');
 }
 
+extern(C) void error(const(char)* message, ...) {
+    va_list args;
+    va_start(args, message);
+
+    print("\x1b[35mThe kernel reported an error\x1b[0m: ");
+    vprint(message, args);
+    print('\n');
+    printControlRegisters();
+}
+
 extern(C) void panic(const(char)* message, ...) {
     va_list args;
     va_start(args, message);
@@ -555,7 +565,17 @@ extern(C) void panic(const(char)* message, ...) {
     vprint(message, args);
     print('\n');
     print("\x1b[45mThe system will be halted\x1b[0m\n");
+    printControlRegisters();
 
+    asm {
+        cli;
+    L1:;
+        hlt;
+        jmp L1;
+    }
+}
+
+private void printControlRegisters() {
     ulong cr0, cr2, cr3, cr4;
 
     asm {
@@ -570,11 +590,4 @@ extern(C) void panic(const(char)* message, ...) {
     }
 
     print("CR0=%x CR2=%x CR3=%x CR4=%x\n", cr0, cr2, cr3, cr4);
-
-    asm {
-        cli;
-    L1:;
-        hlt;
-        jmp L1;
-    }
 }

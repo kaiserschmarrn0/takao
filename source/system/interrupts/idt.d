@@ -87,7 +87,7 @@ void setIDT() {
     }
 }
 
-void registerInterruptHandler(uint number, void function() handler) {
+private void registerInterruptHandler(uint number, void function() handler) {
     auto address = cast(ulong)handler;
 
     idt[number].offsetLow    = cast(ushort)address;
