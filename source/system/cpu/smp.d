@@ -7,7 +7,7 @@ module system.smp;
 import memory.constants;
 
 immutable uint maxCores      = 128;
-immutable uint coreStackSize = 0xF4240; // 1 MiB in bytes
+immutable uint coreStackSize = 16384; // 16 KiB
 
 struct Core {
     // DO NOT MOVE THESE MEMBERS FROM THESE LOCATIONS
@@ -51,12 +51,14 @@ struct CoreStack {
 }
 
 private extern(C) void smpInitCore0(void*, void*);
+private extern(C) void* smpPrepareTrampoline(void*, void*, void*, void*, void*);
+private extern(C) int smpCheckCoreFlag();
 
 private __gshared                 Core[maxCores]      cores;
 private __gshared align(16)       TSS[maxCores]       coreTSSs;
 private __gshared align(pageSize) CoreStack[maxCores] coreStacks;
 
-private uint coreCount = 1; // We must have booted in something
+private __gshared uint coreCount = 1; // We must have booted in something
 
 void initSMP() {
     import util.term;
@@ -70,11 +72,13 @@ void initSMP() {
 
     initCore0();
 
-    for (auto i = 1; i < madtLocalAPICCount; i++) {
-        print("\tFound core #%u: Starting...", i);
+    for (uint i = 1; i < madtLocalAPICCount; i++) {
+        debug {
+            print("\tFound core #%u: Starting...\n", i);
+        }
 
         if (startCore(madtLocalAPICs[i].apicID, coreCount)) {
-            error("\tFailed to start core #%u", i);
+            error("Failed to start core #%u", i);
             continue;
         }
 
@@ -102,56 +106,91 @@ private void setupCoreLocal(int coreNumber, ubyte lapicID) {
 
     // Prepare CPU local
     cores[coreNumber].coreNumber  = coreNumber;
-    cores[coreNumber].kernelStack = cast(size_t)&coreStacks[coreNumber].stack[coreStackSize];
+    cores[coreNumber].kernelStack = cast(size_t)&coreStacks[coreNumber].stack[coreStackSize - 1];
     cores[coreNumber].lapicID     = lapicID;
 
     // Prepare TSS
-    coreTSSs[coreNumber].rsp0 = cast(ulong)&coreStacks[coreNumber].stack[coreStackSize];
-    coreTSSs[coreNumber].ist1 = cast(ulong)&coreStacks[coreNumber].stack[coreStackSize];
+    coreTSSs[coreNumber].rsp0 = cast(ulong)&coreStacks[coreNumber].stack[coreStackSize - 1];
+    coreTSSs[coreNumber].ist1 = cast(ulong)&coreStacks[coreNumber].stack[coreStackSize - 1];
 }
 
-private bool startCore(ubyte targetAPICID, int coreNumber) {
-  /*  if (coreNumber == maxCores) {
+private bool startCore(ubyte lapicID, uint coreNumber) {
+    import util.term;
+    import system.acpi.madt;
+    import memory.virtual;
+    import system.interrupts.apic;
+
+    if (coreNumber >= maxCores) {
         warning("Core limit exceeded, wont enable #%u", coreNumber);
-        return false;
+        return true;
     }
 
-    setupCoreLocal(coreNumber, targetAPICID);
+    setupCoreLocal(coreNumber, lapicID);
 
-    struct cpu_local_t *cpu_local = &cpu_locals[cpu_number];
-    struct tss_t *tss = &cpu_tss[cpu_number];
-    uint8_t *stack = &cpu_stacks[cpu_number].stack[CPU_STACK_SIZE];
+    auto core  = &cores[coreNumber];
+    auto tss   = &coreTSSs[coreNumber];
+    auto stack = &coreStacks[coreNumber].stack[coreStackSize - 1];
 
-    auto core  = &cores[0];
-    auto tss   = &coreTSSs[0];
-    auto stack =
-
-    void *trampoline = smp_prepare_trampoline(ap_kernel_entry, (void *)kernel_pagemap->pml4,
-                                              stack, cpu_local, tss);
+    void* trampoline = smpPrepareTrampoline(&coreKernelEntry, cast(void*)pageMap,
+                                            stack, core, tss);
 
     // Send the INIT IPI
-    lapic_write(APICREG_ICR1, ((uint32_t)target_apic_id) << 24);
-    lapic_write(APICREG_ICR0, 0x500);
+    writeLocalAPIC(apicICR1, lapicID << 24);
+    writeLocalAPIC(apicICR0, 0x500);
     // wait 10ms
-    ksleep(10);
-    // Send the Startup IPI
-    lapic_write(APICREG_ICR1, ((uint32_t)target_apic_id) << 24);
-    lapic_write(APICREG_ICR0, 0x600 | (uint32_t)(size_t)trampoline);
-    // wait 1ms
-    ksleep(1);
+    //ksleep(10);
 
-    if (smp_check_ap_flag()) {
-        return 0;
+    // Send the Startup IPI
+    writeLocalAPIC(apicICR1, lapicID << 24);
+    writeLocalAPIC(apicICR0, 0x600 | cast(uint)cast(size_t)trampoline);
+    // wait 1ms
+    // ksleep(1);
+
+    if (smpCheckCoreFlag()) {
+        return false;
     } else {
         // Send the Startup IPI again
-        lapic_write(APICREG_ICR1, ((uint32_t)target_apic_id) << 24);
-        lapic_write(APICREG_ICR0, 0x600 | (uint32_t)(size_t)trampoline);
+        writeLocalAPIC(apicICR1, lapicID << 24);
+        writeLocalAPIC(apicICR0, 0x600 | cast(uint)cast(size_t)trampoline);
         // wait 1s
-        ksleep(1000);
-        if (smp_check_ap_flag())
-            return 0;
-        else
-            return -1;
-    }*/
+        // ksleep(1000);
+        if (smpCheckCoreFlag()) {
+            return false;
+        } else return true;
+    }
+
     return false;
+}
+
+private void coreKernelEntry() {
+    import util.term;
+    import system.interrupts.apic;
+
+    // Cores jump here after initialisation
+
+    asm {
+        cli;
+    a:
+        hlt;
+        jmp a;
+    }
+
+    debug {
+        print("\tStarted up core #%u\n", coreCount - 1);
+    }
+
+    // Enable this AP's local APIC
+    enableLocalAPIC();
+
+    // Enable interrupts
+    asm {
+        sti;
+    }
+
+    // Wait for some job to be scheduled
+    for (;;) {
+        asm {
+            hlt;
+        }
+    }
 }

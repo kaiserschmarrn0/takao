@@ -12,7 +12,7 @@ extern(C) void main() {
     import memory.e820:       getE820;
     import memory.physical:   initPhysicalBitmap;
     import memory.virtual:    mapGlobalMemory;
-    import util.term:         initTerm, info, panic;
+    import util.term:         initTerm, info, panic, error;
 
     firstStageInterrupts();
 

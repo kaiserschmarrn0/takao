@@ -4,7 +4,48 @@
 
 [bits 64]
 
+%define trampolineAddress  0x1000
+%define pageSize           4096
+
+section .data
+
+%define smpTrampoline_size  smpTrampoline_end - smpTrampoline
+smpTrampoline:              incbin "source/real/smptrampoline.bin"
+smpTrampoline_end:
+
 section .text
+global smpPrepareTrampoline:function (smpPrepareTrampoline.end - smpPrepareTrampoline)
+
+; Store trampoline data in low memory and return the page index of the
+; trampoline code.
+smpPrepareTrampoline:
+    extern loadTSS
+    ; entry point in rdi, page table in rsi
+    ; stack pointer in rdx, cpu local in rcx
+    ; tss in r8
+
+    ; prepare variables
+    mov byte [0x510], 0
+    mov qword [0x520], rdi
+    mov qword [0x540], rsi
+    mov qword [0x550], rdx
+    mov qword [0x560], rcx
+    sgdt [0x580]
+    sidt [0x590]
+
+    ; Copy trampoline blob to 0x1000
+    mov rsi, smpTrampoline
+    mov rdi, trampolineAddress
+    mov rcx, smpTrampoline_size
+    rep movsb
+
+    mov rdi, r8
+    call loadTSS
+
+    mov rax, trampolineAddress / pageSize
+    ret
+.end:
+
 global smpInitCore0:function (smpInitCore0.end - smpInitCore0)
 
 smpInitCore0:
@@ -41,5 +82,13 @@ smpInitCore0:
     mov ax, 0x38
     ltr ax
 
+    ret
+.end:
+
+global smpCheckCoreFlag:function (smpCheckCoreFlag.end - smpCheckCoreFlag)
+
+smpCheckCoreFlag:
+    xor rax, rax
+    mov al, byte [0x510]
     ret
 .end:

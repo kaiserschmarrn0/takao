@@ -7,6 +7,9 @@ module system.interrupts.apic;
 import memory.constants: physicalMemoryOffset;
 import system.acpi.madt;
 
+immutable uint apicICR0 = 0x300;
+immutable uint apicICR1 = 0x310;
+
 __gshared uint* localAPICEOIPointer;
 
 void enableAPIC() {

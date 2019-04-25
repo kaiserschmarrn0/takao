@@ -256,3 +256,52 @@ done:
 fail:
     return -1;
 }
+
+// Update flags for a mapping
+int remapPage(PageTableEntry* pagemap, size_t virtualAddress, size_t flags) {
+    /* Calculate the indices in the various tables using the virtual address */
+    size_t pml4Entry = (virtualAddress & (cast(size_t)0x1FF << 39)) >> 39;
+    size_t pdptEntry = (virtualAddress & (cast(size_t)0x1FF << 30)) >> 30;
+    size_t pdEntry   = (virtualAddress & (cast(size_t)0x1FF << 21)) >> 21;
+    size_t ptEntry   = (virtualAddress & (cast(size_t)0x1FF << 12)) >> 12;
+
+    PageTableEntry* pdpt, pd, pt;
+    ulong cr3;
+
+    // Get reference to the various tables in sequence. Return -1 if one of the tables is not present,
+    // since we cannot unmap a virtual address if we don't know what it's mapped to in the first place
+    if (pagemap[pml4Entry] & 0x1) {
+        pdpt = cast(PageTableEntry*)((pagemap[pml4Entry] & 0xFFFFFFFFFFFFF000) + physicalMemoryOffset);
+    } else goto fail;
+
+    if (pdpt[pdptEntry] & 0x1) {
+        pd = cast(PageTableEntry*)((pdpt[pdptEntry] & 0xFFFFFFFFFFFFF000) + physicalMemoryOffset);
+    } else goto fail;
+
+    if (pd[pdEntry] & 0x1) {
+        pt = cast(PageTableEntry*)((pd[pdEntry] & 0xFFFFFFFFFFFFF000) + physicalMemoryOffset);
+    } else goto fail;
+
+    // Update flags
+    pt[ptEntry] = (pt[ptEntry] & 0xFFFFFFFFFFFFF000) | flags;
+
+
+    asm {
+        mov CR3, RAX;
+        mov RAX, cr3;
+    }
+
+    if (cast(size_t)pagemap == cr3) {
+        // TODO: TLB shootdown
+        // Invalidate page
+        asm {
+            mov virtualAddress, RAX;
+            invlpg [RAX];
+        }
+    }
+
+    return 0;
+
+fail:
+    return -1;
+}

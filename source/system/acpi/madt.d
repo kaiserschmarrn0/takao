@@ -77,7 +77,7 @@ __gshared ulong     madtNMICount = 0;
 void initMADT() {
     import system.acpi:  findSDT;
     import memory.alloc: alloc;
-    import util.term:    panic;
+    import util.term:    print, panic;
 
     madt = cast(MADT*)findSDT("APIC");
 
@@ -95,20 +95,20 @@ void initMADT() {
         madtPtr += *(madtPtr + 1)) {
         switch (*(madtPtr)) {
             case 0:
-                // Processor local APIC
-                madtLocalAPICs[madtLocalAPICCount++] = cast(MADTLocalAPIC*)madtPtr;
+                debug print("\tFound local APIC #%u\n", madtLocalAPICCount++);
+                madtLocalAPICs[madtLocalAPICCount] = cast(MADTLocalAPIC*)madtPtr;
                 break;
             case 1:
-                // I/O APIC
-                madtIOAPICs[madtIOAPICCount++] = cast(MADTIOAPIC*)madtPtr;
+                debug print("\tFound IOAPIC #%u\n", madtIOAPICCount++);
+                madtIOAPICs[madtIOAPICCount] = cast(MADTIOAPIC*)madtPtr;
                 break;
             case 2:
-                // Interrupt Source Override
-                madtISOs[madtISOCount++] = cast(MADTISO*)madtPtr;
+                debug print("\tFound ISO #%u\n", madtISOCount++);
+                madtISOs[madtISOCount] = cast(MADTISO*)madtPtr;
                 break;
             case 4:
-                // NMI
-                madtNMIs[madtNMICount++] = cast(MADTNMI*)madtPtr;
+                debug print("\tFound NMI #%u\n", madtNMICount++);
+                madtNMIs[madtNMICount] = cast(MADTNMI*)madtPtr;
                 break;
             default:
         }

@@ -551,7 +551,7 @@ extern(C) void error(const(char)* message, ...) {
     va_list args;
     va_start(args, message);
 
-    print("\x1b[35mThe kernel reported an error\x1b[0m: ");
+    print("\x1b[33mThe kernel reported an error\x1b[0m: ");
     vprint(message, args);
     print('\n');
     printControlRegisters();
