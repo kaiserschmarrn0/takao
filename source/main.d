@@ -21,7 +21,7 @@ extern(C) void main() {
     initVBE();
     initTerm();
 
-    info("Reached main(), booting up...\t\t\t\t\t\t\t\t:kongoudisgust:");
+    info("Reached main(), booting up...                  :kongoudisgust:");
 
     firstStageInterrupts();
 

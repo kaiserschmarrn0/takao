@@ -28,7 +28,6 @@ struct IDTPointer {
 private __gshared IDTDescriptor[256] idt;
 
 void setIDT() {
-    import system.interrupts.exceptions;
     import system.interrupts.handlers;
 
     IDTPointer idtPointer = {

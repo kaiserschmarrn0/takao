@@ -75,16 +75,16 @@ extern(C) void getEDIDInfo(EDIDInfo*);
 extern(C) void getVBEModeInfo(GetVBE*);
 extern(C) void setVBEMode(ushort);
 
-private __gshared VBEInfo vbeInfo;
-private __gshared EDIDInfo edidInfo;
-private __gshared VBEModeInfo vbeMode;
-private __gshared GetVBE getVBE;
+private __gshared VBEInfo      vbeInfo;
+private __gshared EDIDInfo     edidInfo;
+private __gshared VBEModeInfo  vbeMode;
+private __gshared GetVBE       getVBE;
 private __gshared ushort[1024] videoModes;
 
-__gshared uint *vbeFramebuffer;
-__gshared int vbeWidth;
-__gshared int vbeHeight;
-__gshared int vbePitch;
+__gshared uint* vbeFramebuffer;
+__gshared int   vbeWidth;
+__gshared int   vbeHeight;
+__gshared int   vbePitch;
 
 private void edidCall() {
     debug {
@@ -93,10 +93,10 @@ private void edidCall() {
 
     getEDIDInfo(&edidInfo);
 
-    vbeWidth   =  cast(int)edidInfo.detTimingDesc1[2];
-    vbeWidth  += (cast(int)edidInfo.detTimingDesc1[4] & 0xF0) << 4;
-    vbeHeight  =  cast(int)edidInfo.detTimingDesc1[5];
-    vbeHeight += (cast(int)edidInfo.detTimingDesc1[7] & 0xF0) << 4;
+    vbeWidth   = edidInfo.detTimingDesc1[2];
+    vbeWidth  += (edidInfo.detTimingDesc1[4] & 0xF0) << 4;
+    vbeHeight  = edidInfo.detTimingDesc1[5];
+    vbeHeight += (edidInfo.detTimingDesc1[7] & 0xF0) << 4;
 
     if (!vbeWidth || !vbeHeight) {
         warning("EDID returned 0, defaulting to 1024x768\n");
@@ -105,7 +105,7 @@ private void edidCall() {
     }
 
     debug {
-        print("\tEDID resolution: %ux%u\n", cast(uint)vbeWidth, cast(uint)vbeHeight);
+        print("\tEDID resolution: %ux%u\n", vbeWidth, vbeHeight);
     }
 }
 
@@ -118,27 +118,27 @@ void initVBE() {
     getVBEInfo(&vbeInfo);
 
     // Copy the video mode array somewhere else because it might get overwritten
-    for (size_t i = 0; ; i++) {
-        videoModes[i] = (cast(ushort*)(cast(size_t)vbeInfo.videoModes + physicalMemoryOffset))[i];
+    for (auto i = 0; ; i++) {
+        videoModes[i] = (cast(ushort*)(vbeInfo.videoModes + physicalMemoryOffset))[i];
 
-        if ((cast(ushort*)cast(size_t)vbeInfo.videoModes)[i+1] == 0xffff) {
-            videoModes[i+1] = 0xffff;
+        if ((cast(ushort*)vbeInfo.videoModes)[i + 1] == 0xFFFF) {
+            videoModes[i + 1] = 0xFFFF;
             break;
         }
     }
 
     debug {
         print("\tVersion: %u.%u\n", vbeInfo.versionMajor, vbeInfo.versionMin);
-        print("\tOEM: %s\n", cast(char*)(cast(size_t)vbeInfo.oem + physicalMemoryOffset));
-        print("\tGraphics vendor: %s\n", cast(char*)(cast(size_t)vbeInfo.vendor + physicalMemoryOffset));
-        print("\tProduct name: %s\n", cast(char*)(cast(size_t)vbeInfo.productName + physicalMemoryOffset));
-        print("\tProduct revision: %s\n", cast(char*)(cast(size_t)vbeInfo.productReview + physicalMemoryOffset));
+        print("\tOEM: %s\n", cast(char*)(vbeInfo.oem + physicalMemoryOffset));
+        print("\tGraphics vendor: %s\n", cast(char*)(vbeInfo.vendor + physicalMemoryOffset));
+        print("\tProduct name: %s\n", cast(char*)(vbeInfo.productName + physicalMemoryOffset));
+        print("\tProduct revision: %s\n", cast(char*)(vbeInfo.productReview + physicalMemoryOffset));
     }
 
     edidCall();
 
     debug {
-        print("\tTarget resolution: %ux%u\n", cast(uint)vbeWidth, cast(uint)vbeHeight);
+        print("\tTarget resolution: %ux%u\n", vbeWidth, vbeHeight);
     }
 
     // Try to set the mode
@@ -147,18 +147,19 @@ void initVBE() {
     for (size_t i = 0; videoModes[i] != 0xFFFF; i++) {
         getVBE.mode = videoModes[i];
         getVBEModeInfo(&getVBE);
+
         if (vbeMode.resX == vbeWidth && vbeMode.resY == vbeHeight
             && vbeMode.bpp == 32) {
             // Mode found
             debug {
-                print("\tFound matching mode %x, attempting to set.\n", cast(uint)getVBE.mode);
+                print("\tFound matching mode %x, attempting to set.\n", getVBE.mode);
             }
 
-            vbeFramebuffer = cast(uint*)(cast(size_t)vbeMode.framebuffer + physicalMemoryOffset);
-            vbePitch = vbeMode.pitch;
+            vbeFramebuffer = cast(uint*)(vbeMode.framebuffer + physicalMemoryOffset);
+            vbePitch       = vbeMode.pitch;
 
             debug {
-                print("\tFramebuffer address: %x\n", cast(size_t)vbeMode.framebuffer + physicalMemoryOffset);
+                print("\tFramebuffer address: %x\n", vbeMode.framebuffer + physicalMemoryOffset);
             }
 
             setVBEMode(getVBE.mode);

@@ -13,6 +13,7 @@ global earlyError:function (earlyError.end - earlyError)
 earlyError:
     pusha
     mov edi, 0xB8000
+
 .loop:
     lodsb
     test al, al
@@ -20,9 +21,11 @@ earlyError:
     stosb
     inc edi
     jmp .loop
+
 .out:
     popa
     cli
+
 .hang:
     hlt
     jmp .hang

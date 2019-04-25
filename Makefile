@@ -13,7 +13,7 @@ DC = ldc2
 LD = ld.lld
 AS = nasm
 
-DFLAGS = -O2 -mcpu=native -dw
+DFLAGS = -O2 -dw
 
 LDFLAGS = -O2 -gc-sections
 
