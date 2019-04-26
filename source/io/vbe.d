@@ -110,7 +110,7 @@ private void edidCall() {
 }
 
 void initVBE() {
-    import memory.virtual: pageMap, mapPage, remapPage;
+    import memory.virtual: pageMap, mapPage;
     import util.lib:       areEquals;
 
     info("Initialising VBE");
@@ -163,14 +163,6 @@ void initVBE() {
             }
 
             setVBEMode(getVBE.mode);
-
-            // Make the framebuffer write-combining
-            /*size_t fbPages = ((vbePitch * vbeHeight) + pageSize - 1) / pageSize;
-
-            for (auto j = 0; j < fbPages; j++) {
-                remapPage(pageMap, cast(size_t)vbeFramebuffer + j * pageSize,
-                          0x03 | (1 << 7) | (1 << 3));
-            }*/
 
             return;
         }

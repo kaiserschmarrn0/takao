@@ -1,8 +1,8 @@
-// handlers.d - IDT exception and interrupt handlers
+// isr.d - IDT exception and interrupt handlers
 // (C) 2019 the takao authors (AUTHORS.md). All rights reserved
 // This code is governed by a license that can be found in LICENSE.md
 
-module system.interrupts.handlers;
+module system.interrupts.isr;
 
 // Exceptions are classified as:
 // - Faults: Can be corrected and the program can continue as if nothing
@@ -489,8 +489,51 @@ void defaultInterruptHandler() {
     panic("An unhandled interrupt ocurred!");
 }
 
+import system.pit;
+import system.interrupts.apic;
+
 void pitHandler() {
-    // PIT code
+    asm {
+        naked;
+
+        push RAX;
+        push RBX;
+        push RCX;
+        push RDX;
+        push RSI;
+        push RDI;
+        push RBP;
+        push R8;
+        push R9;
+        push R10;
+        push R11;
+        push R12;
+        push R13;
+        push R14;
+        push R15;
+
+        call pitInner; // In the PIT code
+
+        mov localAPICEOIPointer, 0;
+
+        pop R15;
+        pop R14;
+        pop R13;
+        pop R12;
+        pop R11;
+        pop R10;
+        pop R9;
+        pop R8;
+        pop RBP;
+        pop RDI;
+        pop RSI;
+        pop RDX;
+        pop RCX;
+        pop RBX;
+        pop RAX;
+
+        iretq;
+    }
 }
 
 void keyboardHandler() {

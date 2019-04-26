@@ -54,14 +54,15 @@ private extern(C) void smpInitCore0(void*, void*);
 private extern(C) void* smpPrepareTrampoline(void*, void*, void*, void*, void*);
 private extern(C) int smpCheckCoreFlag();
 
-private __gshared                 Core[maxCores]      cores;
-private __gshared align(16)       TSS[maxCores]       coreTSSs;
-private __gshared align(pageSize) CoreStack[maxCores] coreStacks;
+__gshared                 Core[maxCores]      cores;
+__gshared align(16)       TSS[maxCores]       coreTSSs;
+__gshared align(pageSize) CoreStack[maxCores] coreStacks;
 
 private __gshared uint coreCount = 1; // We must have booted in something
 
 void initSMP() {
     import util.term;
+    import system.pit;
     import system.acpi.madt;
 
     info("Starting up SMP");
@@ -85,7 +86,7 @@ void initSMP() {
         coreCount++;
 
         // Wait a bit
-        // ksleep(10);
+        sleep(10);
     }
 }
 
@@ -116,6 +117,7 @@ private void setupCoreLocal(int coreNumber, ubyte lapicID) {
 
 private bool startCore(ubyte lapicID, uint coreNumber) {
     import util.term;
+    import system.pit;
     import system.acpi.madt;
     import memory.virtual;
     import system.interrupts.apic;
@@ -135,25 +137,26 @@ private bool startCore(ubyte lapicID, uint coreNumber) {
                                             stack, core, tss);
 
     // Send the INIT IPI
-    writeLocalAPIC(apicICR1, lapicID << 24);
+    writeLocalAPIC(apicICR1, (cast(uint)lapicID) << 24);
     writeLocalAPIC(apicICR0, 0x500);
     // wait 10ms
-    //ksleep(10);
+    sleep(10);
 
     // Send the Startup IPI
-    writeLocalAPIC(apicICR1, lapicID << 24);
-    writeLocalAPIC(apicICR0, 0x600 | cast(uint)cast(size_t)trampoline);
+    writeLocalAPIC(apicICR1, (cast(uint)lapicID) << 24);
+    writeLocalAPIC(apicICR0, 0x600 | cast(uint)trampoline);
     // wait 1ms
-    // ksleep(1);
+    sleep(1);
 
     if (smpCheckCoreFlag()) {
         return false;
     } else {
         // Send the Startup IPI again
         writeLocalAPIC(apicICR1, lapicID << 24);
-        writeLocalAPIC(apicICR0, 0x600 | cast(uint)cast(size_t)trampoline);
+        writeLocalAPIC(apicICR0, 0x600 | cast(uint)trampoline);
         // wait 1s
-        // ksleep(1000);
+        sleep(1000);
+
         if (smpCheckCoreFlag()) {
             return false;
         } else return true;
@@ -168,18 +171,11 @@ private void coreKernelEntry() {
 
     // Cores jump here after initialisation
 
-    asm {
-        cli;
-    a:
-        hlt;
-        jmp a;
-    }
-
     debug {
         print("\tStarted up core #%u\n", coreCount - 1);
     }
 
-    // Enable this AP's local APIC
+    // Enable this core's local APIC
     enableLocalAPIC();
 
     // Enable interrupts

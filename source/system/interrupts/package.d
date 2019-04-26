@@ -22,11 +22,13 @@ private extern(C) void flushIRQs();
 void secondStageInterrupts() {
     import system.interrupts.apic: enableAPIC;
     import util.term:              info;
+    import system.pit:             initPIT;
 
     info("Second Stage Interrupts: Flush IRQs, APIC and PIT");
 
     flushIRQs();
     enableAPIC();
+    initPIT();
 
     asm {
         sti;

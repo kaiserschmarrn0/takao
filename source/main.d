@@ -6,6 +6,7 @@ module main;
 
 extern(C) void main() {
     import io.vbe:            initVBE;
+    import system.pit:        sleep;
     import system.cpu.smp:    initSMP;
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
     import system.acpi:       getACPIInfo;
@@ -30,6 +31,8 @@ extern(C) void main() {
     secondStageInterrupts();
 
     initSMP();
+
+    sleep(99);
 
     panic("End of the kernel");
 }

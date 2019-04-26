@@ -63,16 +63,16 @@ struct MADTNMI {
 __gshared MADT* madt;
 
 __gshared MADTLocalAPIC** madtLocalAPICs;
-__gshared ulong           madtLocalAPICCount = 0;
+__gshared ubyte           madtLocalAPICCount = 0;
 
 __gshared MADTIOAPIC** madtIOAPICs;
-__gshared ulong        madtIOAPICCount = 0;
+__gshared ubyte        madtIOAPICCount = 0;
 
 __gshared MADTISO** madtISOs;
-__gshared ulong     madtISOCount = 0;
+__gshared ubyte     madtISOCount = 0;
 
 __gshared MADTNMI** madtNMIs;
-__gshared ulong     madtNMICount = 0;
+__gshared ubyte     madtNMICount = 0;
 
 void initMADT() {
     import system.acpi:  findSDT;

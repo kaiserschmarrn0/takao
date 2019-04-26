@@ -84,14 +84,14 @@ void disablePIC() {
 }
 
 void installLocalAPICNMIs() {
-    foreach (i; 0..madtNMICount) {
+    foreach (ubyte i; 0..madtNMICount) {
         // Reserve vectors 0x90 .. length of(madtNMIs) for NMIs
-        setLocalAPICNMI(0x90 + i, madtNMIs[i].flags, madtNMIs[i].lint);
+        setLocalAPICNMI(cast(ubyte)(0x90 + i), madtNMIs[i].flags, madtNMIs[i].lint);
     }
 }
 
-void setLocalAPICNMI(ulong vector, ushort flags, ubyte lint) {
-    auto nmi = cast(uint)(800 | vector);
+void setLocalAPICNMI(ubyte vector, ushort flags, ubyte lint) {
+    uint nmi = 800 | vector;
 
     if (flags & 2) {
         nmi |= (1 << 13);
@@ -113,15 +113,103 @@ void enableLocalAPIC() {
 }
 
 uint readLocalAPIC(uint reg) {
+    import core.bitop;
+
     auto base = madt.localControllerAddress + physicalMemoryOffset;
-    return *(cast(uint*)(base + reg));
+    return volatileLoad(cast(uint*)(base + reg));
 }
 
 void writeLocalAPIC(uint reg, uint data) {
+    import core.bitop;
+
     auto base = madt.localControllerAddress + physicalMemoryOffset;
-    *(cast(uint*)(base + reg)) = data;
+    volatileStore(cast(uint*)(base + reg), data);
 }
 
 void eoiLocalAPIC() {
     writeLocalAPIC(0xB0, 0);
+}
+
+void ioapicSetMask(int core, ubyte irq, int status) {
+    import system.cpu.smp;
+
+    ubyte apic = cores[core].lapicID;
+
+    // Redirect will handle whether the IRQ is masked or not, we just need to
+    // search the MADT ISOs for a corresponding IRQ
+    foreach (i; 0..madtISOCount) {
+        if (madtISOs[i].irqSource == irq) {
+            ioapicSetRedirect(madtISOs[i].irqSource, madtISOs[i].gsi,
+                              madtISOs[i].flags, apic, status);
+            return;
+        }
+    }
+
+    ioapicSetRedirect(irq, irq, 0, apic, status);
+}
+
+void ioapicSetRedirect(ubyte irq, uint gsi, ushort flags, ubyte apic, int status) {
+    size_t ioapic = ioapicFromRedirect(gsi);
+
+    // Map APIC irqs to vectors beginning after exceptions
+    ulong redirect = irq + 0x20;
+
+    if (flags & 2) {
+        redirect |= (1 << 13);
+    }
+
+    if (flags & 8) {
+        redirect |= (1 << 15);
+    }
+
+    if (!status) {
+        // Set mask bit
+        redirect |= (1 << 16);
+    }
+
+    // Set target APIC ID
+    redirect |= (cast(ulong)apic) << 56;
+    uint ioredtbl = (gsi - madtIOAPICs[ioapic].gsib) * 2 + 16;
+
+    ioapicWrite(ioapic, ioredtbl + 0, cast(uint)redirect);
+    ioapicWrite(ioapic, ioredtbl + 1, cast(uint)(redirect >> 32));
+}
+
+// Return the index of the I/O APIC that handles this redirect
+size_t ioapicFromRedirect(uint gsi) {
+    foreach (i; 0..madtIOAPICCount) {
+        if (madtIOAPICs[i].gsib <= gsi &&
+            madtIOAPICs[i].gsib + ioapicGetMaxRedirect(i) > gsi) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+// Get the maximum number of redirects this I/O APIC can handle */
+uint ioapicGetMaxRedirect(size_t ioapic) {
+    return (ioapicRead(ioapic, 1) & 0xFF0000) >> 16;
+}
+
+// Read from the `io_apic_num`'th I/O APIC as described by the MADT
+uint ioapicRead(size_t ioapic, uint reg) {
+    import core.bitop;
+    import memory.constants;
+
+    auto base = cast(uint*)(madtIOAPICs[ioapic].address + physicalMemoryOffset);
+    volatileStore(base, reg);
+
+    return volatileLoad(base + 4);
+}
+
+// Write to the `ioapic`'th I/O APIC as described by the MADT
+void ioapicWrite(size_t ioapic, uint reg, uint data) {
+    import core.bitop;
+    import memory.constants;
+
+    auto base = cast(uint*)(madtIOAPICs[ioapic].address + physicalMemoryOffset);
+
+    volatileStore(base, reg);
+    volatileStore(base + 4, data);
 }
