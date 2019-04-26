@@ -17,23 +17,23 @@ global dumpVGAFont
 section .data
 
 %define getVBEInfo_size        getVBEInfo_end - getVBEInfo_bin
-getVBEInfo_bin:                incbin "source/real/getvbeinfo.bin"
+getVBEInfo_bin:                incbin "source/kernel/real/getvbeinfo.bin"
 getVBEInfo_end:
 
 %define getEDIDInfo_size       getEDIDInfo_end - getEDIDInfo_bin
-getEDIDInfo_bin:               incbin "source/real/edidinfo.bin"
+getEDIDInfo_bin:               incbin "source/kernel/real/edidinfo.bin"
 getEDIDInfo_end:
 
 %define getVBEModeInfo_size    getVBEModeInfo_end - getVBEModeInfo_bin
-getVBEModeInfo_bin:            incbin "source/real/vbemodeinfo.bin"
+getVBEModeInfo_bin:            incbin "source/kernel/real/vbemodeinfo.bin"
 getVBEModeInfo_end:
 
 %define setVBEMode_size        setVBEMode_end - setVBEMode_bin
-setVBEMode_bin:                incbin "source/real/setvbemode.bin"
+setVBEMode_bin:                incbin "source/kernel/real/setvbemode.bin"
 setVBEMode_end:
 
 %define dumpVGAFont_size       dumpVGAFont_end - dumpVGAFont_bin
-dumpVGAFont_bin:               incbin "source/real/vgafont.bin"
+dumpVGAFont_bin:               incbin "source/kernel/real/vgafont.bin"
 dumpVGAFont_end:
 
 section .text

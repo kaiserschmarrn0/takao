@@ -131,7 +131,7 @@ void eoiLocalAPIC() {
 }
 
 void ioapicSetMask(int core, ubyte irq, int status) {
-    import system.cpu.smp;
+    import system.cores;
 
     ubyte apic = cores[core].lapicID;
 

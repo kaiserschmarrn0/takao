@@ -44,8 +44,6 @@ void pitInner() {
 }
 
 void sleep(ulong milis) {
-    import util.term;
-
     ulong finalTime = uptimeMilis + (milis * (pitFrequency / 1000));
 
     finalTime++;

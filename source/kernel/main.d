@@ -7,7 +7,6 @@ module main;
 extern(C) void main() {
     import io.vbe:            initVBE;
     import system.pit:        sleep;
-    import system.cpu.smp:    initSMP;
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
     import system.acpi:       getACPIInfo;
     import memory.e820:       getE820;
@@ -29,8 +28,6 @@ extern(C) void main() {
     getACPIInfo();
 
     secondStageInterrupts();
-
-    initSMP();
 
     sleep(99);
 

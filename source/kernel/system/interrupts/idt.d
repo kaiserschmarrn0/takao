@@ -66,7 +66,6 @@ void setIDT() {
     // 0x1F is reserved.
 
     registerInterruptHandler(0x20, &pitHandler);
-    registerInterruptHandler(0x21, &keyboardHandler);
 
     foreach (i; 0..16) {
         registerInterruptHandler(0x90 + i, &apicNMIHandler);
