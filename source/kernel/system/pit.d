@@ -6,7 +6,7 @@ module system.pit;
 
 immutable ushort pitFrequency = 1000;
 
-__gshared ulong uptimeMilis = 0;
+__gshared ulong uptime = 0;
 
 void initPIT() {
     import io.ports;
@@ -40,13 +40,17 @@ void initPIT() {
 }
 
 void pitInner() {
-    uptimeMilis++;
+    import core.bitop;
+
+    volatileStore(&uptime, volatileLoad(&uptime) + 1);
 }
 
 void sleep(ulong milis) {
-    ulong finalTime = uptimeMilis + (milis * (pitFrequency / 1000));
+    import core.bitop;
+
+    ulong finalTime = uptime + (milis * (pitFrequency / 1000));
 
     finalTime++;
 
-    while (uptimeMilis < finalTime) {}
+    while (volatileLoad(&uptime) < finalTime) {}
 }

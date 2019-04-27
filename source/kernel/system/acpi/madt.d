@@ -95,20 +95,20 @@ void initMADT() {
         madtPtr += *(madtPtr + 1)) {
         switch (*(madtPtr)) {
             case 0:
-                debug print("\tFound local APIC #%u\n", madtLocalAPICCount++);
-                madtLocalAPICs[madtLocalAPICCount] = cast(MADTLocalAPIC*)madtPtr;
+                debug print("\tFound local APIC #%u\n", madtLocalAPICCount);
+                madtLocalAPICs[madtLocalAPICCount++] = cast(MADTLocalAPIC*)madtPtr;
                 break;
             case 1:
-                debug print("\tFound IOAPIC #%u\n", madtIOAPICCount++);
-                madtIOAPICs[madtIOAPICCount] = cast(MADTIOAPIC*)madtPtr;
+                debug print("\tFound IOAPIC #%u\n", madtIOAPICCount);
+                madtIOAPICs[madtIOAPICCount++] = cast(MADTIOAPIC*)madtPtr;
                 break;
             case 2:
-                debug print("\tFound ISO #%u\n", madtISOCount++);
-                madtISOs[madtISOCount] = cast(MADTISO*)madtPtr;
+                debug print("\tFound ISO #%u\n", madtISOCount);
+                madtISOs[madtISOCount++] = cast(MADTISO*)madtPtr;
                 break;
             case 4:
-                debug print("\tFound NMI #%u\n", madtNMICount++);
-                madtNMIs[madtNMICount] = cast(MADTNMI*)madtPtr;
+                debug print("\tFound NMI #%u\n", madtNMICount);
+                madtNMIs[madtNMICount++] = cast(MADTNMI*)madtPtr;
                 break;
             default:
         }

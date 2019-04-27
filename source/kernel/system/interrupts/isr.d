@@ -514,7 +514,8 @@ void pitHandler() {
 
         call pitInner; // In the PIT code
 
-        mov localAPICEOIPointer, 0;
+        mov RAX, localAPICEOIPointer;
+        mov int ptr [RAX], 0;
 
         pop R15;
         pop R14;

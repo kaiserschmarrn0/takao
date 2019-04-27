@@ -12,7 +12,7 @@ extern(C) void main() {
     import memory.e820:       getE820;
     import memory.physical:   initPhysicalBitmap;
     import memory.virtual:    mapGlobalMemory;
-    import util.term:         initTerm, info, panic, error;
+    import util.term:         initTerm, info, panic;
 
     firstStageInterrupts();
 
@@ -28,8 +28,6 @@ extern(C) void main() {
     getACPIInfo();
 
     secondStageInterrupts();
-
-    sleep(99);
 
     panic("End of the kernel");
 }

@@ -37,61 +37,61 @@ void setIDT() {
 
     // Set all the interrupts at first
     foreach (uint i; 0..idt.length) {
-        registerInterruptHandler(i, &defaultInterruptHandler);
+        registerInterrupt(i, &defaultInterruptHandler, false);
     }
 
-    registerInterruptHandler(0x0, &DEHandler);
-    registerInterruptHandler(0x1, &DBHandler);
-    registerInterruptHandler(0x2, &NMIHandler);
-    registerInterruptHandler(0x3, &BPHandler);
-    registerInterruptHandler(0x4, &OFHandler);
-    registerInterruptHandler(0x5, &BRHandler);
-    registerInterruptHandler(0x6, &UDHandler);
-    registerInterruptHandler(0x7, &NMHandler);
-    registerInterruptHandler(0x8, &DFHandler);
-    registerInterruptHandler(0x9, &CSOHandler);
-    registerInterruptHandler(0xA, &TSHandler);
-    registerInterruptHandler(0xB, &NPHandler);
-    registerInterruptHandler(0xC, &SSHandler);
-    registerInterruptHandler(0xD, &GPHandler);
-    registerInterruptHandler(0xE, &PFHandler);
+    registerInterrupt(0x0, &DEHandler, false);
+    registerInterrupt(0x1, &DBHandler, false);
+    registerInterrupt(0x2, &NMIHandler, false);
+    registerInterrupt(0x3, &BPHandler, false);
+    registerInterrupt(0x4, &OFHandler, false);
+    registerInterrupt(0x5, &BRHandler, false);
+    registerInterrupt(0x6, &UDHandler, false);
+    registerInterrupt(0x7, &NMHandler, false);
+    registerInterrupt(0x8, &DFHandler, true);
+    registerInterrupt(0x9, &CSOHandler, false);
+    registerInterrupt(0xA, &TSHandler, false);
+    registerInterrupt(0xB, &NPHandler, false);
+    registerInterrupt(0xC, &SSHandler, false);
+    registerInterrupt(0xD, &GPHandler, false);
+    registerInterrupt(0xE, &PFHandler, false);
     // 0xF is reserved.
-    registerInterruptHandler(0x10, &MFHandler);
-    registerInterruptHandler(0x11, &ACHandler);
-    registerInterruptHandler(0x12, &MCHandler);
-    registerInterruptHandler(0x13, &XFHandler);
-    registerInterruptHandler(0x14, &VEHandler);
+    registerInterrupt(0x10, &MFHandler, false);
+    registerInterrupt(0x11, &ACHandler, false);
+    registerInterrupt(0x12, &MCHandler, false);
+    registerInterrupt(0x13, &XFHandler, false);
+    registerInterrupt(0x14, &VEHandler, false);
     // 0x15..0x1D are reserved.
-    registerInterruptHandler(0x1E, &SXHandler);
+    registerInterrupt(0x1E, &SXHandler, false);
     // 0x1F is reserved.
 
-    registerInterruptHandler(0x20, &pitHandler);
+    registerInterrupt(0x20, &pitHandler, false);
 
     foreach (i; 0..16) {
-        registerInterruptHandler(0x90 + i, &apicNMIHandler);
+        registerInterrupt(0x90 + i, &apicNMIHandler, true);
     }
 
     foreach (i; 0..8) {
-        registerInterruptHandler(0xA0 + i, &masterPICHandler);
+        registerInterrupt(0xA0 + i, &masterPICHandler, true);
     }
 
     foreach (i; 0..8) {
-        registerInterruptHandler(0xA8 + i, &slavePICHandler);
+        registerInterrupt(0xA8 + i, &slavePICHandler, true);
     }
 
-    registerInterruptHandler(0xFF, &apicSpuriousHandler);
+    registerInterrupt(0xFF, &apicSpuriousHandler, true);
 
     asm {
         lidt [idtPointer];
     }
 }
 
-private void registerInterruptHandler(uint number, void function() handler) {
+private void registerInterrupt(uint number, void function() handler, bool ist) {
     auto address = cast(ulong)handler;
 
     idt[number].offsetLow    = cast(ushort)address;
     idt[number].selector     = 0x08;
-    idt[number].ist          = 0x00;
+    idt[number].ist          = ist ? 1 : 0;
     idt[number].flags        = 0x8E;
     idt[number].offsetMiddle = cast(ushort)(address >> 16);
     idt[number].offsetHigh   = cast(uint)(address >> 32);

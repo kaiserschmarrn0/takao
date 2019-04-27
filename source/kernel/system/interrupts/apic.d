@@ -192,7 +192,7 @@ uint ioapicGetMaxRedirect(size_t ioapic) {
     return (ioapicRead(ioapic, 1) & 0xFF0000) >> 16;
 }
 
-// Read from the `io_apic_num`'th I/O APIC as described by the MADT
+// Read from the ioapic'th I/O APIC as described by the MADT
 uint ioapicRead(size_t ioapic, uint reg) {
     import core.bitop;
     import memory.constants;
