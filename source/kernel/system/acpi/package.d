@@ -53,7 +53,7 @@ __gshared RSDT* rsdt;
 __gshared XSDT* xsdt;
 
 void getACPIInfo() {
-    import memory.constants: physicalMemoryOffset;
+    import memory:           physicalMemoryOffset;
     import system.acpi.madt: initMADT;
     import util.lib:         areEquals;
     import util.term:        print, info, panic;
@@ -100,9 +100,9 @@ RSDPFound:
     initMADT();
 }
 
-void* findSDT(const char* signature) {
-    import memory.constants: physicalMemoryOffset;
-    import util.lib:         areEquals;
+void* findSDT(const(char)* signature) {
+    import memory:   physicalMemoryOffset;
+    import util.lib: areEquals;
 
     SDT* pointer;
 

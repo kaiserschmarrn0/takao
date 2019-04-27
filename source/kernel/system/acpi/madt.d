@@ -22,7 +22,7 @@ struct MADTHeader {
     ubyte length;
 }
 
-struct MADTLocalAPIC {
+struct MADTLAPIC {
     align(1):
 
     MADTHeader header;
@@ -62,8 +62,8 @@ struct MADTNMI {
 
 __gshared MADT* madt;
 
-__gshared MADTLocalAPIC** madtLocalAPICs;
-__gshared ubyte           madtLocalAPICCount = 0;
+__gshared MADTLAPIC** madtLAPICs;
+__gshared ubyte       madtLAPICCount = 0;
 
 __gshared MADTIOAPIC** madtIOAPICs;
 __gshared ubyte        madtIOAPICCount = 0;
@@ -84,7 +84,7 @@ void initMADT() {
     assert(madt);
 
     // We wont find more than 256 of each (I hope)
-    madtLocalAPICs = cast(MADTLocalAPIC**)alloc(256);
+    madtLAPICs = cast(MADTLAPIC**)alloc(256);
     madtIOAPICs    = cast(MADTIOAPIC**)   alloc(256);
     madtISOs       = cast(MADTISO**)      alloc(256);
     madtNMIs       = cast(MADTNMI**)      alloc(256);
@@ -95,22 +95,25 @@ void initMADT() {
         madtPtr += *(madtPtr + 1)) {
         switch (*(madtPtr)) {
             case 0:
-                debug print("\tFound local APIC #%u\n", madtLocalAPICCount);
-                madtLocalAPICs[madtLocalAPICCount++] = cast(MADTLocalAPIC*)madtPtr;
+                madtLAPICs[madtLAPICCount++] = cast(MADTLAPIC*)madtPtr;
                 break;
             case 1:
-                debug print("\tFound IOAPIC #%u\n", madtIOAPICCount);
                 madtIOAPICs[madtIOAPICCount++] = cast(MADTIOAPIC*)madtPtr;
                 break;
             case 2:
-                debug print("\tFound ISO #%u\n", madtISOCount);
                 madtISOs[madtISOCount++] = cast(MADTISO*)madtPtr;
                 break;
             case 4:
-                debug print("\tFound NMI #%u\n", madtNMICount);
                 madtNMIs[madtNMICount++] = cast(MADTNMI*)madtPtr;
                 break;
             default:
         }
+    }
+
+    debug {
+        print("\tFound up to '%u' LAPICs\n", madtLAPICCount);
+        print("\tFound up to '%u' IOAPICs\n", madtIOAPICCount);
+        print("\tFound up to '%u' ISOs\n", madtISOCount);
+        print("\tFound up to '%u' NMIs\n", madtNMICount);
     }
 }

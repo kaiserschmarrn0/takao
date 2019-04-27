@@ -514,7 +514,7 @@ void pitHandler() {
 
         call pitInner; // In the PIT code
 
-        mov RAX, localAPICEOIPointer;
+        mov RAX, lapicEOIPointer;
         mov int ptr [RAX], 0;
 
         pop R15;
@@ -542,10 +542,10 @@ void keyboardHandler() {
 }
 
 void apicNMIHandler() {
-    import system.interrupts.apic: eoiLocalAPIC;
+    import system.interrupts.apic: eoiLAPIC;
     import util.term:              panic;
 
-    eoiLocalAPIC();
+    eoiLAPIC();
 
     panic("Non-maskable APIC interrupt (NMI) occured. Possible hardware issue");
 }
@@ -570,10 +570,10 @@ void slavePICHandler() {
 }
 
 void apicSpuriousHandler() {
-    import system.interrupts.apic: eoiLocalAPIC;
+    import system.interrupts.apic: eoiLAPIC;
     import util.term:              panic;
 
-    eoiLocalAPIC();
+    eoiLAPIC();
 
     panic("A spurious interrupt sent by the APIC occured");
 }

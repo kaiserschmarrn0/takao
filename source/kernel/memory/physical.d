@@ -4,7 +4,7 @@
 
 module memory.physical;
 
-import memory.constants;
+import memory;
 
 private immutable auto bitmapReallocStep = 1;
 
@@ -19,9 +19,6 @@ private __gshared size_t currentPointer = bitmapBase;
 
 void initPhysicalBitmap() {
     import memory.e820: e820Map;
-    import util.term:   info, panic;
-
-    info("Initialising the physical memory bitmap...");
 
     memoryBitmap = &initialBitmap[0];
     tempBitmap   = cast(uint*)pmmAlloc(bitmapReallocStep, false);

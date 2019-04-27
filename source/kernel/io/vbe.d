@@ -4,7 +4,7 @@
 
 module io.vbe;
 
-import memory.constants;
+import memory;
 import util.term;
 
 struct VBEInfo {

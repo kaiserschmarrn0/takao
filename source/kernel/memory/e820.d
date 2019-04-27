@@ -16,9 +16,7 @@ __gshared E820Entry[256] e820Map;
 private extern(C) void get_e820(E820Entry*);
 
 void getE820() {
-    import util.term: print, info;
-
-    info("Obtaining the E820 memory map...");
+    import util.term: print;
 
     get_e820(&e820Map[0]);
 
@@ -30,14 +28,14 @@ void getE820() {
                 break;
             }
 
-            print("\t[%x -> %x] %x <%s>\n", entry.base,
+            print("\t\t[%x -> %x] %x <%s>\n", entry.base,
                   entry.base + entry.length, entry.length,
                   e820Type(entry.type));
 
             if (entry.type == 1) memorySize += entry.length;
         }
 
-        print("\tTotal usable memory: %u MiB\n", memorySize / 1024 / 1024);
+        print("\t\tTotal usable memory: %u MiB\n", memorySize / 1024 / 1024);
     }
 }
 

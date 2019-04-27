@@ -6,19 +6,15 @@ module main;
 
 extern(C) void main() {
     import io.vbe:            initVBE;
-    import system.pit:        sleep;
+    import system.cpu:        initCPU;
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
     import system.acpi:       getACPIInfo;
-    import memory.e820:       getE820;
-    import memory.physical:   initPhysicalBitmap;
-    import memory.virtual:    mapGlobalMemory;
-    import util.term:         initTerm, info, panic;
+    import memory:            initMemoryManagers;
+    import util.term:         initTerm, info, warning, panic;
 
     firstStageInterrupts();
 
-    getE820();
-    initPhysicalBitmap();
-    mapGlobalMemory();
+    initMemoryManagers();
 
     initVBE();
     initTerm();
@@ -28,6 +24,8 @@ extern(C) void main() {
     getACPIInfo();
 
     secondStageInterrupts();
+
+    initCPU();
 
     panic("End of the kernel");
 }

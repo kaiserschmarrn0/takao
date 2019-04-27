@@ -4,13 +4,14 @@
 
 module memory.alloc;
 
+import memory;
+
 private struct allocMetadata {
     ulong pages;
     ulong size;
 }
 
 void* alloc(size_t size) {
-    import memory.constants;
     import memory.physical: pmmAlloc;
 
     size_t pageCount = (size + pageSize - 1) / pageSize;
@@ -33,7 +34,6 @@ void* alloc(size_t size) {
 }
 
 void free(void* ptr) {
-    import memory.constants;
     import memory.physical: pmmFree;
 
     auto metadata     = cast(allocMetadata*)(cast(ulong)ptr - pageSize);

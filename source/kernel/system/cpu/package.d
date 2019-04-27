@@ -1,10 +1,10 @@
-// cores.d - Core info and setting up
+// package.d - Core and CPU variables and structures
 // (C) 2019 the takao authors (AUTHORS.md). All rights reserved
 // This code is governed by a license that can be found in LICENSE.md
 
-module system.cores;
+module system.cpu;
 
-import memory.constants;
+import memory;
 
 immutable uint maxCores      = 128;
 immutable uint coreStackSize = 16384; // 16 KiB
@@ -16,16 +16,14 @@ struct Core {
     size_t kernelStack;
     size_t threadKernelStack;
     size_t threadUserStack;
-    size_t threadErrmp;
+    size_t threadErrno;
     size_t ipiAbortReceived;
 
     // Feel free to move every other member, and use any type as you see fit
-    ubyte lapicID;
-    int ipi_abortexec_received;
-    int ipi_resched_received;
+    ubyte lapic;
 }
 
-struct TSS {
+struct CoreTSS {
     align(1):
 
     align(16) uint unused0;
@@ -51,5 +49,29 @@ struct CoreStack {
 }
 
 __gshared                 Core[maxCores]      cores;
-__gshared align(16)       TSS[maxCores]       coreTSSs;
+__gshared align(16)       CoreTSS[maxCores]   coreTSSs;
 __gshared align(pageSize) CoreStack[maxCores] coreStacks;
+
+void initCPU() {
+    import util.term;
+    import system.cpu.smp;
+
+    info("Initialising CPU");
+
+    debug {
+        print("\tSetting up SMP\n");
+    }
+
+    initSMP();
+}
+
+size_t currentCore() {
+    size_t number;
+
+    asm {
+        mov RAX, qword ptr GS:[0];
+        mov number, RAX;
+    }
+
+    return number;
+}

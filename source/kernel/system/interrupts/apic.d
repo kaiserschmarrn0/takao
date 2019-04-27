@@ -4,13 +4,10 @@
 
 module system.interrupts.apic;
 
-import memory.constants: physicalMemoryOffset;
+import memory: physicalMemoryOffset;
 import system.acpi.madt;
 
-immutable uint apicICR0 = 0x300;
-immutable uint apicICR1 = 0x310;
-
-__gshared uint* localAPICEOIPointer;
+__gshared uint* lapicEOIPointer;
 
 void enableAPIC() {
     import util.term: print;
@@ -25,16 +22,16 @@ void enableAPIC() {
         print("\tInstalling non-maskable interrupts (NMIs)...\n");
     }
 
-    installLocalAPICNMIs();
+    installLAPICNMIs();
 
     debug {
         print("\tEnabling local APIC...\n");
     }
 
-    enableLocalAPIC();
+    enableLAPIC();
 
-    size_t localAPICBase = madt.localControllerAddress + physicalMemoryOffset;
-    localAPICEOIPointer = cast(uint*)(localAPICBase + 0xB0);
+    size_t LAPICBase = madt.localControllerAddress + physicalMemoryOffset;
+    lapicEOIPointer = cast(uint*)(LAPICBase + 0xB0);
 }
 
 void disablePIC() {
@@ -83,14 +80,14 @@ void disablePIC() {
     wait();
 }
 
-void installLocalAPICNMIs() {
+void installLAPICNMIs() {
     foreach (ubyte i; 0..madtNMICount) {
         // Reserve vectors 0x90 .. length of(madtNMIs) for NMIs
-        setLocalAPICNMI(cast(ubyte)(0x90 + i), madtNMIs[i].flags, madtNMIs[i].lint);
+        setLAPICNMI(cast(ubyte)(0x90 + i), madtNMIs[i].flags, madtNMIs[i].lint);
     }
 }
 
-void setLocalAPICNMI(ubyte vector, ushort flags, ubyte lint) {
+void setLAPICNMI(ubyte vector, ushort flags, ubyte lint) {
     uint nmi = 800 | vector;
 
     if (flags & 2) {
@@ -102,38 +99,38 @@ void setLocalAPICNMI(ubyte vector, ushort flags, ubyte lint) {
     }
 
     if (lint == 1) {
-        writeLocalAPIC(0x360, nmi);
+        writeLAPIC(0x360, nmi);
     } else if (lint == 0) {
-        writeLocalAPIC(0x350, nmi);
+        writeLAPIC(0x350, nmi);
     }
 }
 
-void enableLocalAPIC() {
-    writeLocalAPIC(0xF0, readLocalAPIC(0xF0) | 0x1FF);
+void enableLAPIC() {
+    writeLAPIC(0xF0, readLAPIC(0xF0) | 0x1FF);
 }
 
-uint readLocalAPIC(uint reg) {
+uint readLAPIC(uint reg) {
     import core.bitop;
 
     auto base = madt.localControllerAddress + physicalMemoryOffset;
     return volatileLoad(cast(uint*)(base + reg));
 }
 
-void writeLocalAPIC(uint reg, uint data) {
+void writeLAPIC(uint reg, uint data) {
     import core.bitop;
 
     auto base = madt.localControllerAddress + physicalMemoryOffset;
     volatileStore(cast(uint*)(base + reg), data);
 }
 
-void eoiLocalAPIC() {
-    writeLocalAPIC(0xB0, 0);
+void eoiLAPIC() {
+    writeLAPIC(0xB0, 0);
 }
 
 void ioapicSetMask(int core, ubyte irq, int status) {
-    import system.cores;
+    import system.cpu;
 
-    ubyte apic = cores[core].lapicID;
+    ubyte apic = cores[core].lapic;
 
     // Redirect will handle whether the IRQ is masked or not, we just need to
     // search the MADT ISOs for a corresponding IRQ
@@ -195,7 +192,6 @@ uint ioapicGetMaxRedirect(size_t ioapic) {
 // Read from the ioapic'th I/O APIC as described by the MADT
 uint ioapicRead(size_t ioapic, uint reg) {
     import core.bitop;
-    import memory.constants;
 
     auto base = cast(uint*)(madtIOAPICs[ioapic].address + physicalMemoryOffset);
     volatileStore(base, reg);
@@ -206,7 +202,6 @@ uint ioapicRead(size_t ioapic, uint reg) {
 // Write to the `ioapic`'th I/O APIC as described by the MADT
 void ioapicWrite(size_t ioapic, uint reg, uint data) {
     import core.bitop;
-    import memory.constants;
 
     auto base = cast(uint*)(madtIOAPICs[ioapic].address + physicalMemoryOffset);
 
