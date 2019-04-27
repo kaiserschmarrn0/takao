@@ -17,7 +17,7 @@ DFLAGS = -O2 -dw
 
 LDFLAGS = -O2 -gc-sections
 
-QEMUFLAGS = -m 2G
+QEMUFLAGS = -m 2G -smp 4
 
 DFLAGS_INTERNAL := $(DFLAGS) -mtriple=x86_64-elf -relocation-model=static \
 	-code-model=kernel -mattr=-sse,-sse2,-sse3,-ssse3 -disable-red-zone \

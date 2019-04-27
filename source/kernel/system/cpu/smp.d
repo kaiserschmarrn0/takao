@@ -146,12 +146,13 @@ private bool startCore(ubyte targetAPIC, ubyte coreNumber) {
     }
 }
 
-private void coreKernelEntry() {
+void coreKernelEntry() {
     import util.term;
     import system.interrupts.apic;
 
     // Cores jump here after initialisation
     debug {
+        // TODO: All this shit needs locks otherwise it turns into a mess
         print("\t\tStarted up core #%u successfully\n", currentCore());
     }
 
@@ -170,7 +171,9 @@ private void coreKernelEntry() {
 
 private int checkCoreFlag() {
     asm {
-        xor RAX, RAX;
+        naked;
+
+        xor EAX, EAX;
         mov AL, byte ptr [0x510];
         ret;
     }
