@@ -36,7 +36,17 @@ void initSMP() {
 
     foreach (i; 1..madtLAPICCount) {
         debug {
-            print("\t\tStarting up core #%u\n", i);
+            print("\t\tStarting up core #%u", i);
+        }
+
+        // In practice some dead cores have LAPIC == 0, this cores dont exist
+        // and are meant to be ignored
+        // Tested on AMD Ryzen 5 2400G (8) @ 3
+        if (!madtLAPICs[i].apicID) {
+            debug {
+                print(" [LAPIC 0 ignored]\n", i);
+            }
+            continue;
         }
 
         if (startCore(madtLAPICs[i].apicID, availableCores)) {
@@ -158,7 +168,7 @@ private void coreKernelEntry() {
 
     // Cores jump here after initialisation
     debug {
-        print("\t\tStarted up core #%u successfully\n", currentCore());
+        print(" [Successful, reports as core #%u]\n", currentCore());
     }
 
     // Enable this core's LAPIC
