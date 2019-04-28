@@ -1,9 +1,16 @@
-// main.d - Entrypoint of the kernel
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module main;
 
+/**
+ * Entrypoint of the kernel
+ *
+ * Entrypoint called directly by the bootloader as soon as we get a good
+ * environment (long mode, a good stack, etc)
+ */
 extern(C) void main() {
     import io.vbe:            initVBE;
     import system.cpu:        initCPU;

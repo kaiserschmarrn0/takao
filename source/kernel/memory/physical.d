@@ -1,12 +1,15 @@
-// physical.d - Physical memory management
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module memory.physical;
 
 import memory;
 
 private immutable auto bitmapReallocStep = 1;
+private immutable size_t memoryBase = 0x1000000;
+private immutable size_t bitmapBase = memoryBase / pageSize;
 
 private __gshared uint*  memoryBitmap;
 private __gshared uint[] initialBitmap = [0xFFFFFF7F];
@@ -17,6 +20,9 @@ private __gshared size_t bitmapEntries = 32;
 
 private __gshared size_t currentPointer = bitmapBase;
 
+/**
+ * Initialises the physical bitmap, the base of the memory management in the OS
+ */
 void initPhysicalBitmap() {
     import memory.e820: e820Map;
 
@@ -101,6 +107,15 @@ void initPhysicalBitmap() {
     }
 }
 
+/**
+ * Allocate a number of pages
+ *
+ * Params:
+ *     pageCount = Number of pages to allocate
+ *     zero      = Zero out the pages or not
+ *
+ * Returns: A `void*` to the first of the allocated pages, `null` in failure
+ */
 void* pmmAlloc(size_t pageCount, bool zero) {
     auto currentPageCount = pageCount;
 
@@ -137,6 +152,13 @@ found:
     return ret;
 }
 
+/**
+ * Free a number of pages from a pointer
+ *
+ * Params:
+ *     pointer   = The pointer to be freed
+ *     pageCount = The number of pages to free
+ */
 void pmmFree(void* pointer, size_t pageCount) {
     auto start = cast(size_t)pointer / pageSize;
 

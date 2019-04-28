@@ -1,27 +1,34 @@
-// vbe.d - VBE text printing driver
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module io.vbe;
 
 import memory;
 import util.term;
 
+/**
+ * VBE information as found in hardware
+ */
 struct VBEInfo {
     align(1):
 
     ubyte  versionMin;
     ubyte  versionMajor;
-    uint   oem;            // is a 32 bit pointer to char
+    uint   oem;            /// Is a 32 bit pointer to char
     uint   capabilities;
-    uint   videoModes;     // is a 32 bit pointer to ushort
+    uint   videoModes;     /// Is a 32 bit pointer to ushort
     ushort videoMemBlocks;
     ushort revision;
-    uint   vendor;         // is a 32 bit pointer to char
-    uint   productName;    // is a 32 bit pointer to char
-    uint   productReview;  // is a 32 bit pointer to char
+    uint   vendor;         /// Is a 32 bit pointer to char
+    uint   productName;    /// Is a 32 bit pointer to char
+    uint   productReview;  /// Is a 32 bit pointer to char
 }
 
+/**
+ * EDID information reported by the real mode calls
+ */
 struct EDIDInfo {
     align(1):
 
@@ -51,6 +58,9 @@ struct EDIDInfo {
     ubyte     checksum;
 }
 
+/**
+ * Information about the VBE modes
+ */
 struct VBEModeInfo {
     align(1):
 
@@ -65,8 +75,11 @@ struct VBEModeInfo {
     ubyte[212] pad3;
 }
 
+/**
+ * Returned from the real mode calls
+ */
 struct GetVBE {
-    uint   vbeMode; // is a 32 bit pointer to VBEModeInfo
+    uint   vbeMode; /// Is a 32 bit pointer to VBEModeInfo
     ushort mode;
 }
 
@@ -81,10 +94,10 @@ private __gshared VBEModeInfo  vbeMode;
 private __gshared GetVBE       getVBE;
 private __gshared ushort[1024] videoModes;
 
-__gshared uint* vbeFramebuffer;
-__gshared int   vbeWidth;
-__gshared int   vbeHeight;
-__gshared int   vbePitch;
+__gshared uint* vbeFramebuffer; /// The VBE framebuffer reported by initVBE
+__gshared int   vbeWidth;       /// VBE selected mode width in pixels
+__gshared int   vbeHeight;      /// VBE selected mode height in pixels
+__gshared int   vbePitch;       /// The pitch of the mode
 
 private void edidCall() {
     debug {
@@ -109,6 +122,9 @@ private void edidCall() {
     }
 }
 
+/**
+ * Initialise the VBE interface, filling the global variables in the process
+ */
 void initVBE() {
     import memory.virtual: pageMap, mapPage;
     import util.lib:       areEquals;

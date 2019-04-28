@@ -8,6 +8,7 @@ override ISO    = $(kernel).iso
 
 override sourceDir = source
 override buildDir  = build
+override docsDir   = docs
 
 DC = ldc2
 LD = ld.lld
@@ -33,6 +34,10 @@ ifeq ($(DEBUG), on)
 DFLAGS_INTERNAL := $(DFLAGS_INTERNAL) -gc -d-debug
 
 QEMUFLAGS_INTERNAL := $(QEMUFLAGS_INTERNAL) -debugcon stdio
+endif
+
+ifeq ($(DOCS), on)
+DFLAGS_INTERNAL := $(DFLAGS_INTERNAL) -Dd=$(docsDir)
 endif
 
 ifeq ($(KVM), on)
@@ -80,4 +85,4 @@ test: iso
 	qemu-system-x86_64 $(QEMUFLAGS_INTERNAL)
 
 clean:
-	rm -f $(objects) $(binaries) $(image) $(ISO)
+	rm -rf $(objects) $(binaries) $(image) $(ISO) $(docsDir)

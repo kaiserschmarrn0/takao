@@ -35,7 +35,7 @@ And next lets build the source with:
 # DFLAGS="-O2 -mcpu=znver1" make
 # That will make the compiler optimise the code and target the zen (AMD ryzen)
 # architecture, a full set of flags can be found in 'ldc2 -mcpu=help'
-make             # Add DEBUG=on for a debug build
+make             # Add DEBUG=on for a debug build, DOCS=on to generate docs
 make KVM=on test # Add DEBUG here too to match the debug build
 ```
 

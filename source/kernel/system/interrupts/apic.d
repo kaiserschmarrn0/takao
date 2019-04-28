@@ -1,6 +1,7 @@
-// apic.d - APIC enabling
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module system.interrupts.apic;
 
@@ -9,6 +10,9 @@ import system.acpi.madt;
 
 __gshared uint* lapicEOIPointer;
 
+/**
+ * Enables the system APIC, and then will initialise the LAPIC of core #0
+ */
 void enableAPIC() {
     import util.term: print;
 
@@ -34,7 +38,7 @@ void enableAPIC() {
     lapicEOIPointer = cast(uint*)(LAPICBase + 0xB0);
 }
 
-void disablePIC() {
+private void disablePIC() {
     import io.ports: inb, outb, wait;
 
     // Each chip (master and slave) has a command port and a data port.
@@ -80,14 +84,14 @@ void disablePIC() {
     wait();
 }
 
-void installLAPICNMIs() {
+private void installLAPICNMIs() {
     foreach (ubyte i; 0..madtNMICount) {
         // Reserve vectors 0x90 .. length of(madtNMIs) for NMIs
         setLAPICNMI(cast(ubyte)(0x90 + i), madtNMIs[i].flags, madtNMIs[i].lint);
     }
 }
 
-void setLAPICNMI(ubyte vector, ushort flags, ubyte lint) {
+private void setLAPICNMI(ubyte vector, ushort flags, ubyte lint) {
     uint nmi = 800 | vector;
 
     if (flags & 2) {
@@ -105,10 +109,21 @@ void setLAPICNMI(ubyte vector, ushort flags, ubyte lint) {
     }
 }
 
+/**
+ * Enables the current core LAPIC, writting to the APIC registers.
+ */
 void enableLAPIC() {
     writeLAPIC(0xF0, readLAPIC(0xF0) | 0x1FF);
 }
 
+/**
+ * Reads a specific LAPIC register using MADT information
+ *
+ * Params:
+ *     reg = The requested register
+ *
+ * Return: Contents of the requested register
+ */
 uint readLAPIC(uint reg) {
     import core.bitop;
 
@@ -116,6 +131,13 @@ uint readLAPIC(uint reg) {
     return volatileLoad(cast(uint*)(base + reg));
 }
 
+/**
+ * Writes to a specific LAPIC register using MADT information
+ *
+ * Params:
+ *     reg  = The requested register to write
+ *     data = The data to write
+ */
 void writeLAPIC(uint reg, uint data) {
     import core.bitop;
 
@@ -123,10 +145,21 @@ void writeLAPIC(uint reg, uint data) {
     volatileStore(cast(uint*)(base + reg), data);
 }
 
+/**
+ * Writes 0 to the EOI register of the LAPIC, signaling the end of an interrupt
+ */
 void eoiLAPIC() {
     writeLAPIC(0xB0, 0);
 }
 
+/**
+ * Masks one irq in the IOAPIC.
+ *
+ * Params:
+ *     core = The core number to use
+ *     irq  = The IRQ in the IDT to mask
+ *     status = Status for the masked kernel, active (1) or inactive (0)
+ */
 void ioapicSetMask(int core, ubyte irq, int status) {
     import system.cpu;
 
@@ -145,7 +178,7 @@ void ioapicSetMask(int core, ubyte irq, int status) {
     ioapicSetRedirect(irq, irq, 0, apic, status);
 }
 
-void ioapicSetRedirect(ubyte irq, uint gsi, ushort flags, ubyte apic, int status) {
+private void ioapicSetRedirect(ubyte irq, uint gsi, ushort flags, ubyte apic, int status) {
     size_t ioapic = ioapicFromRedirect(gsi);
 
     // Map APIC irqs to vectors beginning after exceptions
@@ -173,7 +206,7 @@ void ioapicSetRedirect(ubyte irq, uint gsi, ushort flags, ubyte apic, int status
 }
 
 // Return the index of the I/O APIC that handles this redirect
-size_t ioapicFromRedirect(uint gsi) {
+private size_t ioapicFromRedirect(uint gsi) {
     foreach (i; 0..madtIOAPICCount) {
         if (madtIOAPICs[i].gsib <= gsi &&
             madtIOAPICs[i].gsib + ioapicGetMaxRedirect(i) > gsi) {
@@ -185,12 +218,12 @@ size_t ioapicFromRedirect(uint gsi) {
 }
 
 // Get the maximum number of redirects this I/O APIC can handle */
-uint ioapicGetMaxRedirect(size_t ioapic) {
+private uint ioapicGetMaxRedirect(size_t ioapic) {
     return (ioapicRead(ioapic, 1) & 0xFF0000) >> 16;
 }
 
 // Read from the ioapic'th I/O APIC as described by the MADT
-uint ioapicRead(size_t ioapic, uint reg) {
+private uint ioapicRead(size_t ioapic, uint reg) {
     import core.bitop;
 
     auto base = cast(uint*)(madtIOAPICs[ioapic].address + physicalMemoryOffset);
@@ -200,7 +233,7 @@ uint ioapicRead(size_t ioapic, uint reg) {
 }
 
 // Write to the `ioapic`'th I/O APIC as described by the MADT
-void ioapicWrite(size_t ioapic, uint reg, uint data) {
+private void ioapicWrite(size_t ioapic, uint reg, uint data) {
     import core.bitop;
 
     auto base = cast(uint*)(madtIOAPICs[ioapic].address + physicalMemoryOffset);

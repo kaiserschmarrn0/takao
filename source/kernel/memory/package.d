@@ -1,18 +1,22 @@
-// package.d - Memory functions
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module memory;
 
+/// The physical memory offset applied to all the address space
 immutable size_t physicalMemoryOffset       = 0xFFFF800000000000;
+
+/// The physical memory offset applied to the kernel symbols
 immutable size_t kernelPhysicalMemoryOffset = 0xFFFFFFFFC0000000;
 
-immutable size_t pageSize         = 4096;
-immutable size_t pageTableEntries = 512;
+immutable size_t pageSize         = 4096; /// Page size of the kernel mapping
+immutable size_t pageTableEntries = 512;  /// Entries of each page table
 
-immutable size_t memoryBase = 0x1000000;
-immutable size_t bitmapBase = memoryBase / pageSize;
-
+/**
+ * Initialises all the memory managers with all they need to fully run
+ */
 void initMemoryManagers() {
     import memory.e820;
     import memory.physical;

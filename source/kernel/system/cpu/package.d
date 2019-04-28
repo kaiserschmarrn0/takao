@@ -1,13 +1,14 @@
-// package.d - Core and CPU variables and structures
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module system.cpu;
 
 import memory;
 
-immutable uint maxCores      = 128;
-immutable uint coreStackSize = 16384; // 16 KiB
+immutable uint maxCores      = 128;   /// Max number of cores the kernel supports
+immutable uint coreStackSize = 16384; /// The kernel stack size * core, 16 KiB
 
 struct Core {
     // DO NOT MOVE THESE MEMBERS FROM THESE LOCATIONS
@@ -48,10 +49,13 @@ struct CoreStack {
     align(pageSize) ubyte[coreStackSize] stack;
 }
 
-__gshared                 Core[maxCores]      cores;
-__gshared align(16)       CoreTSS[maxCores]   coreTSSs;
-__gshared align(pageSize) CoreStack[maxCores] coreStacks;
+__gshared                 Core[maxCores]      cores;      /// Info of all system's cores
+__gshared align(16)       CoreTSS[maxCores]   coreTSSs;   /// All the cores TSSs
+__gshared align(pageSize) CoreStack[maxCores] coreStacks; /// All the core stacks
 
+/**
+ * Initialise all related to CPU, like SMP or features
+ */
 void initCPU() {
     import util.term;
     import system.cpu.smp;
@@ -65,6 +69,13 @@ void initCPU() {
     initSMP();
 }
 
+/**
+ * Identifies the current core using `GS`
+ *
+ * Returns: The core number that executes the code, from 0 to `maxCores`
+ *
+ * Bugs: Prints incoherent information if core #0 is the one executing it
+ */
 size_t currentCore() {
     size_t number;
 

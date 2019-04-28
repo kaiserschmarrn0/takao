@@ -1,6 +1,7 @@
-// madt.d - MADT ACPI table structures and reading
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module system.acpi.madt;
 
@@ -74,6 +75,12 @@ __gshared ubyte     madtISOCount = 0;
 __gshared MADTNMI** madtNMIs;
 __gshared ubyte     madtNMICount = 0;
 
+/**
+ * Uses ACPI's `findSDT` to find the MADT, and extract information that will get
+ * saved in global variables
+ *
+ * It assumes we wont find more than 256 LAPIC, IOAPIC, ISO or NMI entries.
+ */
 void initMADT() {
     import system.acpi:  findSDT;
     import memory.alloc: alloc;
@@ -83,11 +90,10 @@ void initMADT() {
 
     assert(madt);
 
-    // We wont find more than 256 of each (I hope)
-    madtLAPICs = cast(MADTLAPIC**)alloc(256);
-    madtIOAPICs    = cast(MADTIOAPIC**)   alloc(256);
-    madtISOs       = cast(MADTISO**)      alloc(256);
-    madtNMIs       = cast(MADTNMI**)      alloc(256);
+    madtLAPICs  = cast(MADTLAPIC**) alloc(256);
+    madtIOAPICs = cast(MADTIOAPIC**)alloc(256);
+    madtISOs    = cast(MADTISO**)   alloc(256);
+    madtNMIs    = cast(MADTNMI**)   alloc(256);
 
     // parse the MADT entries
     for (ubyte* madtPtr = cast(ubyte*)(&madt.entriesBeginning);

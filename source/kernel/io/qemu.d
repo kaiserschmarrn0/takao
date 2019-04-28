@@ -1,9 +1,16 @@
-// qemu.d - QEMU output functions
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module io.qemu;
 
+/**
+ * Sends a character to the QEMU debug port, accesible thru 0xE9
+ *
+ * Params:
+ *     c = The character requested for sending
+ */
 void qemuPutChar(char c) {
     import io.ports: outb;
 

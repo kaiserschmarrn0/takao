@@ -1,6 +1,7 @@
-// package.d - ACPI table definition and usage
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module system.acpi;
 
@@ -48,10 +49,19 @@ struct XSDT {
     ulong   sdtPointers;
 }
 
-__gshared RSDP* rsdp;
-__gshared RSDT* rsdt;
-__gshared XSDT* xsdt;
+__gshared RSDP* rsdp; /// The RSDP, that always is found
+__gshared RSDT* rsdt; /// The RSDT if found
+__gshared XSDT* xsdt; /// The XSDT is found
 
+/**
+ * Searches for the RSDP table from `0x80000 + physicalMemoryOffset` to
+ * `0x100000 + physicalMemoryOffset` (physicalMemoryOffset -> kernel constant)
+ *
+ * Once RSDP is located, it either defines XSDT or RSDT for use, prefering XSDT.
+ * The chosen one will have a value while the other will be `null`.
+ *
+ * If RSDP is not found, panics
+ */
 void getACPIInfo() {
     import memory:           physicalMemoryOffset;
     import system.acpi.madt: initMADT;
@@ -100,6 +110,17 @@ RSDPFound:
     initMADT();
 }
 
+/**
+ * Finds an ACPI SDT inside either XSDT or RSDT, the one choosen by
+ * `getACPIInfo`
+ *
+ * Params:
+ *     signature = The string signature of the table to be found
+ *
+ * Return: A pointer to the table
+ *
+ * Bugs: Will #PF if both the XSDT and RSDT point to `null`
+ */
 void* findSDT(const(char)* signature) {
     import memory:   physicalMemoryOffset;
     import util.lib: areEquals;

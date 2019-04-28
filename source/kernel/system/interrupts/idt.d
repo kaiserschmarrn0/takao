@@ -1,6 +1,7 @@
-// idt.d - IDT loading and filling
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module system.interrupts.idt;
 
@@ -27,6 +28,9 @@ struct IDTPointer {
 
 private __gshared IDTDescriptor[256] idt;
 
+/**
+ * Sets the system IDT, exceptions and IRQs
+ */
 void setIDT() {
     import system.interrupts.isr;
 

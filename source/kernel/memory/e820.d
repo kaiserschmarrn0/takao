@@ -1,6 +1,7 @@
-// e820.d - E820
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module memory.e820;
 
@@ -11,10 +12,15 @@ struct E820Entry {
     uint  unused;
 }
 
-__gshared E820Entry[256] e820Map;
+__gshared E820Entry[256] e820Map; /// the e820 memory map filled by `getE820`
 
 private extern(C) void get_e820(E820Entry*);
 
+/**
+ * Getting the e820 map and putting it in `e820Map`
+ *
+ * To accomplish this it will make a real mode call defined in `get_e820`
+ */
 void getE820() {
     import util.term: print;
 

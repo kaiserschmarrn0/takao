@@ -1,6 +1,7 @@
-// virtual.d - Virtual memory management
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module memory.virtual;
 
@@ -8,22 +9,32 @@ import memory;
 
 alias PageTableEntry = ulong;
 
-__gshared PageTableEntry* pageMap;
+__gshared PageTableEntry* pageMap; /// The kernel paging scheme, loaded in `CR3`
 
+/**
+ * Sets the paging scheme of the kernel
+ *
+ * This function will map the first 4GiB of memory, this saves issues
+ * with MMIO hardware that lies on addresses < 4GiB later on.
+ *
+ * It will then identity map the first 32 MiB and map 32 MiB for the physical
+ * memory area, and 32 MiB for the kernel in the higher half.
+ *
+ * Finally, it forcefully map from the first 32 MiB to the first 4 GiB for I/O
+ * into the higher half and finally map all the available memory (e820)
+ */
 void mapGlobalMemory() {
     import memory.e820:     e820Map;
     import memory.physical: pmmAlloc;
 
-    // We will map the first 4GiB of memory, this saves issues
-    // with MMIO hardware that lies on addresses < 4GiB later on.
+    // First 4GiB of memory
     pageMap = cast(PageTableEntry*)(cast(size_t)pmmAlloc(1, true) +
                     physicalMemoryOffset);
 
     // Catch allocation failure
     assert(!(cast(size_t)pageMap == physicalMemoryOffset));
 
-    // Identity map the first 32 MiB and map 32 MiB for the phys mem area, and
-    // 32 MiB for the kernel in the higher half
+    // Identity mapping
     foreach (i; 0..(0x2000000 / pageSize)) {
         ulong addr = i * pageSize;
 
@@ -48,7 +59,7 @@ void mapGlobalMemory() {
         mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
     }
 
-    // Then use the e820 to map all the available memory (saves on allocation
+    // Use the e820 to map all the available memory (saves on allocation
     // time and it's easier).
     // The physical memory is mapped at the beginning of the higher half
     // (entry 256 of the pml4) onwards.
@@ -77,8 +88,17 @@ void mapGlobalMemory() {
     }
 }
 
-// map physaddr -> virtaddr using pml4 pointer
-// Returns 0 on success, -1 on failure
+/**
+ * Maps a physical address to a virtual address using a pml4 pointer (pagemap)
+ *
+ * Params:
+ *     pagemap         = The pml4 pointer to use
+ *     virtualAddress  = The virtual address to map
+ *     physicalAddress = The physical address to use
+ *     flags           = Flags for the page
+ *
+ * Returns: `0` on success, `-1` on failure
+ */
 int mapPage(PageTableEntry* pagemap, size_t virtualAddress,
             size_t physicalAddress, size_t flags) {
     import memory.physical: pmmAlloc, pmmFree;
@@ -181,6 +201,15 @@ fail1:
     return -1;
 }
 
+/**
+ * Unmaps a virtual address using a pml4 pointer (pagemap)
+ *
+ * Params:
+ *     pagemap         = The pml4 pointer to use
+ *     virtualAddress  = The virtual address to unmap
+ *
+ * Returns: `0` on success, `-1` on failure
+ */
 int unmapPage(PageTableEntry* pagemap, size_t virtualAddress) {
     import memory.physical: pmmFree;
 

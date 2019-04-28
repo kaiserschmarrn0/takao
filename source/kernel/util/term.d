@@ -1,6 +1,7 @@
-// messages.d - Output functions
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module util.term;
 
@@ -8,7 +9,7 @@ public import core.stdc.stdarg;
 
 import io.vbe;
 
-__gshared bool termEnabled = false;
+__gshared bool termEnabled = false; /// Status of the graphical terminal
 
 private const char[] conversionTable = "0123456789ABCDEF";
 
@@ -55,8 +56,11 @@ private __gshared immutable uint[] ansiColours = [
     0xDCDCDC               // grey
 ];
 
-extern(C) void dumpVGAFont(ubyte*);
+private extern(C) void dumpVGAFont(ubyte*);
 
+/**
+ * Initialise the terminal
+ */
 void initTerm() {
     import memory.alloc: alloc;
 
@@ -367,7 +371,7 @@ private void escapeParse(char c) {
     }
 }
 
-void vbePutChar(char c) {
+private void vbePutChar(char c) {
     if (escape) {
         escapeParse(c);
         return;
@@ -472,24 +476,43 @@ private void printHex(ulong x) {
     print(&buf[i]);
 }
 
-void print(char character) {
+/**
+ * Print a character to the terminal, implements escape sequences
+ *
+ * Params:
+ *     c = The character to print
+ */
+void print(char c) {
     import io.qemu: qemuPutChar;
 
     debug {
-        qemuPutChar(character);
+        qemuPutChar(c);
     }
 
     if (termEnabled) {
-        vbePutChar(character);
+        vbePutChar(c);
     }
 }
 
+/**
+ * Print a string to the terminal
+ *
+ * Params:
+ *     message = String to print
+ */
 void print(const(char)* message) {
     for (auto i = 0; message[i]; i++) {
         print(message[i]);
     }
 }
 
+/**
+ * Print a formated string to the terminal
+ *
+ * Params:
+ *     format = String to format and print once formatted
+ *     args   = Initialised list of arguments to format
+ */
 extern(C) void vprint(const(char)* format, va_list args) {
     for (auto i = 0; format[i]; i++) {
         if (format[i] != '%') {
@@ -522,6 +545,13 @@ extern(C) void vprint(const(char)* format, va_list args) {
     }
 }
 
+/**
+ * Print a formatted string to the terminal
+ *
+ * Params:
+ *     message = String to format and print
+ *     ...     = Extra arguments
+ */
 extern(C) void print(const(char)* message, ...) {
     va_list args;
     va_start(args, message);
@@ -529,6 +559,13 @@ extern(C) void print(const(char)* message, ...) {
     vprint(message, args);
 }
 
+/**
+ * Print Information about the runtime in the terminal
+ *
+ * Params:
+ *     message = String to format and print
+ *     ...     = Extra arguments
+ */
 extern(C) void info(const(char)* message, ...) {
     va_list args;
     va_start(args, message);
@@ -538,6 +575,13 @@ extern(C) void info(const(char)* message, ...) {
     print('\n');
 }
 
+/**
+ * Print a warning to the terminal
+ *
+ * Params:
+ *     message = String to format and print
+ *     ...     = Extra arguments
+ */
 extern(C) void warning(const(char)* message, ...) {
     va_list args;
     va_start(args, message);
@@ -547,6 +591,13 @@ extern(C) void warning(const(char)* message, ...) {
     print('\n');
 }
 
+/**
+ * Panics printing a message, will also print registers and HCF
+ *
+ * Params:
+ *     message = String to format and print
+ *     ...     = Extra arguments
+ */
 extern(C) void panic(const(char)* message, ...) {
     va_list args;
     va_start(args, message);

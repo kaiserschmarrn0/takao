@@ -1,6 +1,7 @@
-// package.d - Core and CPU variables and structures
-// (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-// This code is governed by a license that can be found in LICENSE.md
+/**
+ * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
+ * This code is governed by a license that can be found in LICENSE.md
+ */
 
 module system.cpu.smp;
 
@@ -11,23 +12,28 @@ import system.pit;
 immutable uint apicICR0 = 0x300;
 immutable uint apicICR1 = 0x310;
 
-__gshared ubyte availableCores = 1; // We must have already booted on core #0
+__gshared ubyte availableCores = 1; /// The number of cores ready in the system
 
-extern(C) void loadTSS(CoreTSS*);
-extern(C) void* prepareTrampoline(void*, void*, void*, void*, void*);
+private extern(C) void loadTSS(CoreTSS*);
+private extern(C) void* prepareTrampoline(void*, void*, void*, void*, void*);
 
+/**
+ * Initialise SMP by first configuring core #0 and then starting cores following
+ * the `MADT` (ACPI)
+ *
+ * Once a new core is spawned, it will be put on halt
+ * by `startCore` -> `coreKernelEntry` until an interrupt is received
+ */
 void initSMP() {
     import util.term;
     import system.acpi.madt;
 
-    // Prepare core #0 first
     debug {
         print("\t\tConfiguring core #0\n");
     }
 
     initCore0();
 
-    // Start up the APs and jump them into the kernel
     foreach (i; 1..madtLAPICCount) {
         debug {
             print("\t\tStarting up core #%u\n", i);
@@ -146,13 +152,12 @@ private bool startCore(ubyte targetAPIC, ubyte coreNumber) {
     }
 }
 
-void coreKernelEntry() {
+private void coreKernelEntry() {
     import util.term;
     import system.interrupts.apic;
 
     // Cores jump here after initialisation
     debug {
-        // TODO: All this shit needs locks otherwise it turns into a mess
         print("\t\tStarted up core #%u successfully\n", currentCore());
     }
 
