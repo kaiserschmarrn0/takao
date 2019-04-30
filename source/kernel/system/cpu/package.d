@@ -6,6 +6,7 @@
 module system.cpu;
 
 import memory;
+import system.cpu.cpuid;
 
 immutable uint maxCores      = 128;   /// Max number of cores the kernel supports
 immutable uint coreStackSize = 16384; /// The kernel stack size * core, 16 KiB
@@ -49,9 +50,10 @@ struct CoreStack {
     align(pageSize) ubyte[coreStackSize] stack;
 }
 
-__gshared                 Core[maxCores]      cores;      /// Info of all system's cores
+__gshared                 Core[maxCores]      cores;      /// Basic core info
 __gshared align(16)       CoreTSS[maxCores]   coreTSSs;   /// All the cores TSSs
 __gshared align(pageSize) CoreStack[maxCores] coreStacks; /// All the core stacks
+__gshared                 CPUID[maxCores]     coreCPUIDs; /// CPUID info
 
 /**
  * Initialise all related to CPU, like SMP or features
@@ -73,8 +75,6 @@ void initCPU() {
  * Identifies the current core using `GS`
  *
  * Returns: The core number that executes the code, from 0 to `maxCores`
- *
- * Bugs: Prints incoherent information if core #0 is the one executing it
  */
 size_t currentCore() {
     size_t number;
@@ -82,6 +82,11 @@ size_t currentCore() {
     asm {
         mov RAX, qword ptr GS:[0];
         mov number, RAX;
+    }
+
+    // Core #0 may return random values, but always more than cores
+    if (number >= maxCores) {
+        number = 0;
     }
 
     return number;

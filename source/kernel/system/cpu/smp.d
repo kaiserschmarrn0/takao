@@ -39,9 +39,9 @@ void initSMP() {
             print("\t\tStarting up core #%u", i);
         }
 
-        // In practice some dead cores have LAPIC == 0, this cores dont exist
+        // In practice some "dead" cores have LAPIC == 0, these cores dont exist
         // and are meant to be ignored
-        // Tested on AMD Ryzen 5 2400G (8) @ 3
+        // Tested on an AMD Ryzen 5 2400G (8) @ 3
         if (!madtLAPICs[i].apicID) {
             debug {
                 print(" [LAPIC 0 ignored]\n", i);
@@ -62,10 +62,13 @@ void initSMP() {
 }
 
 private void initCore0() {
+    import system.cpu.cpuid;
+
     setupCore(0, 0);
 
     auto core = &cores[0];
     auto tss  = &coreTSSs[0];
+    checkCPUID(&coreCPUIDs[0]);
 
     ushort tssLoad = 0x38;
 
@@ -81,21 +84,6 @@ private void initCore0() {
         mov EAX, EDI;
         shr RDI, 32;
         mov EDX, EDI;
-        wrmsr;
-
-        // Enable SSE
-        mov RAX, CR0;
-        and AL, 0xFB;
-        or AL, 0x02;
-        mov CR0, RAX;
-        mov RAX, CR4;
-        or AX, 3 << 9;
-        mov CR4, RAX;
-
-        // Set up the PAT properly
-        mov RCX, 0x277;
-        rdmsr;
-        mov EDX, 0x0105; // Write-protect and write-combining
         wrmsr;
 
         mov RDI, RSI;
@@ -164,12 +152,16 @@ private bool startCore(ubyte targetAPIC, ubyte coreNumber) {
 
 private void coreKernelEntry() {
     import util.term;
+    import system.cpu.cpuid;
     import system.interrupts.apic;
 
     // Cores jump here after initialisation
     debug {
         print(" [Successful, reports as core #%u]\n", currentCore());
     }
+
+    // CPUID
+    checkCPUID(&coreCPUIDs[currentCore()]);
 
     // Enable this core's LAPIC
     enableLAPIC();

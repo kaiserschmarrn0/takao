@@ -1,4 +1,4 @@
-; getE820.asm - Real mode E820 caller
+; gete820.asm - Real mode E820 caller
 ; (C) 2019 the takao authors (AUTHORS.md). All rights reserved
 ; This code is governed by a license that can be found in LICENSE.md
 

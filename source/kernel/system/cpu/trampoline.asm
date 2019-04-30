@@ -32,6 +32,7 @@ prepareTrampoline:
     mov qword [0x540], rsi
     mov qword [0x550], rdx
     mov qword [0x560], rcx
+    ; mov qword [0x570], syscallEntry once we have a syscall entry
     sgdt [0x580]
     sidt [0x590]
 

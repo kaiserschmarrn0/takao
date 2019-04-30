@@ -583,10 +583,12 @@ extern(C) void info(const(char)* message, ...) {
  *     ...     = Extra arguments
  */
 extern(C) void warning(const(char)* message, ...) {
+    import system.cpu;
+
     va_list args;
     va_start(args, message);
 
-    print("\x1b[33mThe kernel reported a warning\x1b[0m: ");
+    print("\x1b[33mThe kernel reported a warning (core #%u)\x1b[0m: ", currentCore());
     vprint(message, args);
     print('\n');
 }
@@ -599,10 +601,12 @@ extern(C) void warning(const(char)* message, ...) {
  *     ...     = Extra arguments
  */
 extern(C) void panic(const(char)* message, ...) {
+    import system.cpu;
+
     va_list args;
     va_start(args, message);
 
-    print("\x1b[31mThe kernel panicked\x1b[0m: ");
+    print("\x1b[31mThe kernel panicked (core #%u)\x1b[0m: ", currentCore());
     vprint(message, args);
     print('\n');
     print("\x1b[45mThe system will be halted\x1b[0m\n");
