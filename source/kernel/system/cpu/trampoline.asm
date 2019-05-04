@@ -22,6 +22,8 @@ global prepareTrampoline:function (prepareTrampoline.end - prepareTrampoline)
 ; Store trampoline data in low memory and return the page index of the
 ; trampoline code.
 prepareTrampoline:
+    extern syscallEntry
+
     ; entry point in rdi, page table in rsi
     ; stack pointer in rdx, cpu local in rcx
     ; tss in r8
@@ -32,7 +34,7 @@ prepareTrampoline:
     mov qword [0x540], rsi
     mov qword [0x550], rdx
     mov qword [0x560], rcx
-    ; mov qword [0x570], syscallEntry once we have a syscall entry
+    mov qword [0x570], syscallEntry
     sgdt [0x580]
     sidt [0x590]
 

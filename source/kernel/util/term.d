@@ -9,7 +9,7 @@ public import core.stdc.stdarg;
 
 import io.vbe;
 
-__gshared bool termEnabled = false; /// Status of the graphical terminal
+private __gshared bool termEnabled = false; /// Status of the graphical terminal
 
 private const char[] conversionTable = "0123456789ABCDEF";
 
@@ -546,7 +546,7 @@ extern(C) void vprint(const(char)* format, va_list args) {
 }
 
 /**
- * Print a formatted string to the terminal
+ * Print a formatted string as a line into the terminal
  *
  * Params:
  *     message = String to format and print
@@ -591,6 +591,7 @@ extern(C) void warning(const(char)* message, ...) {
     print("\x1b[33mThe kernel reported a warning (core #%u)\x1b[0m: ", currentCore());
     vprint(message, args);
     print('\n');
+    printControlRegisters();
 }
 
 /**

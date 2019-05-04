@@ -32,7 +32,8 @@ private __gshared IDTDescriptor[256] idt;
  * Sets the system IDT, exceptions and IRQs
  */
 void setIDT() {
-    import system.interrupts.isr;
+    import system.interrupts.exceptions;
+    import system.interrupts.irq;
 
     IDTPointer idtPointer = {
         size:   idt.sizeof - 1,

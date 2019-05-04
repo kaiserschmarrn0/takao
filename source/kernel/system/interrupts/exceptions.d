@@ -17,7 +17,7 @@
  * running program. (i.e. before calling IRET)
  */
 
-module system.interrupts.isr;
+module system.interrupts.exceptions;
 
 /**
  * A Fault (#DE)
@@ -596,18 +596,17 @@ private extern(C) void exceptionEntry(uint exceptionNumber, bool hasErrorCode) {
         pop RAX;
 
         test SIL, SIL;
-        jnz L1;
+        jnz end;
         push 0;
 
-    L1:;
+    end:;
         mov ESI, EDI;
         mov RDI, RSP;
-        call exceptionHandler;
+        call exceptionInner;
     }
 }
 
-private extern(C) void exceptionHandler(ExceptionStackState* stack,
-                                        uint exception) {
+private extern(C) void exceptionInner(ExceptionStackState* stack, uint exception) {
     import util.term: print, panic;
 
     print("SS:         %x\n", stack.ss);
@@ -617,119 +616,9 @@ private extern(C) void exceptionHandler(ExceptionStackState* stack,
     print("RIP:        %x\n", stack.rip);
     print("Error code: %x\n", stack.errorCode);
 
-    char* exceptionSpace = stack.cs & 0b111 ?
+    auto exceptionSpace = stack.cs & 0b111 ?
                            cast(char*)"userspace" :
                            cast(char*)"kernelspace";
 
     panic("%s in %s", exceptionName[exception], exceptionSpace);
-}
-
-/**
- * The default interrupt handler
- */
-void defaultInterruptHandler() {
-    import util.term: panic;
-
-    panic("An unhandled interrupt ocurred!");
-}
-
-import system.pit;
-import system.interrupts.apic;
-
-/**
- * The PIT (IRQ0) interrupt handler
- */
-void pitHandler() {
-    asm {
-        naked;
-
-        push RAX;
-        push RBX;
-        push RCX;
-        push RDX;
-        push RSI;
-        push RDI;
-        push RBP;
-        push R8;
-        push R9;
-        push R10;
-        push R11;
-        push R12;
-        push R13;
-        push R14;
-        push R15;
-
-        call pitInner; // In the PIT code
-
-        mov RAX, lapicEOIPointer;
-        mov int ptr [RAX], 0;
-
-        pop R15;
-        pop R14;
-        pop R13;
-        pop R12;
-        pop R11;
-        pop R10;
-        pop R9;
-        pop R8;
-        pop RBP;
-        pop RDI;
-        pop RSI;
-        pop RDX;
-        pop RCX;
-        pop RBX;
-        pop RAX;
-
-        iretq;
-    }
-}
-
-/**
- * A handler for APIC Non maskable interrupts
- */
-void apicNMIHandler() {
-    import system.interrupts.apic: eoiLAPIC;
-    import util.term:              panic;
-
-    eoiLAPIC();
-
-    panic("Non-maskable APIC interrupt (NMI) occured. Possible hardware issue");
-}
-
-/**
- * A handler for the master PIC interrupts, which should be masked
- */
-void masterPICHandler() {
-    import io.ports:  outb;
-    import util.term: panic;
-
-    outb(0x20, 0x20);
-
-    panic("A spurious interrupt sent by the master PIC occured");
-}
-
-/**
- * A handler for the slave PIC interrupts, which should be masked
- */
-void slavePICHandler() {
-    import io.ports:  outb;
-    import util.term: panic;
-
-    outb(0xA0, 0x20);
-    outb(0x20, 0x20);
-
-    panic("A spurious interrupt sent by the slave PIC occured");
-}
-
-/**
- * A handler for the spurious APIC interrupts, which should've never existed to
- * begin with
- */
-void apicSpuriousHandler() {
-    import system.interrupts.apic: eoiLAPIC;
-    import util.term:              panic;
-
-    eoiLAPIC();
-
-    panic("A spurious interrupt sent by the APIC occured");
 }

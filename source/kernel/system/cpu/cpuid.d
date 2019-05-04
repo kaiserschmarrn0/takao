@@ -191,6 +191,8 @@ private void checkFeatures(CPUID* cpuid) {
 }
 
 private void enableFeatures(CPUID* cpuid) {
+    import process.syscall;
+
     // We know at least SSE2 is present, so we enable SSE and if its SSE3 we win
     // that
     asm {
@@ -222,20 +224,20 @@ private void enableFeatures(CPUID* cpuid) {
         wrmsr;
 
         // Setup syscall MSRs
-        mov RAX, 0x00000000;
         mov RCX, 0xC0000081;
         mov RDX, 0x00130008;
+        mov RAX, 0x00000000;
         wrmsr;
 
-        mov RAX, 0x00000000; // TODO: syscallEntry instead of 0 once it exists
-        mov RCX, 0xC0000082; // with all the mechanism of syscall, and etc.
+        mov RCX, 0xC0000082;
+        mov RAX, syscallEntryAddress;
         mov RDX, RAX;
         shr RDX, 32;
         mov EAX, EAX;
         wrmsr;
 
         mov RCX, 0xC0000084;
-        mov RAX, ~0x002;
+        mov RAX, ~0x2;
         xor RDX, RDX;
         not RDX;
         wrmsr;
