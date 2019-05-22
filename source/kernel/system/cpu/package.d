@@ -65,7 +65,7 @@ void initCPU() {
     info("Initialising CPU");
 
     debug {
-        print("\tSetting up SMP\n");
+        log("Setting up SMP");
     }
 
     initSMP();

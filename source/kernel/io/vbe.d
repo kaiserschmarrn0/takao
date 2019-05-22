@@ -99,29 +99,6 @@ __gshared int   vbeWidth;       /// VBE selected mode width in pixels
 __gshared int   vbeHeight;      /// VBE selected mode height in pixels
 __gshared int   vbePitch;       /// The pitch of the mode
 
-private void edidCall() {
-    debug {
-        print("\tCalling EDID...\n");
-    }
-
-    getEDIDInfo(&edidInfo);
-
-    vbeWidth   = edidInfo.detTimingDesc1[2];
-    vbeWidth  += (edidInfo.detTimingDesc1[4] & 0xF0) << 4;
-    vbeHeight  = edidInfo.detTimingDesc1[5];
-    vbeHeight += (edidInfo.detTimingDesc1[7] & 0xF0) << 4;
-
-    if (!vbeWidth || !vbeHeight) {
-        warning("EDID returned 0, defaulting to 1024x768");
-        vbeWidth  = 1024;
-        vbeHeight = 768;
-    }
-
-    debug {
-        print("\tEDID resolution: %ux%u\n", vbeWidth, vbeHeight);
-    }
-}
-
 /**
  * Initialise the VBE interface, filling the global variables in the process
  */
@@ -144,17 +121,17 @@ void initVBE() {
     }
 
     debug {
-        print("\tVersion: %u.%u\n", vbeInfo.versionMajor, vbeInfo.versionMin);
-        print("\tOEM: %s\n", cast(char*)(vbeInfo.oem + physicalMemoryOffset));
-        print("\tGraphics vendor: %s\n", cast(char*)(vbeInfo.vendor + physicalMemoryOffset));
-        print("\tProduct name: %s\n", cast(char*)(vbeInfo.productName + physicalMemoryOffset));
-        print("\tProduct revision: %s\n", cast(char*)(vbeInfo.productReview + physicalMemoryOffset));
+        log("Version: %u.%u", vbeInfo.versionMajor, vbeInfo.versionMin);
+        log("OEM: %s", cast(char*)(vbeInfo.oem + physicalMemoryOffset));
+        log("Graphics vendor: %s", cast(char*)(vbeInfo.vendor + physicalMemoryOffset));
+        log("Product name: %s", cast(char*)(vbeInfo.productName + physicalMemoryOffset));
+        log("Product revision: %s", cast(char*)(vbeInfo.productReview + physicalMemoryOffset));
     }
 
     edidCall();
 
     debug {
-        print("\tTarget resolution: %ux%u\n", vbeWidth, vbeHeight);
+        log("Target resolution: %ux%u", vbeWidth, vbeHeight);
     }
 
     // Try to set the mode
@@ -168,14 +145,14 @@ void initVBE() {
             && vbeMode.bpp == 32) {
             // Mode found
             debug {
-                print("\tFound matching mode %x, attempting to set.\n", getVBE.mode);
+                log("Found matching mode %x, attempting to set", getVBE.mode);
             }
 
             vbeFramebuffer = cast(uint*)(vbeMode.framebuffer + physicalMemoryOffset);
             vbePitch       = vbeMode.pitch;
 
             debug {
-                print("\tFramebuffer address: %x\n", vbeMode.framebuffer + physicalMemoryOffset);
+                log("Framebuffer address: %x", vbeMode.framebuffer + physicalMemoryOffset);
             }
 
             setVBEMode(getVBE.mode);
@@ -186,4 +163,27 @@ void initVBE() {
 
     // Modeset failed, panic
     panic("VESA VBE modesetting failed");
+}
+
+private void edidCall() {
+    debug {
+        log("Calling EDID...");
+    }
+
+    getEDIDInfo(&edidInfo);
+
+    vbeWidth   = edidInfo.detTimingDesc1[2];
+    vbeWidth  += (edidInfo.detTimingDesc1[4] & 0xF0) << 4;
+    vbeHeight  = edidInfo.detTimingDesc1[5];
+    vbeHeight += (edidInfo.detTimingDesc1[7] & 0xF0) << 4;
+
+    if (!vbeWidth || !vbeHeight) {
+        warning("EDID returned 0, defaulting to 1024x768");
+        vbeWidth  = 1024;
+        vbeHeight = 768;
+    }
+
+    debug {
+        log("EDID resolution: %ux%u", vbeWidth, vbeHeight);
+    }
 }

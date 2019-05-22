@@ -38,10 +38,10 @@ checkCPUID:
     ret
 
 .noCPUID:
-    mov esi, .CPUIDErrorMessage - kernelPhysicalOffset
+    mov esi, .errorMessage - kernelPhysicalOffset
     call earlyError
 
-.CPUIDErrorMessage db "CPUID not supported, kernel halted", 0
+.errorMessage db "CPUID not supported, kernel halted", 0
 .end:
 
 global checkLongMode:function (checkLongMode.end - checkLongMode)
@@ -66,8 +66,8 @@ checkLongMode:
     ret
 
 .noLongMode:
-    mov esi, .LongModeErrorMessage - kernelPhysicalOffset
+    mov esi, .errorMessage - kernelPhysicalOffset
     call earlyError
 
-.LongModeErrorMessage db "Long mode not supported, kernel halted", 0
+.errorMessage db "Long mode not supported, kernel halted", 0
 .end:

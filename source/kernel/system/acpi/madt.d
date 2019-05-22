@@ -84,7 +84,7 @@ __gshared ubyte     madtNMICount = 0;
 void initMADT() {
     import system.acpi:  findSDT;
     import memory.alloc: alloc;
-    import util.term:    print, panic;
+    import util.term:    log;
 
     madt = cast(MADT*)findSDT("APIC");
 
@@ -117,9 +117,9 @@ void initMADT() {
     }
 
     debug {
-        print("\tFound up to '%u' LAPICs\n", madtLAPICCount);
-        print("\tFound up to '%u' IOAPICs\n", madtIOAPICCount);
-        print("\tFound up to '%u' ISOs\n", madtISOCount);
-        print("\tFound up to '%u' NMIs\n", madtNMICount);
+        log("Found up to '%u' LAPICs", madtLAPICCount);
+        log("Found up to '%u' IOAPICs", madtIOAPICCount);
+        log("Found up to '%u' ISOs", madtISOCount);
+        log("Found up to '%u' NMIs", madtNMICount);
     }
 }

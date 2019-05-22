@@ -29,23 +29,24 @@ void initSMP() {
     import system.acpi.madt;
 
     debug {
-        print("\t\tConfiguring core #0\n");
+        log("Configuring core #0");
     }
 
     initCore0();
 
     foreach (i; 1..madtLAPICCount) {
         debug {
-            print("\t\tStarting up core #%u", i);
+            log("Starting up core #%u", i);
         }
 
-        // In practice some "dead" cores have LAPIC == 0, these cores dont exist
+        // In practice some "dead" cores have LAPIC = 0, these cores dont exist
         // and are meant to be ignored
         // Tested on an AMD Ryzen 5 2400G (8) @ 3
         if (!madtLAPICs[i].apicID) {
             debug {
-                print(" [LAPIC 0 ignored]\n", i);
+                log("False core #%u with LAPIC = 0 ignored", i);
             }
+
             continue;
         }
 
@@ -133,21 +134,20 @@ private bool startCore(ubyte targetAPIC, ubyte coreNumber) {
     writeLAPIC(apicICR0, 0x500);
     sleep(10);
 
-    // Send the Startup IPI
-    writeLAPIC(apicICR1, (cast(uint)targetAPIC) << 24);
-    writeLAPIC(apicICR0, 0x600 | cast(uint)cast(size_t)trampoline);
-    sleep(1);
-
-    if (checkCoreFlag()) {
-        return false;
-    } else {
-        // Send the Startup IPI again
+    // Send the Startup IPI 2 times
+    foreach (x; 0..2) {
         writeLAPIC(apicICR1, (cast(uint)targetAPIC) << 24);
         writeLAPIC(apicICR0, 0x600 | cast(uint)cast(size_t)trampoline);
-        sleep(1000);
 
-        return !checkCoreFlag();
+        for (int i = 0; i < 500; i++) {
+            sleep(1);
+            if (checkCoreFlag()) {
+                return false;
+            }
+        }
     }
+
+    return true;
 }
 
 private void coreKernelEntry() {
@@ -157,7 +157,7 @@ private void coreKernelEntry() {
 
     // Cores jump here after initialisation
     debug {
-        print(" [Successful, reports as core #%u]\n", currentCore());
+        log("New core reports as core #%u", currentCore());
     }
 
     // CPUID

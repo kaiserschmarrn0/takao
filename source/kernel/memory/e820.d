@@ -22,7 +22,7 @@ private extern(C) void get_e820(E820Entry*);
  * To accomplish this it will make a real mode call defined in `get_e820`
  */
 void getE820() {
-    import util.term: print;
+    import util.term: log;
 
     get_e820(&e820Map[0]);
 
@@ -34,14 +34,14 @@ void getE820() {
                 break;
             }
 
-            print("\t\t[%x -> %x] %x <%s>\n", entry.base,
+            log("[%x -> %x] %x <%s>", entry.base,
                   entry.base + entry.length, entry.length,
                   e820Type(entry.type));
 
             if (entry.type == 1) memorySize += entry.length;
         }
 
-        print("\t\tTotal usable memory: %u MiB\n", memorySize / 1024 / 1024);
+        log("Total usable memory: %u MiB", memorySize / 1024 / 1024);
     }
 }
 

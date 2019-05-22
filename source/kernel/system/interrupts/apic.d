@@ -14,22 +14,22 @@ __gshared uint* lapicEOIPointer;
  * Enables the system APIC, and then will initialise the LAPIC of core #0
  */
 void enableAPIC() {
-    import util.term: print;
+    import util.term: log;
 
     debug {
-        print("\tDisabling PIC...\n");
+        log("Disabling PIC...");
     }
 
     disablePIC();
 
     debug {
-        print("\tInstalling non-maskable interrupts (NMIs)...\n");
+        log("Installing non-maskable interrupts (NMIs)...");
     }
 
     installLAPICNMIs();
 
     debug {
-        print("\tEnabling local APIC...\n");
+        log("Enabling local APIC...");
     }
 
     enableLAPIC();

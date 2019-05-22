@@ -45,21 +45,21 @@ void setIDT() {
         registerInterrupt(i, &defaultInterruptHandler, false);
     }
 
-    registerInterrupt(0x0, &DEHandler, false);
-    registerInterrupt(0x1, &DBHandler, false);
-    registerInterrupt(0x2, &NMIHandler, false);
-    registerInterrupt(0x3, &BPHandler, false);
-    registerInterrupt(0x4, &OFHandler, false);
-    registerInterrupt(0x5, &BRHandler, false);
-    registerInterrupt(0x6, &UDHandler, false);
-    registerInterrupt(0x7, &NMHandler, false);
-    registerInterrupt(0x8, &DFHandler, true);
-    registerInterrupt(0x9, &CSOHandler, false);
-    registerInterrupt(0xA, &TSHandler, false);
-    registerInterrupt(0xB, &NPHandler, false);
-    registerInterrupt(0xC, &SSHandler, false);
-    registerInterrupt(0xD, &GPHandler, false);
-    registerInterrupt(0xE, &PFHandler, false);
+    registerInterrupt(0x00, &DEHandler, false);
+    registerInterrupt(0x01, &DBHandler, false);
+    registerInterrupt(0x02, &NMIHandler, false);
+    registerInterrupt(0x03, &BPHandler, false);
+    registerInterrupt(0x04, &OFHandler, false);
+    registerInterrupt(0x05, &BRHandler, false);
+    registerInterrupt(0x06, &UDHandler, false);
+    registerInterrupt(0x07, &NMHandler, false);
+    registerInterrupt(0x08, &DFHandler, true);
+    registerInterrupt(0x09, &CSOHandler, false);
+    registerInterrupt(0x0A, &TSHandler, false);
+    registerInterrupt(0x0B, &NPHandler, false);
+    registerInterrupt(0x0C, &SSHandler, false);
+    registerInterrupt(0x0D, &GPHandler, false);
+    registerInterrupt(0x0E, &PFHandler, false);
     // 0xF is reserved.
     registerInterrupt(0x10, &MFHandler, false);
     registerInterrupt(0x11, &ACHandler, false);

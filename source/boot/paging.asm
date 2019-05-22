@@ -107,7 +107,7 @@ enablePaging:
     ; And now, with PAE enabled we can finally enable paging in all its glory.
     mov eax, pagemap - kernelPhysicalOffset
     mov cr3, eax
-    
+
     mov eax, cr0
     or eax, 1 << 31
     mov cr0, eax

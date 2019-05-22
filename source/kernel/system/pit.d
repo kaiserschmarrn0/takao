@@ -20,7 +20,7 @@ void initPIT() {
     import util.term;
 
     debug {
-        print("\tStarting PIT at %uHz\n", pitFrequency);
+        log("Starting PIT at %uHz", pitFrequency);
     }
 
     // The value we send to the PIT is the value to divide it's input clock

@@ -66,7 +66,7 @@ void getACPIInfo() {
     import memory:           physicalMemoryOffset;
     import system.acpi.madt: initMADT;
     import util.lib:         areEquals;
-    import util.term:        print, info, panic;
+    import util.term:        log, info, panic;
 
     info("Searching for ACPI tables...");
 
@@ -88,19 +88,19 @@ void getACPIInfo() {
 
 RSDPFound:
     debug {
-        print("\tAvailable, revision %u", rsdp.revision);
+        log("Available, revision %u", rsdp.revision);
     }
 
     if (rsdp.revision >= 2 && rsdp.xsdt) {
         debug {
-            print(", using the XSDT\n");
+            log("Using the XSDT");
         }
 
         rsdt = null;
         xsdt = cast(XSDT*)(rsdp.xsdt + physicalMemoryOffset);
     } else {
         debug {
-            print(", using the RSDT\n");
+            log("Using the RSDT");
         }
 
         rsdt = cast(RSDT*)(rsdp.rsdt + physicalMemoryOffset);

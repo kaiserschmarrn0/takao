@@ -26,19 +26,19 @@ void initMemoryManagers() {
     info("Initialising memory managers");
 
     debug {
-        print("\tObtaining the e820 memory map\n");
+        log("Obtaining the e820 memory map...");
     }
 
     getE820();
 
     debug {
-        print("\tInitialising physical memory bitmap\n");
+        log("Initialising physical memory bitmap...");
     }
 
     initPhysicalBitmap();
 
     debug {
-        print("\tInitialising virtual memory and mapping\n");
+        log("Initialising virtual memory and mapping...");
     }
 
     mapGlobalMemory();

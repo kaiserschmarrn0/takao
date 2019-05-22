@@ -367,7 +367,6 @@ private void escapeParse(char c) {
             break;
         default:
             escape = 0;
-            break;
     }
 }
 
@@ -559,6 +558,25 @@ extern(C) void print(const(char)* message, ...) {
     vprint(message, args);
 }
 
+
+/**
+ * Log misc info in the terminal
+ *
+ * Params:
+ *     message = String to format and print
+ *     ...     = Extra arguments
+ */
+extern(C) void log(const(char)* message, ...) {
+    import system.pit;
+
+    va_list args;
+    va_start(args, message);
+
+    print("[%u] \t", uptime);
+    vprint(message, args);
+    print('\n');
+}
+
 /**
  * Print Information about the runtime in the terminal
  *
@@ -567,10 +585,12 @@ extern(C) void print(const(char)* message, ...) {
  *     ...     = Extra arguments
  */
 extern(C) void info(const(char)* message, ...) {
+    import system.pit;
+
     va_list args;
     va_start(args, message);
 
-    print("\x1b[36m::\x1b[0m ", message);
+    print("[%u] \x1b[36m::\x1b[0m ", uptime);
     vprint(message, args);
     print('\n');
 }
@@ -584,11 +604,13 @@ extern(C) void info(const(char)* message, ...) {
  */
 extern(C) void warning(const(char)* message, ...) {
     import system.cpu;
+    import system.pit;
 
     va_list args;
     va_start(args, message);
 
-    print("\x1b[33mThe kernel reported a warning (core #%u)\x1b[0m: ", currentCore());
+    print("[%u] \x1b[33mThe kernel reported a warning (core #%u)\x1b[0m: ",
+          uptime, currentCore());
     vprint(message, args);
     print('\n');
     printControlRegisters();
@@ -603,11 +625,13 @@ extern(C) void warning(const(char)* message, ...) {
  */
 extern(C) void panic(const(char)* message, ...) {
     import system.cpu;
+    import system.pit;
 
     va_list args;
     va_start(args, message);
 
-    print("\x1b[31mThe kernel panicked (core #%u)\x1b[0m: ", currentCore());
+    print("[%u] \x1b[31mThe kernel panicked (core #%u)\x1b[0m: ", uptime,
+          currentCore());
     vprint(message, args);
     print('\n');
     print("\x1b[45mThe system will be halted\x1b[0m\n");

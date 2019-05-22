@@ -14,18 +14,18 @@ section .data
 align 16
 
 GDTPointerLowerHalf:
-    dw GDTPointer.GDTEnd   - GDTPointer.GDTStart - 1  ; GDT size
-    dd GDTPointer.GDTStart - kernelPhysicalOffset     ; GDT start
+    dw GDTPointer.end   - GDTPointer.start - 1  ; GDT size
+    dd GDTPointer.start - kernelPhysicalOffset  ; GDT start
 
 align 16
 
 GDTPointer:
-    dw .GDTEnd - .GDTStart - 1  ; GDT size
-    dq .GDTStart                ; GDT start
+    dw .start - .start - 1  ; GDT size
+    dq .start               ; GDT start
 
 align 16
 
-.GDTStart:
+.start:
 .nullDescriptor:
     dw 0x0000           ; Limit
     dw 0x0000           ; Base (low 16 bits)
@@ -101,7 +101,7 @@ align 16
     dd 0
   .TSSReserved:
     dd 0
-.GDTEnd:
+.end:
 
 section .text
 global loadTSS:function (loadTSS.end - loadTSS)
