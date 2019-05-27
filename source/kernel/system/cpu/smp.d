@@ -50,7 +50,7 @@ void initSMP() {
             continue;
         }
 
-        if (startCore(madtLAPICs[i].apicID, availableCores)) {
+        if (!startCore(madtLAPICs[i].apicID, availableCores)) {
             warning("Failed to start core #%u", i);
             continue;
         }
@@ -117,7 +117,7 @@ private bool startCore(ubyte targetAPIC, ubyte coreNumber) {
 
     if (coreNumber >= maxCores) {
         warning("Core limit of %u exceeded", maxCores);
-        return true;
+        return false;
     }
 
     setupCore(coreNumber, targetAPIC);
@@ -142,12 +142,12 @@ private bool startCore(ubyte targetAPIC, ubyte coreNumber) {
         for (int i = 0; i < 500; i++) {
             sleep(1);
             if (checkCoreFlag()) {
-                return false;
+                return true;
             }
         }
     }
 
-    return true;
+    return false;
 }
 
 private void coreKernelEntry() {

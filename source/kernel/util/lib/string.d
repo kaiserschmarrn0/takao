@@ -3,7 +3,7 @@
  * This code is governed by a license that can be found in LICENSE.md
  */
 
-module util.lib;
+module util.lib.string;
 
 /**
  * Compare if 2 strings are equal
@@ -44,22 +44,4 @@ bool areEquals(const(char)* dst, const(char)* src) {
     }
 
     return true;
-}
-
-/**
- * Test a bit
- *
- * Params:
- *     var   = Address to test
- *     ofs   = Value to test
- */
-extern(C) bool bitTest(uint var, uint ofs) {
-    asm {
-        naked;
-
-        xor EAX, EAX;
-        bt EDI, ESI;
-        setc AL;
-        ret;
-    }
 }

@@ -6,7 +6,7 @@
 module system.cpu;
 
 import memory;
-import system.cpu.cpuid;
+public import system.cpu.cpuid;
 
 immutable uint maxCores      = 128;   /// Max number of cores the kernel supports
 immutable uint coreStackSize = 16384; /// The kernel stack size * core, 16 KiB
@@ -84,7 +84,7 @@ size_t currentCore() {
         mov number, RAX;
     }
 
-    // Core #0 may return random values, but always more than cores
+    // Core #0 may return random values, but always more than the max cores
     if (number >= maxCores) {
         number = 0;
     }

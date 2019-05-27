@@ -14,7 +14,7 @@ DC = ldc2
 LD = ld.lld
 AS = nasm
 
-DFLAGS = -O2 -dw
+DFLAGS = -O2 -de
 
 LDFLAGS = -O2 -gc-sections
 

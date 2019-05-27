@@ -36,7 +36,7 @@ enum CPUIDinRCXwithRAX1 : ulong {
     // OSXSAVE     = 1 << 27, // XSAVE enabled by OS
     // AVX         = 1 << 28, // Advanced Vector eXtensions
     // F16C        = 1 << 29, // F16C (half-precision) FP feature
-    // RDRND       = 1 << 30, // RDRAND (on-chip random number generator)
+    RDRAND      = 1 << 30, // RDRAND (on-chip random number generator)
     // RESERVED    = 1 << 32  // Not reserved, but it's always 0 so...
 }
 
@@ -147,6 +147,7 @@ enum CPUIDinRDXwithRAX0x80000001 : ulong {
 /// CPUID information per cores
 struct CPUID {
     bool hasSSE3;
+    bool hasRDRAND;
     bool hasMSR;
     bool hasPAT;
     bool hasSSE2;
@@ -174,6 +175,7 @@ void checkCPUID(CPUID* cpuid) {
     }
 
     cpuid.hasSSE3    = (c & CPUIDinRCXwithRAX1.SSE3)              != 0;
+    cpuid.hasRDRAND  = (c & CPUIDinRCXwithRAX1.RDRAND)            != 0;
     cpuid.hasMSR     = (d & CPUIDinRDXwithRAX1.MSR)               != 0;
     cpuid.hasPAT     = (d & CPUIDinRDXwithRAX1.PAT)               != 0;
     cpuid.hasSSE2    = (d & CPUIDinRDXwithRAX1.SSE2)              != 0;
