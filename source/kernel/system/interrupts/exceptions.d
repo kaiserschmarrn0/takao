@@ -607,14 +607,14 @@ private extern(C) void exceptionEntry(uint exceptionNumber, bool hasErrorCode) {
 }
 
 private extern(C) void exceptionInner(ExceptionStackState* stack, uint exception) {
-    import util.term: print, panic;
+    import util.term: log, panic;
 
-    print("SS:         %x\n", stack.ss);
-    print("RSP:        %x\n", stack.rsp);
-    print("RFLAGS:     %x\n", stack.rflags);
-    print("CS:         %x\n", stack.cs);
-    print("RIP:        %x\n", stack.rip);
-    print("Error code: %x\n", stack.errorCode);
+    log("SS:         %x\n", stack.ss);
+    log("RSP:        %x\n", stack.rsp);
+    log("RFLAGS:     %x\n", stack.rflags);
+    log("CS:         %x\n", stack.cs);
+    log("RIP:        %x\n", stack.rip);
+    log("Error code: %x\n", stack.errorCode);
 
     auto exceptionSpace = stack.cs & 0b111 ?
                            cast(char*)"userspace" :

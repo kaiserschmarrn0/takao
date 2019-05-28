@@ -8,6 +8,7 @@ module util.term;
 public import core.stdc.stdarg;
 
 import io.vbe;
+import util.lib.spinlock;
 
 private __gshared bool termEnabled = false; /// Status of the graphical terminal
 
@@ -475,13 +476,7 @@ private void printHex(ulong x) {
     print(&buf[i]);
 }
 
-/**
- * Print a character to the terminal, implements escape sequences
- *
- * Params:
- *     c = The character to print
- */
-void print(char c) {
+private void print(char c) {
     import io.qemu: qemuPutChar;
 
     debug {
@@ -493,26 +488,13 @@ void print(char c) {
     }
 }
 
-/**
- * Print a string to the terminal
- *
- * Params:
- *     message = String to print
- */
-void print(const(char)* message) {
+private void print(const(char)* message) {
     for (auto i = 0; message[i]; i++) {
         print(message[i]);
     }
 }
 
-/**
- * Print a formated string to the terminal
- *
- * Params:
- *     format = String to format and print once formatted
- *     args   = Initialised list of arguments to format
- */
-extern(C) void vprint(const(char)* format, va_list args) {
+private extern(C) void vprint(const(char)* format, va_list args) {
     for (auto i = 0; format[i]; i++) {
         if (format[i] != '%') {
             print(format[i]);
@@ -544,20 +526,17 @@ extern(C) void vprint(const(char)* format, va_list args) {
     }
 }
 
-/**
- * Print a formatted string as a line into the terminal
- *
- * Params:
- *     message = String to format and print
- *     ...     = Extra arguments
- */
-extern(C) void print(const(char)* message, ...) {
+private extern(C) void print(const(char)* message, ...) {
     va_list args;
     va_start(args, message);
 
     vprint(message, args);
 }
 
+private __gshared Lock logLock     = newLock;
+private __gshared Lock infoLock    = newLock;
+private __gshared Lock warningLock = newLock;
+private __gshared Lock errorLock   = newLock;
 
 /**
  * Log misc info in the terminal
@@ -569,12 +548,16 @@ extern(C) void print(const(char)* message, ...) {
 extern(C) void log(const(char)* message, ...) {
     import system.pit;
 
+    acquireSpinlock(&logLock);
+
     va_list args;
     va_start(args, message);
 
     print("[%u] \t", uptime);
     vprint(message, args);
     print('\n');
+
+    releaseSpinlock(&logLock);
 }
 
 /**
@@ -587,12 +570,16 @@ extern(C) void log(const(char)* message, ...) {
 extern(C) void info(const(char)* message, ...) {
     import system.pit;
 
+    acquireSpinlock(&infoLock);
+
     va_list args;
     va_start(args, message);
 
     print("[%u] \x1b[36m::\x1b[0m ", uptime);
     vprint(message, args);
     print('\n');
+
+    releaseSpinlock(&infoLock);
 }
 
 /**
@@ -606,6 +593,8 @@ extern(C) void warning(const(char)* message, ...) {
     import system.cpu;
     import system.pit;
 
+    acquireSpinlock(&warningLock);
+
     va_list args;
     va_start(args, message);
 
@@ -614,6 +603,8 @@ extern(C) void warning(const(char)* message, ...) {
     vprint(message, args);
     print('\n');
     printControlRegisters();
+
+    releaseSpinlock(&warningLock);
 }
 
 /**
@@ -627,11 +618,12 @@ extern(C) void panic(const(char)* message, ...) {
     import system.cpu;
     import system.pit;
 
+    acquireSpinlock(&errorLock);
+
     va_list args;
     va_start(args, message);
 
-    print("[%u] \x1b[31mThe kernel panicked (core #%u)\x1b[0m: ", uptime,
-          currentCore());
+    print("[%u] \x1b[31mThe kernel panicked (core #%u)\x1b[0m: ", uptime, currentCore());
     vprint(message, args);
     print('\n');
     print("\x1b[45mThe system will be halted\x1b[0m\n");

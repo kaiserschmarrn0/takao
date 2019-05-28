@@ -98,7 +98,7 @@ private void setupCore(ubyte coreNumber, ubyte lapic) {
     import memory.virtual;
 
     // Set up stack guard page
-    unmapPage(pageMap, cast(size_t)&coreStacks[coreNumber].guardPage[0]);
+    unmapPage(kernelPageMap, cast(size_t)&coreStacks[coreNumber].guardPage[0]);
 
     // Prepare CPU local
     cores[coreNumber].coreNumber  = coreNumber;
@@ -126,8 +126,8 @@ private bool startCore(ubyte targetAPIC, ubyte coreNumber) {
     auto tss   = &coreTSSs[coreNumber];
     auto stack = &coreStacks[coreNumber].stack[coreStackSize - 1];
 
-    void* trampoline = prepareTrampoline(&coreKernelEntry, cast(void*)pageMap,
-                                         stack, core, tss);
+    void* trampoline = prepareTrampoline(&coreKernelEntry,
+                       cast(void*)kernelPageMap.pml4, stack, core, tss);
 
     // Send the INIT IPI
     writeLAPIC(apicICR1, cast(uint)targetAPIC << 24);

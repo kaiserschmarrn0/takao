@@ -6,6 +6,7 @@
 module memory.physical;
 
 import memory;
+import util.lib.spinlock;
 
 private immutable auto bitmapReallocStep = 1;
 private immutable size_t memoryBase = 0x1000000;
@@ -107,6 +108,8 @@ void initPhysicalBitmap() {
     }
 }
 
+private __gshared Lock lock = newLock;
+
 /**
  * Allocate a number of pages
  *
@@ -117,6 +120,8 @@ void initPhysicalBitmap() {
  * Returns: A `void*` to the first of the allocated pages, `null` in failure
  */
 void* pmmAlloc(size_t pageCount, bool zero) {
+    acquireSpinlock(&lock);
+
     auto currentPageCount = pageCount;
 
     foreach (i; 0..bitmapEntries) {
@@ -130,6 +135,7 @@ void* pmmAlloc(size_t pageCount, bool zero) {
         } else currentPageCount = pageCount;
     }
 
+    releaseSpinlock(&lock);
     return null;
 
 found:
@@ -149,6 +155,7 @@ found:
         }
     }
 
+    releaseSpinlock(&lock);
     return ret;
 }
 
@@ -160,11 +167,15 @@ found:
  *     pageCount = The number of pages to free
  */
 void pmmFree(void* pointer, size_t pageCount) {
+    acquireSpinlock(&lock);
+
     auto start = cast(size_t)pointer / pageSize;
 
     for (auto i = start; i < (start + pageCount); i++) {
         writeBitmap(i, false);
     }
+
+    releaseSpinlock(&lock);
 }
 
 private bool readBitmap(size_t i) {

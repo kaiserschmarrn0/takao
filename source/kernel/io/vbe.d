@@ -103,9 +103,6 @@ __gshared int   vbePitch;       /// The pitch of the mode
  * Initialise the VBE interface, filling the global variables in the process
  */
 void initVBE() {
-    import memory.virtual: pageMap, mapPage;
-    import util.lib:       areEquals;
-
     info("Initialising VBE");
 
     getVBEInfo(&vbeInfo);

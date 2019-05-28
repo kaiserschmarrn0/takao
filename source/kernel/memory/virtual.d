@@ -6,10 +6,16 @@
 module memory.virtual;
 
 import memory;
+import util.lib.spinlock;
 
 alias PageTableEntry = ulong;
 
-__gshared PageTableEntry* pageMap; /// The kernel paging scheme, loaded in `CR3`
+struct Pagemap {
+    PageTableEntry* pml4;
+    Lock            lock;
+};
+
+__gshared Pagemap kernelPageMap; /// The kernel paging scheme, loaded in `CR3`
 
 /**
  * Sets the paging scheme of the kernel
@@ -28,23 +34,25 @@ void mapGlobalMemory() {
     import memory.physical: pmmAlloc;
 
     // First 4GiB of memory
-    pageMap = cast(PageTableEntry*)(cast(size_t)pmmAlloc(1, true) +
+    kernelPageMap.pml4 = cast(PageTableEntry*)(cast(size_t)pmmAlloc(1, true) +
                     physicalMemoryOffset);
 
     // Catch allocation failure
-    assert(!(cast(size_t)pageMap == physicalMemoryOffset));
+    assert(!(cast(size_t)(kernelPageMap.pml4) == physicalMemoryOffset));
+
+    releaseSpinlock(&kernelPageMap.lock);
 
     // Identity mapping
     foreach (i; 0..(0x2000000 / pageSize)) {
         ulong addr = i * pageSize;
 
-        mapPage(pageMap, addr, addr, 0x03);
-        mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
-        mapPage(pageMap, kernelPhysicalMemoryOffset + addr, addr, 0x03);
+        mapPage(kernelPageMap, addr, addr, 0x03);
+        mapPage(kernelPageMap, physicalMemoryOffset + addr, addr, 0x03);
+        mapPage(kernelPageMap, kernelPhysicalMemoryOffset + addr, addr, 0x03);
     }
 
     // Reload new pagemap
-    auto newCR3 = cast(ulong)pageMap - physicalMemoryOffset;
+    auto newCR3 = cast(ulong)(kernelPageMap.pml4) - physicalMemoryOffset;
 
     asm {
         mov RAX, newCR3;
@@ -56,7 +64,7 @@ void mapGlobalMemory() {
     foreach (ulong i; 0..(0x100000000 / pageSize)) {
         ulong addr = i * pageSize;
 
-        mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
+        mapPage(kernelPageMap, physicalMemoryOffset + addr, addr, 0x03);
     }
 
     // Use the e820 to map all the available memory (saves on allocation
@@ -83,7 +91,7 @@ void mapGlobalMemory() {
                 continue;
             }
 
-            mapPage(pageMap, physicalMemoryOffset + addr, addr, 0x03);
+            mapPage(kernelPageMap, physicalMemoryOffset + addr, addr, 0x03);
         }
     }
 }
@@ -99,9 +107,10 @@ void mapGlobalMemory() {
  *
  * Returns: `0` on success, `-1` on failure
  */
-int mapPage(PageTableEntry* pagemap, size_t virtualAddress,
-            size_t physicalAddress, size_t flags) {
+int mapPage(Pagemap pagemap, size_t virtualAddress, size_t physicalAddress, size_t flags) {
     import memory.physical: pmmAlloc, pmmFree;
+
+    acquireSpinlock(&pagemap.lock);
 
     // Calculate the indices in the various tables using the virtual address
     size_t pml4Entry = (virtualAddress & (cast(size_t)0x1FF << 39)) >> 39;
@@ -111,8 +120,8 @@ int mapPage(PageTableEntry* pagemap, size_t virtualAddress,
 
     PageTableEntry* pdpt, pd, pt;
 
-    if (pagemap[pml4Entry] & 0x1) {
-        pdpt = cast(PageTableEntry*)((pagemap[pml4Entry] & 0xFFFFFFFFFFFFF000) +
+    if (pagemap.pml4[pml4Entry] & 0x1) {
+        pdpt = cast(PageTableEntry*)((pagemap.pml4[pml4Entry] & 0xFFFFFFFFFFFFF000) +
                physicalMemoryOffset);
     } else {
         // Allocate a page for the pdpt.
@@ -125,7 +134,7 @@ int mapPage(PageTableEntry* pagemap, size_t virtualAddress,
         }
 
         // Present + writable + user (0b111)
-        pagemap[pml4Entry] = cast(PageTableEntry)(cast(size_t)pdpt -
+        pagemap.pml4[pml4Entry] = cast(PageTableEntry)(cast(size_t)pdpt -
                              physicalMemoryOffset) | 0b111;
     }
 
@@ -167,6 +176,7 @@ int mapPage(PageTableEntry* pagemap, size_t virtualAddress,
     // Also set the specified flags
     pt[ptEntry] = cast(PageTableEntry)(physicalAddress | flags);
 
+    releaseSpinlock(&pagemap.lock);
     return 0;
 
 fail3:
@@ -198,6 +208,7 @@ fail2:
     }
 
 fail1:
+    releaseSpinlock(&pagemap.lock);
     return -1;
 }
 
@@ -210,8 +221,10 @@ fail1:
  *
  * Returns: `0` on success, `-1` on failure
  */
-int unmapPage(PageTableEntry* pagemap, size_t virtualAddress) {
+int unmapPage(Pagemap pagemap, size_t virtualAddress) {
     import memory.physical: pmmFree;
+
+    acquireSpinlock(&pagemap.lock);
 
     // Calculate the indices in the various tables using the virtual address
     size_t pml4Entry = (virtualAddress & (cast(size_t)0x1FF << 39)) >> 39;
@@ -224,8 +237,8 @@ int unmapPage(PageTableEntry* pagemap, size_t virtualAddress) {
     // Get reference to the various tables in sequence and return -1 if one of
     // the tables is not present, since we cannot unmap a virtual address if
     // we don't know what it's mapped to in the first place.
-    if (pagemap[pml4Entry] & 0x1) {
-        pdpt = cast(PageTableEntry*)((pagemap[pml4Entry] & 0xFFFFFFFFFFFFF000) +
+    if (pagemap.pml4[pml4Entry] & 0x1) {
+        pdpt = cast(PageTableEntry*)((pagemap.pml4[pml4Entry] & 0xFFFFFFFFFFFFF000) +
                physicalMemoryOffset);
     } else goto fail;
 
@@ -277,8 +290,10 @@ int unmapPage(PageTableEntry* pagemap, size_t virtualAddress) {
     }
 
 done:
+    releaseSpinlock(&pagemap.lock);
     return 0;
 
 fail:
+    releaseSpinlock(&pagemap.lock);
     return -1;
 }
