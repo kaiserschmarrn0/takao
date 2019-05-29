@@ -84,7 +84,7 @@ __gshared ubyte     madtNMICount = 0;
 void initMADT() {
     import system.acpi:  findSDT;
     import memory.alloc: alloc;
-    import util.term:    log;
+    import util.lib;
 
     madt = cast(MADT*)findSDT("APIC");
 

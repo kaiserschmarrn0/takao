@@ -59,7 +59,7 @@ __gshared                 CPUID[maxCores]     coreCPUIDs; /// CPUID info
  * Initialise all related to CPU, like SMP or features
  */
 void initCPU() {
-    import util.term;
+    import util.lib.messages;
     import system.cpu.smp;
 
     info("Initialising CPU");
@@ -90,4 +90,19 @@ size_t currentCore() {
     }
 
     return number;
+}
+
+/**
+ * Send an IPI to an specific core
+ *
+ * Params:
+ *     cpu   = The requested core to send IPI
+ *     value = Value to send
+ */
+void sendCoreIPI(uint core, uint value) {
+    import system.interrupts.apic;
+    import system.cpu.smp;
+
+    writeLAPIC(apicICR1, (cast(uint)cores[core].lapic) << 24);
+    writeLAPIC(apicICR0, value);
 }

@@ -14,7 +14,7 @@ __gshared uint* lapicEOIPointer;
  * Enables the system APIC, and then will initialise the LAPIC of core #0
  */
 void enableAPIC() {
-    import util.term: log;
+    import util.lib;
 
     debug {
         log("Disabling PIC...");
@@ -39,7 +39,7 @@ void enableAPIC() {
 }
 
 private void disablePIC() {
-    import io.ports: inb, outb, wait;
+    import io.ports;
 
     // Each chip (master and slave) has a command port and a data port.
     // When no command is issued, the data port allows us to access the

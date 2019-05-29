@@ -17,7 +17,8 @@ extern(C) void main() {
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
     import system.acpi:       getACPIInfo;
     import memory:            initMemoryManagers;
-    import util.term:         initTerm, info, panic;
+    import util.term:         initTerm;
+    import util.lib.messages;
 
     firstStageInterrupts();
 

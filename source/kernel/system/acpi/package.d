@@ -65,8 +65,7 @@ __gshared XSDT* xsdt; /// The XSDT is found
 void getACPIInfo() {
     import memory:           physicalMemoryOffset;
     import system.acpi.madt: initMADT;
-    import util.lib:         areEquals;
-    import util.term:        log, info, panic;
+    import util.lib;
 
     info("Searching for ACPI tables...");
 
@@ -123,7 +122,7 @@ RSDPFound:
  */
 void* findSDT(const(char)* signature) {
     import memory:   physicalMemoryOffset;
-    import util.lib: areEquals;
+    import util.lib;
 
     SDT* pointer;
 

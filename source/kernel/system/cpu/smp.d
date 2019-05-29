@@ -25,7 +25,7 @@ private extern(C) void* prepareTrampoline(void*, void*, void*, void*, void*);
  * by `startCore` -> `coreKernelEntry` until an interrupt is received
  */
 void initSMP() {
-    import util.term;
+    import util.lib.messages;
     import system.acpi.madt;
 
     debug {
@@ -111,7 +111,7 @@ private void setupCore(ubyte coreNumber, ubyte lapic) {
 }
 
 private bool startCore(ubyte targetAPIC, ubyte coreNumber) {
-    import util.term;
+    import util.lib.messages;
     import memory.virtual;
     import system.interrupts.apic;
 
@@ -151,7 +151,7 @@ private bool startCore(ubyte targetAPIC, ubyte coreNumber) {
 }
 
 private void coreKernelEntry() {
-    import util.term;
+    import util.lib.messages;
     import system.cpu.cpuid;
     import system.interrupts.apic;
 

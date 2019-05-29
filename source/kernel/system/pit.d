@@ -17,7 +17,7 @@ __gshared ulong uptime = 0;
 void initPIT() {
     import io.ports;
     import system.interrupts.apic;
-    import util.term;
+    import util.lib.messages;
 
     debug {
         log("Starting PIT at %uHz", pitFrequency);

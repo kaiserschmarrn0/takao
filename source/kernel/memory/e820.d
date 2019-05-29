@@ -22,7 +22,7 @@ private extern(C) void get_e820(E820Entry*);
  * To accomplish this it will make a real mode call defined in `get_e820`
  */
 void getE820() {
-    import util.term: log;
+    import util.lib.messages;
 
     get_e820(&e820Map[0]);
 

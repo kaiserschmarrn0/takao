@@ -8,7 +8,7 @@ module util.term;
 public import core.stdc.stdarg;
 
 import io.vbe;
-import util.lib.spinlock;
+import util.lib;
 
 private __gshared bool termEnabled = false; /// Status of the graphical terminal
 
@@ -476,8 +476,15 @@ private void printHex(ulong x) {
     print(&buf[i]);
 }
 
-private void print(char c) {
+private __gshared Lock charLock   = newLock;
+private __gshared Lock stringLock = newLock;
+private __gshared Lock vprintLock = newLock;
+private __gshared Lock printLock  = newLock;
+
+void print(char c) {
     import io.qemu: qemuPutChar;
+
+    acquireSpinlock(&charLock);
 
     debug {
         qemuPutChar(c);
@@ -486,15 +493,23 @@ private void print(char c) {
     if (termEnabled) {
         vbePutChar(c);
     }
+
+    releaseSpinlock(&charLock);
 }
 
-private void print(const(char)* message) {
+void print(const(char)* message) {
+    acquireSpinlock(&stringLock);
+
     for (auto i = 0; message[i]; i++) {
         print(message[i]);
     }
+
+    releaseSpinlock(&stringLock);
 }
 
-private extern(C) void vprint(const(char)* format, va_list args) {
+extern(C) void vprint(const(char)* format, va_list args) {
+    acquireSpinlock(&vprintLock);
+
     for (auto i = 0; format[i]; i++) {
         if (format[i] != '%') {
             print(format[i]);
@@ -524,132 +539,17 @@ private extern(C) void vprint(const(char)* format, va_list args) {
             }
         } else print('%');
     }
+
+    releaseSpinlock(&vprintLock);
 }
 
-private extern(C) void print(const(char)* message, ...) {
+extern(C) void print(const(char)* message, ...) {
+    acquireSpinlock(&printLock);
+
     va_list args;
     va_start(args, message);
 
     vprint(message, args);
-}
 
-private __gshared Lock logLock     = newLock;
-private __gshared Lock infoLock    = newLock;
-private __gshared Lock warningLock = newLock;
-private __gshared Lock errorLock   = newLock;
-
-/**
- * Log misc info in the terminal
- *
- * Params:
- *     message = String to format and print
- *     ...     = Extra arguments
- */
-extern(C) void log(const(char)* message, ...) {
-    import system.pit;
-
-    acquireSpinlock(&logLock);
-
-    va_list args;
-    va_start(args, message);
-
-    print("[%u] \t", uptime);
-    vprint(message, args);
-    print('\n');
-
-    releaseSpinlock(&logLock);
-}
-
-/**
- * Print Information about the runtime in the terminal
- *
- * Params:
- *     message = String to format and print
- *     ...     = Extra arguments
- */
-extern(C) void info(const(char)* message, ...) {
-    import system.pit;
-
-    acquireSpinlock(&infoLock);
-
-    va_list args;
-    va_start(args, message);
-
-    print("[%u] \x1b[36m::\x1b[0m ", uptime);
-    vprint(message, args);
-    print('\n');
-
-    releaseSpinlock(&infoLock);
-}
-
-/**
- * Print a warning to the terminal
- *
- * Params:
- *     message = String to format and print
- *     ...     = Extra arguments
- */
-extern(C) void warning(const(char)* message, ...) {
-    import system.cpu;
-    import system.pit;
-
-    acquireSpinlock(&warningLock);
-
-    va_list args;
-    va_start(args, message);
-
-    print("[%u] \x1b[33mThe kernel reported a warning (core #%u)\x1b[0m: ",
-          uptime, currentCore());
-    vprint(message, args);
-    print('\n');
-    printControlRegisters();
-
-    releaseSpinlock(&warningLock);
-}
-
-/**
- * Panics printing a message, will also print registers and HCF
- *
- * Params:
- *     message = String to format and print
- *     ...     = Extra arguments
- */
-extern(C) void panic(const(char)* message, ...) {
-    import system.cpu;
-    import system.pit;
-
-    acquireSpinlock(&errorLock);
-
-    va_list args;
-    va_start(args, message);
-
-    print("[%u] \x1b[31mThe kernel panicked (core #%u)\x1b[0m: ", uptime, currentCore());
-    vprint(message, args);
-    print('\n');
-    print("\x1b[45mThe system will be halted\x1b[0m\n");
-    printControlRegisters();
-
-    asm {
-        cli;
-    L1:;
-        hlt;
-        jmp L1;
-    }
-}
-
-private void printControlRegisters() {
-    ulong cr0, cr2, cr3, cr4;
-
-    asm {
-        mov RAX, CR0;
-        mov cr0, RAX;
-        mov RAX, CR2;
-        mov cr2, RAX;
-        mov RAX, CR3;
-        mov cr3, RAX;
-        mov RAX, CR4;
-        mov cr4, RAX;
-    }
-
-    print("CR0=%x CR2=%x CR3=%x CR4=%x\n", cr0, cr2, cr3, cr4);
+    releaseSpinlock(&printLock);
 }

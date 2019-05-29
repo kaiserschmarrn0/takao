@@ -10,7 +10,7 @@ module system.interrupts;
  */
 void firstStageInterrupts() {
     import system.interrupts.idt: setIDT;
-    import util.term:             info;
+    import util.lib.messages;
 
     info("First Stage Interrupts: Disabling and IDT");
 
@@ -28,7 +28,7 @@ private extern(C) void flushIRQs();
  */
 void secondStageInterrupts() {
     import system.interrupts.apic: enableAPIC;
-    import util.term:              info;
+    import util.lib.messages;
     import system.pit:             initPIT;
 
     info("Second Stage Interrupts: Flush IRQs, APIC and PIT");

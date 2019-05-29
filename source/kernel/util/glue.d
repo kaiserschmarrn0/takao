@@ -9,7 +9,7 @@ module util.glue;
  * Called by the D compiler when an `assert()` is invoked
  */
 extern (C) void __assert(const(char)* exp, const(char)* file, uint line) {
-    import util.term: panic;
+    import util.lib;
 
     panic("In file '%s', line '%u'\n> %s\nFailed assertion", file, line, exp);
 }

@@ -607,7 +607,7 @@ private extern(C) void exceptionEntry(uint exceptionNumber, bool hasErrorCode) {
 }
 
 private extern(C) void exceptionInner(ExceptionStackState* stack, uint exception) {
-    import util.term: log, panic;
+    import util.lib.messages;
 
     log("SS:         %x\n", stack.ss);
     log("RSP:        %x\n", stack.rsp);

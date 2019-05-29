@@ -5,7 +5,7 @@
 
 module util.lib.spinlock;
 
-import util.term: panic;
+import util.lib.messages;
 
 immutable auto maxLockItinerations = 0x4000000;
 
