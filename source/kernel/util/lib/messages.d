@@ -90,6 +90,7 @@ extern(C) void warning(const(char)* message, ...) {
  */
 extern(C) void panic(const(char)* message, ...) {
     import system.cpu;
+    import system.cpu.ipi;
     import system.cpu.smp: availableCores;
     import system.pit;
 
@@ -101,17 +102,18 @@ extern(C) void panic(const(char)* message, ...) {
     print("[%u] \x1b[31mA panic occurred (core #%u)\x1b[0m: ", uptime, currentCore());
     vprint(message, args);
     print('\n');
-    print("\x1b[45mThe system will be halted\x1b[0m\n");
+
     printControlRegisters();
 
-    // Send an abort IPI to all other cores
     foreach (i; 0..availableCores) {
         if (i == currentCore()) {
             continue;
         }
 
-        sendCoreIPI(i, 0x40); // 0x40 is ABORT
+        sendCoreIPI(i, ipiAbort);
     }
+
+    log("\x1b[45mThe system will be halted\x1b[0m");
 
     asm {
         cli;
@@ -135,5 +137,5 @@ private void printControlRegisters() {
         mov cr4, RAX;
     }
 
-    print("CR0=%x CR2=%x CR3=%x CR4=%x\n", cr0, cr2, cr3, cr4);
+    log("CR0=%x CR2=%x CR3=%x CR4=%x", cr0, cr2, cr3, cr4);
 }

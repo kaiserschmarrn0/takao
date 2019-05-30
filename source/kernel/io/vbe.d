@@ -103,6 +103,8 @@ __gshared int   vbePitch;       /// The pitch of the mode
  * Initialise the VBE interface, filling the global variables in the process
  */
 void initVBE() {
+    import memory.virtual;
+
     info("Initialising VBE");
 
     getVBEInfo(&vbeInfo);
@@ -138,8 +140,7 @@ void initVBE() {
         getVBE.mode = videoModes[i];
         getVBEModeInfo(&getVBE);
 
-        if (vbeMode.resX == vbeWidth && vbeMode.resY == vbeHeight
-            && vbeMode.bpp == 32) {
+        if (vbeMode.resX == vbeWidth && vbeMode.resY == vbeHeight && vbeMode.bpp == 32) {
             // Mode found
             debug {
                 log("Found matching mode %x, attempting to set", getVBE.mode);
@@ -153,6 +154,13 @@ void initVBE() {
             }
 
             setVBEMode(getVBE.mode);
+
+            // Make the framebuffer write-combining
+            size_t fbPages = ((vbePitch * vbeHeight) + pageSize - 1) / pageSize;
+
+            foreach (j; 0..fbPages) {
+                remapPage(kernelPageMap, cast(size_t)vbeFramebuffer + j * pageSize, 0x03 | (1 << 7) | (1 << 3));
+            }
 
             return;
         }

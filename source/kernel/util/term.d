@@ -46,7 +46,7 @@ private __gshared int               escValuesCount;
 private __gshared int               rrr;
 private __gshared int               tabSize;
 
-private __gshared immutable uint[] ansiColours = [
+/*private __gshared immutable uint[] ansiColours = [
     0x3F3F3F,              // black
     0x705050,              // red
     0x60B48A,              // green
@@ -55,6 +55,17 @@ private __gshared immutable uint[] ansiColours = [
     0xDC8CC3,              // magenta
     0x8CD0D3,              // cyan
     0xDCDCDC               // grey
+];*/
+
+private __gshared immutable uint[] ansiColours = [
+    0x000000,              // black
+    0xAA0000,              // red
+    0x00AA00,              // green
+    0xAA5500,              // brown
+    0x0000AA,              // blue
+    0xAA00AA,              // magenta
+    0x00AAAA,              // cyan
+    0xAAAAAA               // grey
 ];
 
 private extern(C) void dumpVGAFont(ubyte*);
@@ -74,8 +85,10 @@ void initTerm() {
     cols = vbeWidth  / fontWidth;
     rows = vbeHeight / fontHeight;
 
-    defaultBackground = 0x2F343F;
-    defaultForeground = 0xD3D7CF;
+    /*defaultBackground = 0x2F343F;
+    defaultForeground = 0xD3D7CF;*/
+    defaultBackground = ansiColours[0];
+    defaultForeground = ansiColours[7];
     textBackground    = defaultBackground;
     textForeground    = defaultForeground;
 

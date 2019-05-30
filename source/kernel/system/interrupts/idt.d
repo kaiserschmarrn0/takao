@@ -32,6 +32,7 @@ private __gshared IDTDescriptor[256] idt;
  * Sets the system IDT, exceptions and IRQs
  */
 void setIDT() {
+    import system.cpu.ipi;
     import system.interrupts.exceptions;
     import system.interrupts.irq;
 
@@ -71,6 +72,11 @@ void setIDT() {
     // 0x1F is reserved.
 
     registerInterrupt(0x20, &pitHandler, false);
+
+    // IPIs
+    registerInterrupt(ipiAbort,     &abortCore,     true);
+    registerInterrupt(ipiResched,   &reschedCore,   true);
+    registerInterrupt(ipiAbortExec, &abortExecCore, true);
 
     foreach (i; 0..16) {
         registerInterrupt(0x90 + i, &apicNMIHandler, true);
