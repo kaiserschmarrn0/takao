@@ -6,12 +6,13 @@
 module util.lib.messages;
 
 import util.term;
+import util.lib.string;
 import util.lib.spinlock;
 
-private __gshared Lock logLock     = newLock;
-private __gshared Lock infoLock    = newLock;
-private __gshared Lock warningLock = newLock;
-private __gshared Lock panicLock   = newLock;
+private shared SpinLock logLock     = unlocked;
+private shared SpinLock infoLock    = unlocked;
+private shared SpinLock warningLock = unlocked;
+private shared SpinLock panicLock   = unlocked;
 
 /**
  * Log misc info in the terminal
@@ -20,7 +21,7 @@ private __gshared Lock panicLock   = newLock;
  *     message = String to format and print
  *     ...     = Extra arguments
  */
-extern(C) void log(const(char)* message, ...) {
+extern(C) void log(cstring message, ...) {
     import system.pit;
 
     acquireSpinlock(&logLock);
@@ -42,7 +43,7 @@ extern(C) void log(const(char)* message, ...) {
  *     message = String to format and print
  *     ...     = Extra arguments
  */
-extern(C) void info(const(char)* message, ...) {
+extern(C) void info(cstring message, ...) {
     import system.pit;
 
     acquireSpinlock(&infoLock);
@@ -64,7 +65,7 @@ extern(C) void info(const(char)* message, ...) {
  *     message = String to format and print
  *     ...     = Extra arguments
  */
-extern(C) void warning(const(char)* message, ...) {
+extern(C) void warning(cstring message, ...) {
     import system.cpu;
     import system.pit;
 
@@ -88,7 +89,7 @@ extern(C) void warning(const(char)* message, ...) {
  *     message = String to format and print
  *     ...     = Extra arguments
  */
-extern(C) void panic(const(char)* message, ...) {
+extern(C) void panic(cstring message, ...) {
     import system.cpu;
     import system.cpu.ipi;
     import system.cpu.smp: availableCores;

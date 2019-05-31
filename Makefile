@@ -10,29 +10,25 @@ override sourceDir = source
 override buildDir  = build
 override docsDir   = docs
 
-DC = ldc2
-LD = ld.lld
-AS = nasm
+DC   = ldc2
+LD   = ld.lld
+AS   = nasm
+QEMU = qemu-system-x86_64
 
-DFLAGS = -O2 -de
-
-LDFLAGS = -O2 -gc-sections
-
+DFLAGS    = -O2 -de
+LDFLAGS   = -O2 -gc-sections
 QEMUFLAGS = -m 2G -smp 4
 
-DFLAGS_INTERNAL := $(DFLAGS) -mtriple=x86_64-elf -relocation-model=static \
+DFLAGS_INTERNAL := $(DFLAGS) -mtriple=x86_64-unknown-elf -relocation-model=static \
 	-code-model=kernel -mattr=-sse,-sse2,-sse3,-ssse3 -disable-red-zone \
 	-betterC -op -I=$(sourceDir)/kernel
-
 LDFLAGS_INTERNAL := $(LDFLAGS) --oformat elf_amd64 --Bstatic --nostdlib \
     -T $(buildDir)/linker.ld
-
 QEMUFLAGS_INTERNAL := $(QEMUFLAGS) \
 	-drive file=$(ISO),index=0,media=disk,format=raw \
 
 ifeq ($(DEBUG), on)
-DFLAGS_INTERNAL := $(DFLAGS_INTERNAL) -gc -d-debug
-
+DFLAGS_INTERNAL    := $(DFLAGS_INTERNAL) -gc -d-debug
 QEMUFLAGS_INTERNAL := $(QEMUFLAGS_INTERNAL) -debugcon stdio
 endif
 
@@ -82,7 +78,7 @@ iso: all
 	rm -rf isodir
 
 test: iso
-	qemu-system-x86_64 $(QEMUFLAGS_INTERNAL)
+	$(QEMU) $(QEMUFLAGS_INTERNAL)
 
 clean:
 	rm -rf $(objects) $(binaries) $(image) $(ISO) $(docsDir)

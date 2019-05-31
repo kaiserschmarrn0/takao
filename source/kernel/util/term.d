@@ -489,10 +489,10 @@ private void printHex(ulong x) {
     print(&buf[i]);
 }
 
-private __gshared Lock charLock   = newLock;
-private __gshared Lock stringLock = newLock;
-private __gshared Lock vprintLock = newLock;
-private __gshared Lock printLock  = newLock;
+private shared SpinLock charLock   = unlocked;
+private shared SpinLock stringLock = unlocked;
+private shared SpinLock vprintLock = unlocked;
+private shared SpinLock printLock  = unlocked;
 
 void print(char c) {
     import io.qemu: qemuPutChar;

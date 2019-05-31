@@ -5,39 +5,26 @@
 
 module util.lib.spinlock;
 
+import core.atomic;
 import util.lib.messages;
 
-immutable auto maxLockItinerations = 0x4000000;
+/// Spinlock structure
+alias SpinLock = ubyte;
 
-/// Lock structure
-alias Lock = int;
+immutable SpinLock unlocked = 0; /// Free spinlock value
+immutable SpinLock locked   = 1; /// Locked spinlock value
 
-immutable Lock newLock = 1;
+/// Maximum spins that a spinlock will allow before being considered a deadlock
+immutable auto deadlockCounter = 0x4000000;
 
-/**
- * Adquire a spinlock
- *
- * Params:
- *     lock  = Lock to adquire
- */
-void acquireSpinlock(Lock* lockVal) {
-    foreach (i; 0..maxLockItinerations) {
-        ubyte lockStatus;
-
-        asm {
-            mov RBX, lockVal;
-            lock;
-            btr int ptr [RBX], 0;
-            setc AL;
-            mov lockStatus, AL;
-        }
-
-        if (lockStatus) {
+void acquireSpinlock(shared(SpinLock)* lock) {
+    foreach (i; 0..deadlockCounter) {
+        if (cas(lock, unlocked, locked)) {
             return;
         }
     }
 
-    panic("Deadlock");
+    panic("Deadlock after %u itinerations", deadlockCounter);
 }
 
 /**
@@ -46,10 +33,6 @@ void acquireSpinlock(Lock* lockVal) {
  * Params:
  *     lock  = Lock to release
  */
-void releaseSpinlock(Lock* lockVal) {
-    asm {
-        mov RBX, lockVal;
-        lock;
-        bts int ptr [RBX], 0;
-    }
+void releaseSpinlock(shared(SpinLock)* lock) {
+    atomicStore(*lock, unlocked);
 }

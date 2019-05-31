@@ -5,6 +5,8 @@
 
 module system.acpi;
 
+import util.lib;
+
 struct RSDP {
     align(1):
 
@@ -76,7 +78,7 @@ void getACPIInfo() {
             continue;
         }
 
-        if (areEquals(cast(char*)i, "RSD PTR ", 8)) {
+        if (equals(cast(cstring)i, "RSD PTR ", 8)) {
             rsdp = cast(RSDP*)i;
             goto RSDPFound;
         }
@@ -120,9 +122,8 @@ RSDPFound:
  *
  * Bugs: Will #PF if both the XSDT and RSDT point to `null`
  */
-void* findSDT(const(char)* signature) {
-    import memory:   physicalMemoryOffset;
-    import util.lib;
+void* findSDT(cstring signature) {
+    import memory: physicalMemoryOffset;
 
     SDT* pointer;
 
@@ -130,7 +131,7 @@ void* findSDT(const(char)* signature) {
         foreach (i; 0..xsdt.sdt.length) {
             pointer = cast(SDT*)((&xsdt.sdtPointers)[i] + physicalMemoryOffset);
 
-            if (areEquals(cast(char*)pointer.signature, signature, 4)) {
+            if (equals(cast(cstring)pointer.signature, signature, 4)) {
                 return cast(void*)pointer;
             }
         }
@@ -138,7 +139,7 @@ void* findSDT(const(char)* signature) {
         foreach (i; 0..rsdt.sdt.length) {
             pointer = cast(SDT*)((&rsdt.sdtPointers)[i] + physicalMemoryOffset);
 
-            if (areEquals(cast(char*)pointer.signature, signature, 4)) {
+            if (equals(cast(cstring)pointer.signature, signature, 4)) {
                 return cast(void*)pointer;
             }
         }

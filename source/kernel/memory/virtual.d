@@ -12,10 +12,10 @@ alias PageTableEntry = size_t;
 
 struct PageMap {
     PageTableEntry* pml4;
-    Lock            lock;
+    SpinLock        lock;
 }
 
-__gshared PageMap* kernelPageMap; /// The kernel paging scheme
+shared PageMap* kernelPageMap; /// The kernel paging scheme
 
 PageMap* createPageMap() {
     import memory.physical: pmmAlloc;
@@ -33,12 +33,12 @@ PageMap* createPageMap() {
     }
 
     newPageMap.pml4 = cast(PageTableEntry*)(cast(size_t)newPageMap.pml4 + physicalMemoryOffset);
-    newPageMap.lock = newLock;
+    newPageMap.lock = unlocked;
 
     return newPageMap;
 }
 
-void freePageMap(PageMap* pagemap) {
+void freePageMap(shared PageMap* pagemap) {
     import memory.physical: pmmFree;
     import memory.alloc:    free;
 
@@ -79,7 +79,7 @@ void freePageMap(PageMap* pagemap) {
     }
 
     pmmFree(cast(void*)pagemap.pml4 - physicalMemoryOffset, 1);
-    free(pagemap);
+    free(cast(void*)pagemap);
 }
 
 /**
@@ -98,7 +98,7 @@ void mapGlobalMemory() {
     import memory.e820:     e820Map;
     import memory.physical: pmmAlloc;
 
-    kernelPageMap = createPageMap();
+    kernelPageMap = cast(shared)createPageMap();
     assert(kernelPageMap);
 
     // We will map the first 4GiB of memory, first identity mapping
@@ -166,7 +166,7 @@ void mapGlobalMemory() {
  *
  * Returns: `0` on success, `-1` on failure
  */
-int mapPage(PageMap* pagemap, size_t virtualAddress, size_t physicalAddress, size_t flags) {
+int mapPage(shared PageMap* pagemap, size_t virtualAddress, size_t physicalAddress, size_t flags) {
     import memory.physical: pmmAlloc, pmmFree;
 
     acquireSpinlock(&pagemap.lock);
@@ -280,7 +280,7 @@ fail1:
  *
  * Returns: `0` on success, `-1` on failure
  */
-int unmapPage(PageMap* pagemap, size_t virtualAddress) {
+int unmapPage(shared PageMap* pagemap, size_t virtualAddress) {
     import memory.physical: pmmFree;
 
     acquireSpinlock(&pagemap.lock);
@@ -358,7 +358,7 @@ fail:
 }
 
 /* Update flags for a mapping */
-int remapPage(PageMap* pagemap, size_t virtAddr, size_t flags) {
+int remapPage(shared PageMap* pagemap, size_t virtAddr, size_t flags) {
     acquireSpinlock(&pagemap.lock);
 
     // Calculate the indices in the various tables using the virtual address

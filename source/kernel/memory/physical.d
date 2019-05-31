@@ -108,7 +108,7 @@ void initPhysicalBitmap() {
     }
 }
 
-private __gshared Lock lock = newLock;
+private shared SpinLock lock = unlocked;
 
 /**
  * Allocate a number of pages
