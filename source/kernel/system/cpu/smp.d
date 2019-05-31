@@ -126,8 +126,9 @@ private bool startCore(ubyte targetAPIC, ubyte coreNumber) {
     auto tss   = &coreTSSs[coreNumber];
     auto stack = &coreStacks[coreNumber].stack[coreStackSize - 1];
 
-    void* trampoline = prepareTrampoline(&coreKernelEntry,
-                       cast(void*)kernelPageMap.pml4, stack, core, tss);
+    void* trampoline = prepareTrampoline(cast(void*)&coreKernelEntry,
+                        cast(void*)kernelPageMap.pml4, cast(void*)stack,
+                        cast(void*)core, cast(void*)tss);
 
     // Send the INIT IPI
     writeLAPIC(apicICR1, cast(uint)targetAPIC << 24);

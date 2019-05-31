@@ -5,6 +5,9 @@
 
 module memory.e820;
 
+import util.lib;
+
+/// One entry of the e820 memory map
 struct E820Entry {
     ulong base;
     ulong length;
@@ -12,9 +15,9 @@ struct E820Entry {
     uint  unused;
 }
 
-__gshared E820Entry[256] e820Map; /// the e820 memory map filled by `getE820`
+shared(E820Entry)[256] e820Map; /// The e820 memory map filled by `getE820`
 
-private extern(C) void get_e820(E820Entry*);
+private extern(C) void get_e820(shared(E820Entry)*);
 
 /**
  * Getting the e820 map and putting it in `e820Map`
@@ -22,9 +25,7 @@ private extern(C) void get_e820(E820Entry*);
  * To accomplish this it will make a real mode call defined in `get_e820`
  */
 void getE820() {
-    import util.lib.messages;
-
-    get_e820(&e820Map[0]);
+    get_e820(e820Map.ptr);
 
     debug {
         ulong memorySize = 0;
@@ -38,26 +39,22 @@ void getE820() {
                   entry.base + entry.length, entry.length,
                   e820Type(entry.type));
 
-            if (entry.type == 1) memorySize += entry.length;
+            if (entry.type == 1) {
+                memorySize += entry.length;
+            }
         }
 
         log("Total usable memory: %u MiB", memorySize / 1024 / 1024);
     }
 }
 
-private char* e820Type(uint type) {
+private cstring e820Type(uint type) {
     switch (type) {
-        case 1:
-            return cast(char*)"Usable RAM";
-        case 2:
-            return cast(char*)"Reserved";
-        case 3:
-            return cast(char*)"ACPI-Reclaim";
-        case 4:
-            return cast(char*)"ACPI-NVS";
-        case 5:
-            return cast(char*)"Bad memory";
-        default:
-            return cast(char*)"???";
+        case 1:  return "Usable RAM";
+        case 2:  return "Reserved";
+        case 3:  return "ACPI-Reclaim";
+        case 4:  return "ACPI-NVS";
+        case 5:  return "Bad memory";
+        default: return "???";
     }
 }

@@ -465,7 +465,7 @@ private void printInteger(ulong x) {
     }
 
     i++;
-    print(&buf[i]);
+    print(cast(immutable)&buf[i]);
 }
 
 private void printHex(ulong x) {
@@ -486,7 +486,7 @@ private void printHex(ulong x) {
 
     i++;
     print("0x");
-    print(&buf[i]);
+    print(cast(immutable)&buf[i]);
 }
 
 private shared SpinLock charLock   = unlocked;
@@ -510,7 +510,7 @@ void print(char c) {
     releaseSpinlock(&charLock);
 }
 
-void print(const(char)* message) {
+void print(cstring message) {
     acquireSpinlock(&stringLock);
 
     for (auto i = 0; message[i]; i++) {
@@ -520,7 +520,7 @@ void print(const(char)* message) {
     releaseSpinlock(&stringLock);
 }
 
-extern(C) void vprint(const(char)* format, va_list args) {
+extern(C) void vprint(cstring format, va_list args) {
     acquireSpinlock(&vprintLock);
 
     for (auto i = 0; format[i]; i++) {
@@ -532,7 +532,7 @@ extern(C) void vprint(const(char)* format, va_list args) {
         if (format[++i]) {
             switch (format[i]) {
                 case 's':
-                    char* str;
+                    cstring str;
                     va_arg(args, str);
                     print(str);
                     break;
@@ -542,9 +542,9 @@ extern(C) void vprint(const(char)* format, va_list args) {
                     printHex(h);
                     break;
                 case 'u':
-                    ulong h;
-                    va_arg(args, h);
-                    printInteger(h);
+                    ulong u;
+                    va_arg(args, u);
+                    printInteger(u);
                     break;
                 default:
                     print('%');
@@ -556,7 +556,7 @@ extern(C) void vprint(const(char)* format, va_list args) {
     releaseSpinlock(&vprintLock);
 }
 
-extern(C) void print(const(char)* message, ...) {
+extern(C) void print(cstring message, ...) {
     acquireSpinlock(&printLock);
 
     va_list args;

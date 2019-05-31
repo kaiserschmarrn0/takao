@@ -50,10 +50,10 @@ struct CoreStack {
     align(pageSize) ubyte[coreStackSize] stack;
 }
 
-__gshared                 Core[maxCores]      cores;      /// Basic core info
-__gshared align(16)       CoreTSS[maxCores]   coreTSSs;   /// All the cores TSSs
-__gshared align(pageSize) CoreStack[maxCores] coreStacks; /// All the core stacks
-__gshared                 CPUID[maxCores]     coreCPUIDs; /// CPUID info
+shared                 Core[maxCores]      cores;      /// Basic core info
+shared align(16)       CoreTSS[maxCores]   coreTSSs;   /// All the cores TSSs
+shared align(pageSize) CoreStack[maxCores] coreStacks; /// All the core stacks
+shared                 CPUID[maxCores]     coreCPUIDs; /// CPUID info
 
 /**
  * Initialise all related to CPU, like SMP or features

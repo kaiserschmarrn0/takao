@@ -26,7 +26,7 @@ struct IDTPointer {
     ulong  offset;
 }
 
-private __gshared IDTDescriptor[256] idt;
+private shared(IDTDescriptor)[256] idt;
 
 /**
  * Sets the system IDT, exceptions and IRQs

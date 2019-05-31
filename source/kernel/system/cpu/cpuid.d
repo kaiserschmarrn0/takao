@@ -160,7 +160,7 @@ struct CPUID {
  * Params:
  *     cpuid = The CPUID info struct to act on.
  */
-void checkCPUID(CPUID* cpuid) {
+void checkCPUID(shared(CPUID)* cpuid) {
     size_t c, d, d2;
 
     asm {
@@ -185,14 +185,14 @@ void checkCPUID(CPUID* cpuid) {
     enableFeatures(cpuid);
 }
 
-private void checkFeatures(CPUID* cpuid) {
+private void checkFeatures(shared(CPUID)* cpuid) {
     assert(cpuid.hasMSR);
     assert(cpuid.hasPAT);
     assert(cpuid.hasSSE2);
     assert(cpuid.hasSYSCALL);
 }
 
-private void enableFeatures(CPUID* cpuid) {
+private void enableFeatures(shared(CPUID)* cpuid) {
     import process.syscall;
 
     // We know at least SSE2 is present, so we enable SSE and if its SSE3 we win

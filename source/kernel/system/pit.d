@@ -8,7 +8,7 @@ module system.pit;
 // The frequency in Hz that will be used for the PIT setup
 immutable ushort pitFrequency = 1000;
 
-// The uptime time in tics
+// The uptime time in tics, milis in the case
 __gshared ulong uptime = 0;
 
 /**

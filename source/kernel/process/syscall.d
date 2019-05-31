@@ -5,7 +5,7 @@
 
 module system.syscall;
 
-__gshared size_t syscallEntryAddress;
+shared(size_t) syscallEntryAddress;
 
 static this() {
     syscallEntryAddress = cast(size_t)&syscallEntryAddress;
