@@ -9,8 +9,8 @@ import memory;
 import system.cpu;
 import system.pit;
 
-immutable uint apicICR0 = 0x300;
-immutable uint apicICR1 = 0x310;
+immutable(uint) apicICR0 = 0x300;
+immutable(uint) apicICR1 = 0x310;
 
 __gshared ubyte availableCores = 1; /// The number of cores ready in the system
 
@@ -25,7 +25,7 @@ private extern(C) void* prepareTrampoline(void*, void*, void*, void*, void*);
  * by `startCore` -> `coreKernelEntry` until an interrupt is received
  */
 void initSMP() {
-    import util.lib.messages;
+    import lib.messages;
     import system.acpi.madt;
 
     debug {
@@ -111,7 +111,7 @@ private void setupCore(ubyte coreNumber, ubyte lapic) {
 }
 
 private bool startCore(ubyte targetAPIC, ubyte coreNumber) {
-    import util.lib.messages;
+    import lib.messages;
     import memory.virtual;
     import system.interrupts.apic;
 
@@ -152,7 +152,7 @@ private bool startCore(ubyte targetAPIC, ubyte coreNumber) {
 }
 
 private void coreKernelEntry() {
-    import util.lib.messages;
+    import lib.messages;
     import system.cpu.cpuid;
     import system.interrupts.apic;
 

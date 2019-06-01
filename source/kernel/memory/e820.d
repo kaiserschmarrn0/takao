@@ -5,7 +5,7 @@
 
 module memory.e820;
 
-import util.lib;
+import lib;
 
 /// One entry of the e820 memory map
 struct E820Entry {

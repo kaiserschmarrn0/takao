@@ -21,7 +21,7 @@ void initMemoryManagers() {
     import memory.e820;
     import memory.physical;
     import memory.virtual;
-    import util.lib.messages;
+    import lib.messages;
 
     info("Initialising memory managers");
 

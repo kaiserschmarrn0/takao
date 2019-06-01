@@ -3,7 +3,7 @@
  * This code is governed by a license that can be found in LICENSE.md
  */
 
-module util.lib.string;
+module lib.string;
 
 /// C string datatype, which represents a C `const char*`
 alias cstring = immutable(char)*;

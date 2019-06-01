@@ -3,9 +3,9 @@
  * This code is governed by a license that can be found in LICENSE.md
  */
 
-module util.lib;
+module lib;
 
-public import util.lib.string;
-public import util.lib.bit;
-public import util.lib.spinlock;
-public import util.lib.messages;
+public import lib.string;
+public import lib.bit;
+public import lib.spinlock;
+public import lib.messages;

@@ -8,46 +8,46 @@ module util.term;
 public import core.stdc.stdarg;
 
 import io.vbe;
-import util.lib;
+import lib;
 
-private __gshared bool termEnabled = false; /// Status of the graphical terminal
+private shared(bool) termEnabled = false; /// Status of the graphical terminal
 
-private const char[] conversionTable = "0123456789ABCDEF";
+private immutable(char[]) conversionTable = "0123456789ABCDEF";
 
-private __gshared ubyte[256*16] font;
-private immutable int fontHeight = 16;
-private immutable int fontWidth  = 8;
+private shared(ubyte)[256*16] font;
+private immutable(int)        fontHeight = 16;
+private immutable(int)        fontWidth  = 8;
 
-private __gshared int rows;
-private __gshared int cols;
+private shared(int) rows;
+private shared(int) cols;
 
-private __gshared uint defaultBackground;
-private __gshared uint defaultForeground;
-private __gshared uint textBackground;
-private __gshared uint textForeground;
+private shared(uint) defaultBackground;
+private shared(uint) defaultForeground;
+private shared(uint) textBackground;
+private shared(uint) textForeground;
 
 private __gshared int  cursorX;
 private __gshared int  cursorY;
-private __gshared int  savedCursorX;
-private __gshared int  savedCursorY;
-private __gshared int  cursorStatus;
-private __gshared uint cursorBackground;
-private __gshared uint cursorForeground;
+private shared(int)  savedCursorX;
+private shared(int)  savedCursorY;
+private shared(int)  cursorStatus;
+private shared(uint) cursorBackground;
+private shared(uint) cursorForeground;
 
-private __gshared char* grid;
-private __gshared uint* gridBackground;
-private __gshared uint* gridForeground;
+private shared(char*) grid;
+private shared(uint*) gridBackground;
+private shared(uint*) gridForeground;
 
-private immutable int               maxEscValues = 256;
-private __gshared int               controlSequence;
-private __gshared int               escape;
+private immutable(int)              maxEscValues = 256;
+private shared(int)                 controlSequence;
+private shared(int)                 escape;
 private __gshared int[maxEscValues] escValues;
 private __gshared int               escValuesCount;
-private __gshared int               rrr;
-private __gshared int               tabSize;
+private shared(int)                 rrr;
+private shared(int)                 tabSize;
 
-/*private __gshared immutable uint[] ansiColours = [
-    0x3F3F3F,              // black
+private immutable(uint[]) ansiColours = [
+    0x2F343F,              // black
     0x705050,              // red
     0x60B48A,              // green
     0xDFAF8F,              // brown
@@ -55,9 +55,9 @@ private __gshared int               tabSize;
     0xDC8CC3,              // magenta
     0x8CD0D3,              // cyan
     0xDCDCDC               // grey
-];*/
+];
 
-private __gshared immutable uint[] ansiColours = [
+/*private immutable(uint[]) ansiColours = [
     0x000000,              // black
     0xAA0000,              // red
     0x00AA00,              // green
@@ -66,9 +66,9 @@ private __gshared immutable uint[] ansiColours = [
     0xAA00AA,              // magenta
     0x00AAAA,              // cyan
     0xAAAAAA               // grey
-];
+];*/
 
-private extern(C) void dumpVGAFont(ubyte*);
+private extern(C) void dumpVGAFont(shared(ubyte)*);
 
 /**
  * Initialise the terminal
@@ -80,13 +80,11 @@ void initTerm() {
         info("Initialising TTY...");
     }
 
-    dumpVGAFont(cast(ubyte*)&font[0]);
+    dumpVGAFont(font.ptr);
 
     cols = vbeWidth  / fontWidth;
     rows = vbeHeight / fontHeight;
 
-    /*defaultBackground = 0x2F343F;
-    defaultForeground = 0xD3D7CF;*/
     defaultBackground = ansiColours[0];
     defaultForeground = ansiColours[7];
     textBackground    = defaultBackground;
@@ -102,9 +100,9 @@ void initTerm() {
     escape          = 0;
     tabSize         = 8;
 
-    grid           = cast(char*)alloc(rows * cols);
-    gridBackground = cast(uint*)alloc(rows * cols * uint.sizeof);
-    gridForeground = cast(uint*)alloc(rows * cols * uint.sizeof);
+    grid           = cast(shared(char*))alloc(rows * cols);
+    gridBackground = cast(shared(uint*))alloc(rows * cols * uint.sizeof);
+    gridForeground = cast(shared(uint*))alloc(rows * cols * uint.sizeof);
 
     assert(grid && gridBackground && gridForeground);
 
@@ -128,10 +126,10 @@ private void plotPixel(int x, int y, uint hex) {
 }
 
 private void plotChar(char c, int x, int y, uint hexFg, uint hexBg) {
-    import util.lib: bitTest;
+    import lib.bit: bitTest;
 
-    int    originalX = x;
-    ubyte* glyph     = &font[c * fontHeight];
+    auto originalX = x;
+    auto glyph     = &font[c * fontHeight];
 
     for (int i = 0; i < fontHeight; i++) {
         for (int j = fontWidth - 1; j >= 0; j--) {

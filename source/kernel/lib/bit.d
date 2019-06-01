@@ -3,7 +3,7 @@
  * This code is governed by a license that can be found in LICENSE.md
  */
 
-module util.lib.bit;
+module lib.bit;
 
 /**
  * Test a bit

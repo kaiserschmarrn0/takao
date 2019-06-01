@@ -545,6 +545,8 @@ void SXHandler() {
     }
 }
 
+import lib;
+
 private struct ExceptionStackState {
     ulong errorCode;
     ulong rip;
@@ -554,7 +556,7 @@ private struct ExceptionStackState {
     ulong ss;
 }
 
-private immutable char*[] exceptionName = [
+private immutable(cstring[]) exceptionName = [
     "Division By 0 (#UD)",
     "Debug (#DE)",
     "Non Maskable Interrupt (NMI)",
@@ -607,18 +609,14 @@ private extern(C) void exceptionEntry(uint exceptionNumber, bool hasErrorCode) {
 }
 
 private extern(C) void exceptionInner(ExceptionStackState* stack, uint exception) {
-    import util.lib.messages;
+    log("SS:         %x", stack.ss);
+    log("RSP:        %x", stack.rsp);
+    log("RFLAGS:     %x", stack.rflags);
+    log("CS:         %x", stack.cs);
+    log("RIP:        %x", stack.rip);
+    log("Error code: %x", stack.errorCode);
 
-    log("SS:         %x\n", stack.ss);
-    log("RSP:        %x\n", stack.rsp);
-    log("RFLAGS:     %x\n", stack.rflags);
-    log("CS:         %x\n", stack.cs);
-    log("RIP:        %x\n", stack.rip);
-    log("Error code: %x\n", stack.errorCode);
-
-    auto exceptionSpace = stack.cs & 0b111 ?
-                           cast(char*)"userspace" :
-                           cast(char*)"kernelspace";
+    cstring exceptionSpace = stack.cs & 0b111 ? "userspace" : "kernelspace";
 
     panic("%s in %s", exceptionName[exception], exceptionSpace);
 }

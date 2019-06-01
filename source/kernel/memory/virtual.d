@@ -6,7 +6,7 @@
 module memory.virtual;
 
 import memory;
-import util.lib.spinlock;
+import lib.spinlock;
 
 alias PageTableEntry = size_t;
 

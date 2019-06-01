@@ -3,10 +3,10 @@
  * This code is governed by a license that can be found in LICENSE.md
  */
 
-module util.lib.spinlock;
+module lib.spinlock;
 
 import core.atomic;
-import util.lib.messages;
+import lib.messages;
 
 /// Spinlock structure
 alias SpinLock = ubyte;

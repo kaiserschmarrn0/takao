@@ -7,7 +7,7 @@ module system.interrupts.irq;
 
 import system.pit;
 import system.interrupts.apic;
-import util.lib.messages;
+import lib.messages;
 
 /**
  * The default interrupt handler

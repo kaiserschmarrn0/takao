@@ -6,7 +6,7 @@
 module memory.physical;
 
 import memory;
-import util.lib.spinlock;
+import lib.spinlock;
 
 private immutable auto bitmapReallocStep = 1;
 private immutable size_t memoryBase = 0x1000000;

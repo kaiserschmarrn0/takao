@@ -59,7 +59,7 @@ shared                 CPUID[maxCores]     coreCPUIDs; /// CPUID info
  * Initialise all related to CPU, like SMP or features
  */
 void initCPU() {
-    import util.lib.messages;
+    import lib.messages;
     import system.cpu.smp;
 
     info("Initialising CPU");

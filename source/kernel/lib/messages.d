@@ -3,11 +3,11 @@
  * This code is governed by a license that can be found in LICENSE.md
  */
 
-module util.lib.messages;
+module lib.messages;
 
 import util.term;
-import util.lib.string;
-import util.lib.spinlock;
+import lib.string;
+import lib.spinlock;
 
 private shared SpinLock logLock     = unlocked;
 private shared SpinLock infoLock    = unlocked;

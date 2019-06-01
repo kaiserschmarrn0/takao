@@ -6,7 +6,7 @@
 module io.vbe;
 
 import memory;
-import util.lib;
+import lib;
 
 /**
  * VBE information as found in hardware

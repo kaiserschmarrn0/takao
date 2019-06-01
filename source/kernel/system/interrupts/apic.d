@@ -14,7 +14,7 @@ __gshared uint* lapicEOIPointer;
  * Enables the system APIC, and then will initialise the LAPIC of core #0
  */
 void enableAPIC() {
-    import util.lib;
+    import lib;
 
     debug {
         log("Disabling PIC...");

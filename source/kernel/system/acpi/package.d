@@ -5,7 +5,7 @@
 
 module system.acpi;
 
-import util.lib;
+import lib;
 
 struct RSDP {
     align(1):
@@ -67,7 +67,7 @@ __gshared XSDT* xsdt; /// The XSDT is found
 void getACPIInfo() {
     import memory:           physicalMemoryOffset;
     import system.acpi.madt: initMADT;
-    import util.lib;
+    import lib;
 
     info("Searching for ACPI tables...");
 
