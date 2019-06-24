@@ -1,17 +1,28 @@
 include config
 
+DC = ldc2
+AS = clang
+LD = ld.lld
+
 DFLAGS  = -Isource
-LDFLAGS = -O2 -gc-sections
+ASFLAGS = -ffreestanding
+LDFLAGS = -T build/${ARCH}/linker.ld
 
-ifeq ($(DEBUG), true)
-DFLAGS := $(DFLAGS) -gc -d-debug
+ifeq (${DEBUG}, true)
+DFLAGS  := ${DFLAGS}  -gc -d-debug
+ASFLAGS := ${ASFLAGS} -g
 endif
 
-ifeq ($(OPTIMISE), true)
-DFLAGS  := $(DFLAGS)  -O2
-LDFLAGS := $(LDFLAGS) -O2 -gc-sections
+ifeq (${OPTIMISE}, true)
+DFLAGS  := ${DFLAGS}  -O2
+ASFLAGS := ${ASFLAGS} -O2
+LDFLAGS := ${LDFLAGS} -O2 -gc-sections
 endif
 
-ifeq ($(ARCH), AMD64)
-DFLAGS := $(DFLAGS) -version=AMD64
+ifeq (${ARCH}, AMD64)
+DFLAGS := ${DFLAGS} -d-version=AMD64 \
+	-mtriple=x86_64-unknown-elf -relocation-model=static \
+	-code-model=kernel -mattr=-sse,-sse2,-sse3,-ssse3 -disable-red-zone \
+	-betterC -op
+ASFLAGS := ${ASFLAGS} -target x86_64-unknown-elf
 endif

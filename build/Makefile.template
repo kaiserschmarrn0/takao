@@ -3,17 +3,35 @@ include Makeopts
 CMAGENTA = $(shell tput setaf 5)
 CRESET   = $(shell tput sgr0)
 
-.PHONY: info all reset
+.PHONY: all info clean reset
+
+SOURCE      = $(shell find ./source -type f -name '*.d')
+ARCHSOURCE  = $(shell find ./source/arch/${ARCH} -type f -name '*.d')
+ARCHSSOURCE = $(shell find ./source/arch/${ARCH} -type f -name '*.S')
+OBJ        = ${SOURCE:.d=.o} ${ARCHSOURCE:.d=.o} ${ARCHSSOURCE:.S=.o}
+
+all: info ${OBJ}
+	@echo "${CMAGENTA}${LD}${CRESET} 'takao.elf'"
+	@${LD} ${LDFLAGS} ${OBJ} -o takao.elf
+
+%.o: %.d
+	@echo "${CMAGENTA}${DC}${CRESET} '$@'"
+	@${DC} ${DFLAGS} -c $< $@
+
+%.o: %.S
+	@echo "${CMAGENTA}${AS}${CRESET} '$@'"
+	@${AS} ${ASFLAGS} -c $< -o $@
 
 info:
 	@echo "Building with:"
 	@echo "${CMAGENTA}DFLAGS${CRESET}  = ${DFLAGS}"
 	@echo "${CMAGENTA}LDFLAGS${CRESET} = ${LDFLAGS}"
 
-all: info
+clean:
+	rm -f ${OBJ}
+	rm -f takao.elf
 
-reset:
-	@echo "${DFLAGS}"
-	rm config
-	rm Makefile
-	rm Makeopts
+reset: clean
+	rm -f config
+	rm -f Makefile
+	rm -f Makeopts

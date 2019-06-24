@@ -6,12 +6,14 @@ CRESET="$(tput sgr0)"
 KERNEL="${CMAGENTA}Takao${CRESET}"
 
 echo "$KERNEL configure:"
-echo "Edit 'config' to modify the build options"
+echo "Edit 'config' to modify the build options, in the project folder"
 echo ""
 cp -v build/config.template   ./config
 cp -v build/Makefile.template ./Makefile
 cp -v build/Makeopts.template ./Makeopts
 echo ""
 echo "Thanks for giving $KERNEL a try!"
-echo "We will send the cat gifs promised in the README later"
-echo "Sorry"
+echo "Now run 'make' to build the kernel, or 'make info' to see the flags used"
+echo "To clean the tree, 'make clean', to reset the config, 'make reset'"
+echo ""
+echo "We will send the cat gifs promised in the README later, sorry"

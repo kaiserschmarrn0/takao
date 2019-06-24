@@ -2,3 +2,7 @@
 config
 Makefile
 Makeopts
+
+# Output files
+**/*.o
+takao.elf
