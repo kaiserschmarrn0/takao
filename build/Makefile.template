@@ -1,0 +1,19 @@
+include Makeopts
+
+CMAGENTA = $(shell tput setaf 5)
+CRESET   = $(shell tput sgr0)
+
+.PHONY: info all reset
+
+info:
+	@echo "Building with:"
+	@echo "${CMAGENTA}DFLAGS${CRESET}  = ${DFLAGS}"
+	@echo "${CMAGENTA}LDFLAGS${CRESET} = ${LDFLAGS}"
+
+all: info
+
+reset:
+	@echo "${DFLAGS}"
+	rm config
+	rm Makefile
+	rm Makeopts

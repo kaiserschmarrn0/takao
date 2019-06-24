@@ -1,0 +1,17 @@
+include config
+
+DFLAGS  = -Isource
+LDFLAGS = -O2 -gc-sections
+
+ifeq ($(DEBUG), true)
+DFLAGS := $(DFLAGS) -gc -d-debug
+endif
+
+ifeq ($(OPTIMISE), true)
+DFLAGS  := $(DFLAGS)  -O2
+LDFLAGS := $(LDFLAGS) -O2 -gc-sections
+endif
+
+ifeq ($(ARCH), AMD64)
+DFLAGS := $(DFLAGS) -version=AMD64
+endif

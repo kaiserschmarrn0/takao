@@ -1,0 +1,17 @@
+#!/bin/sh
+
+CMAGENTA="$(tput setaf 5)"
+CRESET="$(tput sgr0)"
+
+KERNEL="${CMAGENTA}Takao${CRESET}"
+
+echo "$KERNEL configure:"
+echo "Edit 'config' to modify the build options"
+echo ""
+cp -v build/config.template   ./config
+cp -v build/Makefile.template ./Makefile
+cp -v build/Makeopts.template ./Makeopts
+echo ""
+echo "Thanks for giving $KERNEL a try!"
+echo "We will send the cat gifs promised in the README later"
+echo "Sorry"

@@ -1,0 +1,32 @@
+# Configuration file
+# When asked for a boolean flag:
+# true            -> enabled
+# everything else -> disabled
+# In the rest of cases, the way of filling the fields will be specified.
+
+#### 1. Arch-independent settings ##############################################
+
+#### Global
+
+# Debug information useful for troubleshooting or diagnostics, but makes the
+# system fatter and in some cases, where memory restrictions apply, slower
+DEBUG = false
+
+# Optimisation in compile time, can be mixed with debug
+OPTIMISE = false
+
+#### 2. Arch-dependent settings ################################################
+
+# Architecture the OS will target, for now, only AMD64 is available
+ARCH = AMD64
+
+#### AMD64 settings
+
+# ACPI support, used for information gathering and other useful things
+# AMD64_ACPI = true
+
+# Symmetric Multi Processing, this is, enabling the use of more than 1 cores.
+# AMD64_ACPI_SMP = true
+
+# Using the APIC instead of the legacy PIC interface
+# AMD64_ACPI_APIC = true
