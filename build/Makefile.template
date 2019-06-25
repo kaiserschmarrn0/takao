@@ -28,8 +28,9 @@ info:
 	@echo "${CMAGENTA}LDFLAGS${CRESET} = ${LDFLAGS}"
 
 clean:
-	rm -f ${OBJ}
-	rm -f takao.elf
+	rm -f  ${OBJ}
+	rm -f  takao.elf
+	rm -rf docs
 
 reset: clean
 	rm -f config

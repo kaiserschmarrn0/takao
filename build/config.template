@@ -8,6 +8,9 @@
 
 #### Global
 
+# Generate documentation along with code
+DOCS = true
+
 # Debug information useful for troubleshooting or diagnostics, but makes the
 # system fatter and in some cases, where memory restrictions apply, slower
 DEBUG = false

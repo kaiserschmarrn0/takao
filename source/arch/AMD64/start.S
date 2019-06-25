@@ -2,6 +2,8 @@
 
 .globl start
 start:
-.halt:
+    call main # Main kernel function
+
+0:  # Loop forever
     hlt
-    jmp .halt
+    jmp 0b

@@ -6,3 +6,4 @@ Makeopts
 # Output files
 **/*.o
 takao.elf
+docs

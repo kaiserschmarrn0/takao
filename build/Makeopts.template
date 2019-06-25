@@ -8,6 +8,11 @@ DFLAGS  = -Isource
 ASFLAGS = -ffreestanding
 LDFLAGS = -T build/${ARCH}/linker.ld
 
+ifeq (${DOCS}, true)
+DFLAGS  := ${DFLAGS}  -Dd=docs
+ASFLAGS := ${ASFLAGS} -g
+endif
+
 ifeq (${DEBUG}, true)
 DFLAGS  := ${DFLAGS}  -gc -d-debug
 ASFLAGS := ${ASFLAGS} -g
