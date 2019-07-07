@@ -1,0 +1,21 @@
+# Configuration file
+# When asked for a boolean flag:
+# on        -> enabled
+# otherwise -> disabled
+# In the rest of cases, the way of filling the fields will be specified.
+
+#### 1. Arch-independent settings ##############################################
+
+#### Global
+
+# Generate documentation along with code
+DOCS = off
+
+# Debug information useful for troubleshooting or diagnostics, but makes the
+# system fatter and in some cases, where memory restrictions apply, slower
+DEBUG = off
+
+#### Test emulation
+
+# Using QEMU's KVM module for faster emulation using the host CPU
+KVM = on

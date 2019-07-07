@@ -1,0 +1,60 @@
+include Makeopts
+
+CMAGENTA = $(shell tput setaf 5)
+CRESET   = $(shell tput sgr0)
+
+REALSOURCE = $(shell find ${SOURCEDIR} -type f -name '*.real')
+DSOURCE    = $(shell find ${SOURCEDIR} -type f -name '*.d')
+ASMSOURCE  = $(shell find ${SOURCEDIR} -type f -name '*.asm')
+
+BIN = $(REALSOURCE:.real=.bin)
+OBJ = $(DSOURCE:.d=.o) $(ASMSOURCE:.asm=.o)
+
+.PHONY: all iso test clean
+
+all: info ${BIN} ${OBJ}
+	@echo "${CMAGENTA}${LD}${CRESET} '${IMAGE}'..."
+	@${LD} ${LDFLAGS} ${OBJ} -o ${IMAGE}
+
+%.o: %.d
+	@echo "${CMAGENTA}${DC}${CRESET} '$@'..."
+	@${DC} ${DFLAGS} -c $< $@
+
+%.o: %.asm
+	@echo "${CMAGENTA}${AS}${CRESET} '$@'..."
+	@${AS} $< -f elf64 -o $@
+
+%.bin: %.real
+	@echo "${CMAGENTA}${AS} (Real mode)${CRESET} '$@'..."
+	@${AS} $< -f bin -o $@
+
+info:
+	@echo "Building with:"
+	@echo "${CMAGENTA}DC${CRESET}        = ${DC}"
+	@echo "${CMAGENTA}AS${CRESET}        = ${AS}"
+	@echo "${CMAGENTA}LD${CRESET}        = ${LD}"
+	@echo "${CMAGENTA}QEMU${CRESET}      = ${QEMU}"
+	@echo ""
+	@echo "${CMAGENTA}DFLAGS${CRESET}    = ${DFLAGS}"
+	@echo "${CMAGENTA}LDFLAGS${CRESET}   = ${LDFLAGS}"
+	@echo "${CMAGENTA}QEMUFLAGS${CRESET} = ${QEMUFLAGS}"
+
+iso: all
+	mkdir -p isodir/boot/grub
+	cp ${IMAGE} isodir/boot/${IMAGE}
+	cp ${BUILDDIR}/grub.cfg isodir/boot/grub/grub.cfg
+	sed -i "s/NAME/${KERNEL}/g" isodir/boot/grub/grub.cfg
+	sed -i "s/IMAGE/${IMAGE}/g" isodir/boot/grub/grub.cfg
+	grub-mkrescue -o ${ISO} isodir
+	rm -rf isodir
+
+test: iso
+	${QEMU} ${QEMUFLAGS}
+
+clean:
+	rm -rf ${OBJ} ${BIN} ${IMAGE} ${ISO} ${DOCSDIR}
+
+reset: clean
+	rm config
+	rm Makeopts
+	rm Makefile

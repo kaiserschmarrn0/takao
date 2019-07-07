@@ -15,7 +15,8 @@ happen, so it doesn't have a specific version number.
 
 Make sure you have installed:
 
-* `git` (only if you are using it to download the source)
+* `git` (only if you are using it to download the source).
+* `bash`, `zsh` or any other POSIX compliant shell.
 * `ldc`, a LLVM based D compiler.
 * `lld`, the LLVM project linker.
 * `make`.
@@ -28,19 +29,10 @@ git clone https://github.com/TheStr3ak5/takao.git
 cd takao
 ```
 
-And next lets build the source with:
+To build the kernel, run `./configure`, it will guide thru the rest of building.
 
-```bash
-# One can add several flags to make the generated code much faster, as in
-# DFLAGS="-O2 -mcpu=znver1" make
-# That will make the compiler optimise the code and target the zen (AMD ryzen)
-# architecture, a full set of flags can be found in 'ldc2 -mcpu=help'
-make             # Add DEBUG=on for a debug build, DOCS=on to generate docs
-make KVM=on test # Add DEBUG here too to match the debug build
-```
-
-One can clean the build tree with `make clean` and even test the kernel with
-`make test`, this last command will require `qemu`.
+To put it in a nutshell, it will explain how to configure the build, prepare the
+environment and signal the required `make` commands.
 
 ## Documentation
 

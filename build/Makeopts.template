@@ -1,0 +1,43 @@
+include config
+
+KERNEL = takao
+IMAGE  = ${KERNEL}.elf
+ISO    = ${KERNEL}.iso
+
+SOURCEDIR = source
+BUILDDIR  = build
+DOCSDIR   = docs
+
+DC   = ldc2
+LD   = ld.lld
+AS   = nasm
+QEMU = qemu-system-x86_64
+
+DFLAGS    = -O2 -de
+LDFLAGS   = -O2 -gc-sections
+QEMUFLAGS = -smp 4
+
+# config's options
+
+ifeq (${DOCS}, on)
+DFLAGS := ${DFLAGS} -Dd=${DOCSDIR}
+endif
+
+ifeq (${DEBUG}, on)
+DFLAGS    := ${DFLAGS}    -gc -d-debug
+QEMUFLAGS := ${QEMUFLAGS} -debugcon stdio
+endif
+
+ifeq (${KVM}, on)
+QEMUFLAGS := ${QEMUFLAGS} -enable-kvm -cpu host
+endif
+
+# AMD64 options
+DFLAGS := ${DFLAGS} -mtriple=x86_64-unknown-elf -relocation-model=static \
+	-code-model=kernel -mattr=-sse,-sse2,-sse3,-ssse3 -disable-red-zone \
+	-betterC -op -I=${SOURCEDIR}/kernel
+
+LDFLAGS := ${LDFLAGS} --oformat elf_amd64 --Bstatic --nostdlib \
+    -T ${BUILDDIR}/linker.ld
+
+QEMUFLAGS := ${QEMUFLAGS} -drive file=${ISO},index=0,media=disk,format=raw
