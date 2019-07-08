@@ -1,7 +1,4 @@
 /**
- * License: (C) 2019 the takao authors (AUTHORS.md). All rights reserved
- * This code is governed by a license that can be found in LICENSE.md
- *
  * Exceptions are classified as:
  *
  * - Faults: Can be corrected and the program can continue as if nothing

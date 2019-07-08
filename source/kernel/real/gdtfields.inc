@@ -1,7 +1,3 @@
-; gdtfields.real - GDT Fields
-; (C) 2019 the takao authors (AUTHORS.md). All rights reserved
-; This code is governed by a license that can be found in LICENSE.md
-
 align 16
 
 GDTPointer:
