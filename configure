@@ -10,7 +10,7 @@ echo
 cp -v build/config.template   ./config
 cp -v build/Makefile.template ./Makefile
 cp -v build/Makeopts.template ./Makeopts
-echo 
+echo
 echo "Thanks for giving $KERNEL a try!"
 echo "Edit 'config' to modify the build options, in the project folder"
 echo "Then run 'make' to build the kernel, or 'make info' to see the flags used"

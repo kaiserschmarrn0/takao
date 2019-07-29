@@ -21,7 +21,7 @@ Make sure you have installed:
 * `lld`, the LLVM project linker.
 * `make`.
 
-With all of that covered, just clone the source with `git` if you dont
+With all of that covered, just clone the source with `git` if you don't
 have it already with:
 
 ```bash
