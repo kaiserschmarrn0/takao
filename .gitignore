@@ -3,5 +3,5 @@
 /**/*.elf
 /**/*.bin
 Makefile
-Makeops
+Makeopts
 config
