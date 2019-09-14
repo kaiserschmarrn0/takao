@@ -12,7 +12,6 @@ extern(C) void main() {
     import system.interrupts: firstStageInterrupts, secondStageInterrupts;
     import system.acpi:       getACPIInfo;
     import memory:            initMemoryManagers;
-    import util.term:         initTerm;
     import lib.messages;
 
     firstStageInterrupts();
@@ -20,7 +19,6 @@ extern(C) void main() {
     initMemoryManagers();
 
     initVBE();
-    initTerm();
 
     info("Reached main(), booting up...                  :kongoudisgust:");
 
