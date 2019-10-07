@@ -16,7 +16,7 @@ GDTPointerLowerHalf:
 align 16
 
 GDTPointer:
-    dw .start - .start - 1  ; GDT size
+    dw .end   - .start - 1  ; GDT size
     dq .start               ; GDT start
 
 align 16

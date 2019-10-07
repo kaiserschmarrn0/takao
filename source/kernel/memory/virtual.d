@@ -127,7 +127,7 @@ void mapGlobalMemory() {
     // (entry 256 of the pml4) onwards.
     for (auto i = 0; e820Map[i].type; i++) {
         size_t alignedBase   = e820Map[i].base - (e820Map[i].base % pageSize);
-        size_t alignedLength = (e820Map[i].length * pageSize) / pageSize;
+        size_t alignedLength = (e820Map[i].length / pageSize) * pageSize;
 
         if (e820Map[i].length % pageSize) {
             alignedLength += pageSize;
@@ -201,7 +201,7 @@ int mapPage(shared PageMap* pagemap, size_t virtualAddress, size_t physicalAddre
              physicalMemoryOffset);
 
         // Catch allocation failure
-        if (cast(size_t)pdpt == physicalMemoryOffset) {
+        if (cast(size_t)pd == physicalMemoryOffset) {
             goto fail2;
         }
 
@@ -219,7 +219,7 @@ int mapPage(shared PageMap* pagemap, size_t virtualAddress, size_t physicalAddre
              physicalMemoryOffset);
 
         // Catch allocation failure
-        if (cast(size_t)pdpt == physicalMemoryOffset) goto fail3;
+        if (cast(size_t)pt == physicalMemoryOffset) goto fail3;
 
         // Present + writable + user (0b111)
         pd[pdEntry] = cast(PageTableEntry)(cast(size_t)pt -
